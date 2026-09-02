@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Creative Learning | Electronics, Robotics & Projects</title>
+  <meta name="description" content="Creative Learning — electronics components, robotics kits, practical learning and project ideas for students, makers and innovators.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <div>Authentic Components <span>•</span> Practical Learning <span>•</span> Project Support</div>
+
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#home" aria-label="Creative Learning home">
+      <img src="images/branding/creative-learning-logo.png" alt="Creative Learning logo">
+      <div>
+        <strong>CREATIVE LEARNING</strong>
+        <span>Education can Transform a Nation</span>
+      </div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+    <nav id="mainNav" aria-label="Main navigation">
+      <a class="nav-link active" href="#home">Home</a>
+      <a class="nav-link" href="#products">Products</a>
+      <a class="nav-link tab-link" href="#practical">Practical</a>
+      <a class="nav-link tab-link" href="#projects">Projects</a>
+      <a class="nav-link tab-link" href="#inspiration">Inspiration</a>
+      <a class="nav-link" href="#kits">Kits</a>
+      <a class="nav-link" href="#why-us">Why Us</a>
+      <div class="header-contact-actions" aria-label="Email Creative Learning">
+        <a class="header-contact gmail" href="#emailComposer" id="headerGmailBtn" aria-label="Email Creative Learning" title="Email Creative Learning">
+          <svg class="contact-svg gmail-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.8A2.8 2.8 0 0 1 5.8 3h12.4A2.8 2.8 0 0 1 21 5.8v12.4a2.8 2.8 0 0 1-2.8 2.8H5.8A2.8 2.8 0 0 1 3 18.2V5.8Z" fill="none"/><path d="M5 7.2 12 12l7-4.8v2.5l-7 4.7-7-4.7V7.2Z"/><path d="M5 8v8.8h2.4V9.6L5 8Zm14 0-2.4 1.6v6.9H19V8Z"/></svg>
+        </a>
+      </div>
+      <button id="cartBtn" class="cart-button">Cart <span id="cartCount">0</span></button>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section class="hero page-section">
+      <div class="hero-copy reveal">
+        <div class="hero-logo-chip"><img src="images/branding/creative-learning-logo.png" alt="Creative Learning"></div>
+        <p class="eyebrow">ELECTRONICS • ROBOTICS • INNOVATION</p>
+        <h1>Learn it.<br><span>Build it.</span><br>Innovate it.</h1>
+        <p class="hero-text">A modern learning destination for components, practical experiments and real-world projects. Explore ideas, understand the hardware, and turn curiosity into working prototypes.</p>
+        <div class="live-view-pill" aria-live="polite"><span class="live-dot"></span><span>Live activity</span><b id="liveViewCount">42</b><small>learners viewing</small></div>
+        <div class="hero-actions">
+          <a class="primary" href="#projects">Explore Projects <span>→</span></a>
+          <a class="secondary" href="#practical">Start Practicals</a>
+        </div>
+        <div class="hero-points">
+          <div><b>Hands-on Learning</b><span>Understand by doing</span></div>
+          <div><b>Real Components</b><span>Build with practical hardware</span></div>
+          <div><b>Project Ready</b><span>From idea to prototype</span></div>
+        </div>
+      </div>
+      <div class="hero-brand-showcase reveal" aria-label="Creative Learning">
+        <div class="hero-brand-orbit"></div>
+        <div class="hero-brand-panel">
+          <span class="hero-brand-kicker">CREATIVE LEARNING</span>
+          <img src="images/branding/creative-learning-hero-logo.png" alt="Creative Learning — Education can Transform a Nation">
+          <p>Education can Transform a Nation</p>
+          <div class="hero-brand-quote" id="heroBrandQuote" aria-live="polite">
+            <span class="hero-brand-quote-mark">“</span>
+            <p id="heroBrandQuoteText">Learning becomes powerful when ideas turn into action.</p>
+            <small id="heroBrandQuoteAuthor">— Creative Learning</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote-strip quote-one reveal">
+      <div class="quote-mark">“</div>
+      <p>Innovation begins when a learner asks, <strong>“What if I build it myself?”</strong></p>
+      <span>CREATIVE LEARNING • LEARN BY DOING</span>
+    </section>
+
+    <section class="trust-strip" id="why-us">
+      <div><span>✦</span><b>Authentic Products</b><small>Original components</small></div>
+      <div><span>✓</span><b>Practical First</b><small>Learn through experiments</small></div>
+      <div><span>⚡</span><b>Fast & Safe</b><small>Secure delivery</small></div>
+      <div><span>◎</span><b>Project Support</b><small>Guidance when you need it</small></div>
+      <div><span>▣</span><b>Built to Explore</b><small>For students & makers</small></div>
+    </section>
+
+
+<section class="quote-gallery quote-gallery-new page-section" id="inspiration" aria-label="Creative Learning quotes">
+  <div class="quote-feature reveal">
+    <div class="quote-feature-copy">
+      <span class="eyebrow">CREATIVE LEARNING • QUOTES</span>
+      <h2>Ideas worth building.<br><span>Words worth remembering.</span></h2>
+      <p>Fresh quotes from Creative Learning appear here. Add, edit or remove them in Admin and the website updates automatically.</p>
+      <div class="quote-live-card">
+        <span class="quote-live-label">LIVE QUOTE</span>
+        <div class="innovation-quote" id="innovationQuote">“The future belongs to people who build what they imagine.”</div>
+        <div class="innovation-author" id="innovationAuthor">— Creative Learning</div>
+      </div>
+    </div>
+    <div class="quote-feature-wall">
+      <div class="quote-mosaic" id="quoteMosaic" aria-live="polite"></div>
+      <div class="quote-progress" aria-hidden="true"><span id="quoteProgress"></span></div>
+    </div>
+  </div>
+</section>
+
+    <section class="catalogue page-section" id="products">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">COMPONENT CATALOGUE</p>
+          <h2>Professional component library</h2>
+          <p>Search the catalogue, open full specifications, and add products to your order.</p>
+        </div>
+        <div class="catalogue-controls">
+          <input id="searchInput" type="search" placeholder="Search Arduino, sensor, motor..." aria-label="Search products">
+          <select id="categorySelect" aria-label="Filter by category"><option value="all">All categories</option></select>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="results-note"><span id="resultCount">0</span> products <span class="image-status">• Component images included</span><span class="sku-status">• Every product has a unique SKU</span></div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <section class="quote-strip quote-two reveal">
+      <div class="quote-mark">✦</div>
+      <p><strong>Every circuit is a question.</strong> Every prototype is an answer waiting to be discovered.</p>
+      <span>KEEP TESTING • KEEP IMPROVING</span>
+    </section>
+
+    <section class="learning-page page-section" id="practical">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">PRACTICAL TAB</p>
+          <h2>Learn through practical experiments</h2>
+          <p>Short, visual activities that turn individual components into understandable concepts.</p>
+        </div>
+        <div class="section-badge">LAB MODE <span>●</span></div>
+      </div>
+      <div class="practical-grid" id="practicalGrid"></div>
+    </section>
+
+    <section class="quote-strip quote-three reveal">
+      <div class="quote-mark">“</div>
+      <p><strong>Do not be afraid of mistakes.</strong> A failed experiment is often the fastest lesson.</p>
+      <span>EXPERIMENT • OBSERVE • ITERATE</span>
+    </section>
+
+    <section class="learning-page page-section projects-section" id="projects">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">PROJECT TAB</p>
+          <h2>Projects that turn ideas into prototypes</h2>
+          <p>Explore project concepts with components, working logic, learning outcomes and upgrade ideas.</p>
+        </div>
+        <div class="section-badge orange">BUILD MODE <span>●</span></div>
+      </div>
+      <div class="project-feature reveal">
+        <div class="project-feature-copy">
+          <span class="tag">FEATURED PROJECT</span>
+          <h3>Smart Irrigation — From Soil to Solution</h3>
+          <p>Measure soil moisture, make a decision with a microcontroller, and control a water pump automatically. A perfect example of sensing + logic + action.</p>
+          <div class="project-mini-stats"><div><b>03</b><span>Core stages</span></div><div><b>06+</b><span>Components</span></div><div><b>∞</b><span>Upgrade ideas</span></div></div>
+          <a class="primary" href="#projects-grid">View all projects <span>→</span></a>
+        </div>
+      </div>
+      <div class="project-grid" id="projects-grid"></div>
+    </section>
+
+    <section class="quote-strip quote-four reveal">
+      <div class="quote-mark">→</div>
+      <p><strong>Think beyond the circuit.</strong> Build something useful, meaningful and uniquely yours.</p>
+      <span>CREATIVITY • ENGINEERING • IMPACT</span>
+    </section>
+
+    <section class="kits-section page-section" id="kits">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">LEARNING & PROJECT KITS</p>
+          <h2>Ready-to-build learning kits</h2>
+          <p>Beginner, advanced, wireless, electronics and smart automation bundles from the catalogue.</p>
+        </div>
+      </div>
+      <div class="kit-grid" id="kitGrid"></div>
+    </section>
+
+    <section class="contact-section reveal">
+      <div>
+        <p class="eyebrow">BULK ORDERS & PROJECT SUPPORT</p>
+        <h2>Have an idea? Let's build the next version.</h2>
+        <p>Send your requirements directly to Creative Learning on WhatsApp. Ask for quantity-based pricing, component combinations, practical guidance or project support.</p>
+      </div>
+      <a class="primary" href="https://wa.me/919714045096?text=Hello%20Creative%20Learning%2C%20I%20need%20help%20with%20a%20project%20or%20component%20kit." target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </section>
+  </main>
+
+  
+
+
+  <footer>
+    <div class="footer-brand"><img src="images/branding/creative-learning-logo.png" alt="Creative Learning"><div><strong>CREATIVE LEARNING</strong><span>Education can Transform a Nation</span></div></div>
+    <div class="footer-contacts" aria-label="Contact Creative Learning">
+      <a class="contact-action whatsapp" href="https://wa.me/919714045096" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" title="WhatsApp">
+        <svg class="contact-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.1 3.9A10.1 10.1 0 0 0 4.2 16.1L3 21l5-1.2a10.1 10.1 0 0 0 12.1-15.9Zm-8 16.4c-1.5 0-2.9-.4-4.2-1.1l-.3-.2-3 .7.7-2.9-.2-.3a8.3 8.3 0 1 1 7 3.8Zm4.6-6.2c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.2-.1-.9-.3-1.7-1-.6-.5-1-1.1-1.1-1.3-.1-.2 0-.3.1-.4l.4-.5c.1-.1.1-.2.2-.4.1-.1 0-.3 0-.4s-.5-1.3-.7-1.8c-.2-.5-.4-.4-.5-.4h-.4c-.1 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 3.9 3.5.5.2.9.3 1.2.4.5.2 1 .2 1.4.1.4-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.1-.4-.2Z"/></svg>
+      </a>
+      <a class="contact-action call" href="tel:+919714045096" aria-label="Call Creative Learning" title="Call">
+        <svg class="contact-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 2.5 9 2c.6-.1 1.1.2 1.3.8l1.2 3.3c.2.5 0 1.1-.4 1.4L9.6 8.8c1 2 2.6 3.6 4.6 4.6l1.3-1.5c.4-.4 1-.6 1.5-.4l3.3 1.2c.6.2.9.7.8 1.3l-.5 2.4c-.1.7-.7 1.1-1.4 1.1C10.8 17.4 6.6 13.2 4.9 7c-.2-.7.3-1.3 1-1.5l.7-3Z"/></svg>
+      </a>
+      <a class="contact-action email" href="https://mail.google.com/mail/?view=cm&fs=1&to=vhp10995@gmail.com" target="_blank" rel="noopener" aria-label="Open Gmail compose" title="Gmail">
+        <svg class="contact-svg gmail-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.8A2.8 2.8 0 0 1 5.8 3h12.4A2.8 2.8 0 0 1 21 5.8v12.4a2.8 2.8 0 0 1-2.8 2.8H5.8A2.8 2.8 0 0 1 3 18.2V5.8Z" fill="none"/><path d="M5 7.2 12 12l7-4.8v2.5l-7 4.7-7-4.7V7.2Z"/><path d="M5 8v8.8h2.4V9.6L5 8Zm14 0-2.4 1.6v6.9H19V8Z"/></svg>
+      </a>
+    </div>
+    <div>© <span id="year"></span> Creative Learning</div>
+  </footer>
+
+  <div class="modal-backdrop" id="emailComposer" aria-hidden="true">
+    <div class="modal email-composer-modal" role="dialog" aria-modal="true" aria-labelledby="emailComposerTitle">
+      <button class="close" data-close="emailComposer" aria-label="Close">×</button>
+      <div class="email-composer-head">
+        <span class="email-composer-icon" aria-hidden="true">✉</span>
+        <div>
+          <p class="eyebrow">DIRECT EMAIL</p>
+          <h2 id="emailComposerTitle">Contact Creative Learning</h2>
+          <p class="muted">Your message will be prepared for our Gmail address.</p>
+        </div>
+      </div>
+      <div class="email-recipient-card">
+        <span>To</span>
+        <strong>vhp10995@gmail.com</strong>
+        <small>Recipient is fixed for secure enquiry routing</small>
+      </div>
+      <form id="emailComposerForm">
+        <label>Subject
+          <input id="emailSubject" name="subject" value="Creative Learning Enquiry" maxlength="120" required>
+        </label>
+        <label>Message
+          <textarea id="emailMessage" name="message" rows="7" placeholder="Tell us what you need help with..." required></textarea>
+        </label>
+        <div class="email-composer-actions">
+          <button class="primary" type="submit">Open Gmail Compose <span>→</span></button>
+          <a class="secondary" id="emailFallbackLink" href="mailto:vhp10995@gmail.com?subject=Creative%20Learning%20Enquiry" aria-label="Open your email application">Use Email App</a>
+        </div>
+        <p class="tiny">If Gmail is not signed in, Google may ask you to sign in first. No email is sent automatically.</p>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal product-modal">
+      <button class="close" data-close="productModal" aria-label="Close">×</button>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
+  <div class="media-lightbox image-lightbox" id="imageLightbox" aria-hidden="true">
+    <div class="media-lightbox-panel image-lightbox-panel" role="dialog" aria-modal="true" aria-label="Image preview">
+      <button class="close media-lightbox-close" data-close="imageLightbox" aria-label="Close image preview">×</button>
+      <div class="media-lightbox-head"><span class="pdf-badge image-badge">IMAGE</span><strong>Product image preview</strong></div>
+      <div class="image-preview-stage"><img src="" alt="Expanded product image"></div>
+    </div>
+  </div>
+
+  <div class="media-lightbox" id="mediaLightbox" aria-hidden="true">
+    <div class="media-lightbox-panel" role="dialog" aria-modal="true" aria-label="PDF preview">
+      <button class="close media-lightbox-close" data-close="mediaLightbox" aria-label="Close PDF preview">×</button>
+      <div class="media-lightbox-head"><span class="pdf-badge">PDF</span><strong>Document preview</strong></div>
+      <iframe title="PDF preview" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-head"><h3>Your Cart</h3><button class="close" id="closeCart" aria-label="Close cart">×</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-summary"><span>Items</span><b id="cartTotalItems">0</b></div>
+      <div class="cart-actions">
+        <button class="primary full" id="checkoutBtn">Proceed to Checkout</button>
+        <button class="secondary full" id="excelBtn" type="button">Download Excel Order</button>
+      </div>
+      <p class="tiny">Prices are shown as “Contact for price” because the supplied catalogue does not list prices.</p>
+    </div>
+  </aside>
+
+  <div class="modal-backdrop" id="checkoutModal">
+    <div class="modal checkout-modal">
+      <button class="close" data-close="checkoutModal" aria-label="Close">×</button>
+      <p class="eyebrow">ORDER CHECKOUT</p>
+      <h2>Send your order to WhatsApp</h2>
+      <p class="muted">Enter your details. We will prepare a WhatsApp message containing the selected products.</p>
+      <form id="checkoutForm">
+        <div class="form-grid">
+          <label>Full name<input name="name" required></label>
+          <label>Phone / WhatsApp<input name="phone" required></label>
+          <label class="wide">Email (optional)<input type="email" name="email"></label>
+          <label class="wide">Delivery address<textarea name="address" rows="3" required></textarea></label>
+          <label class="wide">Notes / requirements<textarea name="notes" rows="3" placeholder="Quantity, project name, preferred models, etc."></textarea></label>
+        </div>
+        <div class="checkout-actions">
+          <button class="primary full" type="submit">Open WhatsApp Order</button>
+          <button class="secondary full" type="button" id="checkoutExcelBtn">Download Excel</button>
+        </div>
+        <p class="tiny">WhatsApp opens with the full order prepared. For security, your browser/WhatsApp still requires you to press Send.</p>
+      </form>
+    </div>
+  </div>
+
+  <script src="data/products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

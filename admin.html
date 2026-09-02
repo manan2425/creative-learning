@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Creative Learning Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="login" class="screen">
+    <div class="login-card">
+      <div class="brand-lockup">
+        <img src="images/branding/creative-learning-logo.png" alt="Creative Learning logo">
+        <div>
+          <strong>CREATIVE LEARNING</strong>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+      <p class="login-intro">Manage your catalogue, company information and website settings.</p>
+
+      <form id="loginForm" novalidate>
+        <label class="field-label" for="password">Admin password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Enter admin password">
+        <button id="loginBtn" type="submit">Login to Admin</button>
+      </form>
+
+      <button id="forgotBtn" class="link-button" type="button">Forgot password?</button>
+      <div id="loginStatus" class="form-status" aria-live="polite"></div>
+      <small class="security-note">This is a browser-based static admin panel. For production, connect authentication and password recovery to a secure server.</small>
+
+      <section id="resetPanel" class="reset-panel" hidden>
+        <div class="reset-title-row">
+          <div>
+            <h2>Reset admin password</h2>
+            <p>Enter your recovery code and choose a new password.</p>
+          </div>
+          <button id="closeResetBtn" class="icon-button" type="button" aria-label="Close reset form">×</button>
+        </div>
+        <form id="resetForm" novalidate>
+          <label class="field-label" for="recoveryCode">Recovery code</label>
+          <input id="recoveryCode" type="password" autocomplete="off" placeholder="Enter recovery code">
+          <label class="field-label" for="newPassword">New password</label>
+          <input id="newPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+          <label class="field-label" for="confirmPassword">Confirm new password</label>
+          <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Re-enter new password">
+          <button type="submit">Reset password</button>
+        </form>
+        <div id="resetStatus" class="form-status" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <header>
+      <div class="admin-brand">
+        <img src="images/branding/creative-learning-logo.png" alt="Creative Learning logo">
+        <div>
+          <b>Creative Learning Admin</b>
+          <span>Manage website details and products</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="exportBtn" type="button">Export changes</button>
+        <button id="logoutBtn" type="button">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel welcome-panel">
+        <div>
+          <span class="eyebrow">CONTROL CENTER</span>
+          <h1>Creative Learning Admin</h1>
+          <p>Update your website without editing the storefront files directly.</p>
+        </div>
+        <img src="images/branding/creative-learning-logo.png" alt="Creative Learning" class="welcome-logo">
+      </section>
+
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab active" data-tab="website" role="tab" aria-selected="true" type="button">Website details</button>
+        <button class="admin-tab" data-tab="products" role="tab" aria-selected="false" type="button">Products</button>
+        <button class="admin-tab" data-tab="components" role="tab" aria-selected="false" type="button">Catalog Tools</button>
+        <button class="admin-tab" data-tab="media" role="tab" aria-selected="false" type="button">Learning Media</button>
+        <button class="admin-tab" data-tab="learning-editors" role="tab" aria-selected="false" type="button">Kits / Practicals / Projects</button>
+        <button class="admin-tab" data-tab="quotes" role="tab" aria-selected="false" type="button">Quotes</button>
+        <button class="admin-tab" data-tab="security" role="tab" aria-selected="false" type="button">Security</button>
+      </div>
+
+      <div id="tab-website" class="tab-panel active" role="tabpanel">
+      <section class="panel">
+        <h2>Company / Website details</h2>
+        <div class="grid">
+          <label>Company name<input id="name"></label>
+          <label>Tagline<input id="tagline"></label>
+          <label>Phone<input id="phone"></label>
+          <label>WhatsApp<input id="whatsapp"></label>
+          <label>Email<input id="email"></label>
+        </div>
+        <button id="saveCompany" type="button">Save company details</button>
+        <span id="companyStatus" class="form-status" aria-live="polite"></span>
+      </section>
+
+      </div>
+
+      <div id="tab-products" class="tab-panel" role="tabpanel" hidden>
+      <section class="panel products-panel">
+        <div class="section-head products-toolbar">
+          <div>
+            <span class="eyebrow">CATALOGUE MANAGER</span>
+            <h2>Products</h2>
+            <p>Add, edit, replace images, or remove products from your website.</p>
+          </div>
+          <div class="toolbar-actions">
+            <input id="search" aria-label="Search products" placeholder="Search products...">
+            <button id="addProductBtn" class="primary-btn" type="button">＋ Add Product</button>
+          </div>
+        </div>
+
+        <section id="addProductPanel" class="add-product-panel" hidden>
+          <div class="add-product-heading">
+            <div><h3>Add new product</h3><p>Create a complete product listing with an optional product photo.</p></div>
+            <button id="closeAddProductBtn" class="icon-button" type="button" aria-label="Close add product form">×</button>
+          </div>
+          <form id="addProductForm" class="product-editor-form" novalidate>
+            <div class="image-uploader">
+              <div class="image-preview empty" id="newProductImagePreview"><span>Product image</span></div>
+              <label class="upload-btn">Choose image<input id="newProductImageFile" type="file" accept="image/*" hidden></label>
+              <button id="removeNewProductImageBtn" class="text-danger" type="button" hidden>Remove image</button>
+            </div>
+            <div class="editor-fields">
+              <label>Product ID<input id="newProductId" required placeholder="e.g. p25"></label>
+              <label>SKU<input id="newProductSku" placeholder="e.g. CL-P25"></label>
+              <label>Product name<input id="newProductName" required placeholder="Product name"></label>
+              <label>Category<input id="newProductCategory" required placeholder="e.g. Sensors"></label>
+              <label>Price<input id="newProductPrice" placeholder="Contact for price"></label>
+              <label class="wide">Description<textarea id="newProductDescription" required placeholder="Short, customer-friendly description"></textarea></label>
+              <label class="wide">Specifications<textarea id="newProductSpecifications" placeholder="Separate key points with semicolons"></textarea></label>
+              <label class="wide">Applications<textarea id="newProductApplications" placeholder="Use cases, projects or applications"></textarea></label>
+              <div class="editor-actions wide">
+                <button type="submit" class="primary-btn">Save Product</button>
+                <button id="cancelAddProductBtn" type="button" class="secondary-btn">Cancel</button>
+                <span id="addProductStatus" class="form-status" aria-live="polite"></span>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <div id="products"></div>
+      </section>
+      </div>
+
+      <div id="tab-components" class="tab-panel" role="tabpanel" hidden>
+        <section class="panel component-manager">
+          <div class="section-title">
+            <div><h2>Add component item</h2><p>Create a new catalogue item. It will appear on the website after saving.</p></div>
+          </div>
+          <form id="addComponentForm" class="component-form" novalidate>
+            <label>ID / SKU<input id="componentId" required placeholder="e.g. p25"></label>
+            <label>Name<input id="componentName" required placeholder="Component name"></label>
+            <label>Category<input id="componentCategory" required placeholder="e.g. Sensors"></label>
+            <label>Price<input id="componentPrice" placeholder="₹ 0"></label>
+            <label class="wide">Description<textarea id="componentDescription" required placeholder="Short product description"></textarea></label>
+            <label>Image path<input id="componentImage" placeholder="images/components/p25-1.jpg"></label>
+            <label class="wide">Specifications<textarea id="componentSpecifications" placeholder="Key specifications"></textarea></label>
+            <label class="wide">Applications<textarea id="componentApplications" placeholder="Applications / use cases"></textarea></label>
+            <div class="component-actions wide">
+              <button type="submit">Add component</button>
+              <button id="clearComponentBtn" class="secondary-btn" type="button">Clear</button>
+              <span id="componentStatus" class="form-status" aria-live="polite"></span>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div><h2>Remove component items</h2><p>Delete catalogue items you no longer want to show on the website.</p></div>
+            <input id="componentSearch" aria-label="Search components to remove" placeholder="Search components...">
+          </div>
+          <div id="componentList" class="component-list"></div>
+        </section>
+      </div>
+
+
+      <div id="tab-media" class="tab-panel" role="tabpanel" hidden>
+        <section class="panel media-manager">
+          <div class="section-title">
+            <div>
+              <h2>Learning media</h2>
+              <p>Attach multiple images and one PDF to components, kits, practicals, and projects. Changes are saved in this browser and appear on the public website immediately.</p>
+            </div>
+          </div>
+          <div class="media-note">Images appear in a horizontal scroll gallery. The PDF is shown with a direct View PDF button.</div>
+          <div class="media-group">
+            <div class="learning-group-head"><h3>Components</h3><input id="componentMediaSearch" class="learning-search" type="search" placeholder="Search components..." aria-label="Search learning media components"></div>
+            <div id="componentMediaList" class="media-item-list"></div>
+          </div>
+          <div class="media-group">
+            <div class="learning-group-head"><h3>Kits</h3><input id="kitMediaSearch" class="learning-search" type="search" placeholder="Search kits..." aria-label="Search learning media kits"></div>
+            <div id="kitMediaList" class="media-item-list"></div>
+          </div>
+          <div class="media-group">
+            <div class="learning-group-head"><h3>Practical</h3><input id="practicalMediaSearch" class="learning-search" type="search" placeholder="Search practicals..." aria-label="Search learning media practicals"></div>
+            <div id="practicalMediaList" class="media-item-list"></div>
+          </div>
+          <div class="media-group">
+            <div class="learning-group-head"><h3>Projects</h3><input id="projectMediaSearch" class="learning-search" type="search" placeholder="Search projects..." aria-label="Search learning media projects"></div>
+            <div id="projectMediaList" class="media-item-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="tab-learning-editors" class="tab-panel" role="tabpanel" hidden>
+        <section class="panel media-manager">
+          <div class="section-title">
+            <div>
+              <h2>Learning item editors</h2>
+              <p>Edit kits, practicals and projects with the same rich controls as products — details, multiple images and one PDF.</p>
+            </div>
+          </div>
+          <div class="media-note">Save changes here and they appear on the public website immediately. Image thumbnails can be clicked and the PDF can be previewed from the website.</div>
+          <div class="media-group learning-admin-group">
+            <div class="learning-group-head"><h3>Kits</h3><div class="learning-group-tools"><input id="kitEditorSearch" class="learning-search" type="search" placeholder="Search kits..." aria-label="Search kit editors"><button id="addKitBtn" class="primary-btn small-btn" type="button">＋ Add Kit</button></div></div>
+            <section id="addKitPanel" class="add-learning-panel" hidden>
+              <form id="addKitForm" class="learning-add-form">
+                <label>Name<input name="name" required placeholder="New learning kit"></label>
+                <label>SKU<input name="sku" placeholder="CL-KIT-001"></label>
+                <label>Price<input name="price" value="Contact for price"></label>
+                <label class="wide">Description<textarea name="description" required></textarea></label>
+                <label class="wide">Specifications<textarea name="specifications"></textarea></label>
+                <label class="wide">Applications<textarea name="applications"></textarea></label>
+                <div class="product-footer-actions"><button class="primary-btn" type="submit">Create kit</button><button id="cancelAddKitBtn" class="secondary-btn" type="button">Cancel</button><span id="kitAddStatus" class="form-status"></span></div>
+              </form>
+            </section>
+            <div id="kitEditorList" class="media-item-list"></div>
+          </div>
+          <div class="media-group learning-admin-group">
+            <div class="learning-group-head"><h3>Practicals</h3><div class="learning-group-tools"><input id="practicalEditorSearch" class="learning-search" type="search" placeholder="Search practicals..." aria-label="Search practical editors"><button id="addPracticalBtn" class="primary-btn small-btn" type="button">＋ Add Practical</button></div></div>
+            <section id="addPracticalPanel" class="add-learning-panel" hidden>
+              <form id="addPracticalForm" class="learning-add-form">
+                <label>Name<input name="title" required placeholder="New practical"></label>
+                <label>SKU<input name="sku" placeholder="CL-PRAC-001"></label>
+                <label>Product ID / SKU<input name="product" placeholder="p02-1"></label>
+                <label>Level<input name="level" value="Beginner"></label>
+                <label>Time<input name="time" value="30 min"></label>
+                <label class="wide">Description / Goal<textarea name="goal" required></textarea></label>
+                <label class="wide">Steps<textarea name="steps" placeholder="Step 1; Step 2; Step 3"></textarea></label>
+                <div class="product-footer-actions"><button class="primary-btn" type="submit">Create practical</button><button id="cancelAddPracticalBtn" class="secondary-btn" type="button">Cancel</button><span id="practicalAddStatus" class="form-status"></span></div>
+              </form>
+            </section>
+            <div id="practicalEditorList" class="media-item-list"></div>
+          </div>
+          <div class="media-group learning-admin-group">
+            <div class="learning-group-head"><h3>Projects</h3><div class="learning-group-tools"><input id="projectEditorSearch" class="learning-search" type="search" placeholder="Search projects..." aria-label="Search project editors"><button id="addProjectBtn" class="primary-btn small-btn" type="button">＋ Add Project</button></div></div>
+            <section id="addProjectPanel" class="add-learning-panel" hidden>
+              <form id="addProjectForm" class="learning-add-form">
+                <label>Name<input name="title" required placeholder="New project"></label>
+                <label>SKU<input name="sku" placeholder="CL-PROJ-001"></label>
+                <label>Product ID / SKU<input name="product" placeholder="p02-1"></label>
+                <label class="wide">Kit / Hardware<textarea name="kit"></textarea></label>
+                <label class="wide">Description<textarea name="summary" required></textarea></label>
+                <label class="wide">What you learn<textarea name="learn"></textarea></label>
+                <label class="wide">Upgrade / Next step<textarea name="upgrade"></textarea></label>
+                <div class="product-footer-actions"><button class="primary-btn" type="submit">Create project</button><button id="cancelAddProjectBtn" class="secondary-btn" type="button">Cancel</button><span id="projectAddStatus" class="form-status"></span></div>
+              </form>
+            </section>
+            <div id="projectEditorList" class="media-item-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="tab-quotes" class="tab-panel" role="tabpanel" hidden>
+        <section class="panel quote-admin-panel">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">PUBLIC WEBSITE QUOTES</span>
+              <h2>Quotes</h2>
+              <p>Add as many quotes as you want. Each quote has its own author, save button and remove button. Saved quotes appear on the public website automatically.</p>
+            </div>
+          </div>
+          <div class="quote-add-box hero-quote-admin-box">
+            <div class="section-title">
+              <div>
+                <span class="eyebrow">HERO LOGO QUOTE</span>
+                <h3>Quote shown below the Creative Learning logo</h3>
+                <p>Edit any quote below, then choose which saved quote should appear under the logo in the upper website hero.</p>
+              </div>
+            </div>
+            <div class="quote-form-grid">
+              <label>Hero logo quote<select id="heroQuoteSelect"></select></label>
+              <div class="product-footer-actions quote-actions"><button id="heroQuoteSave" class="primary-btn" type="button">Save hero quote</button><span id="heroQuoteStatus" class="form-status" aria-live="polite"></span></div>
+            </div>
+          </div>
+          <div class="quote-add-box">
+            <div class="quote-form-grid">
+              <label>Quote text<textarea id="newQuoteText" rows="4" placeholder="Write a new quote..."></textarea></label>
+              <label>Author<input id="newQuoteAuthor" placeholder="Author name"></label>
+            </div>
+            <div class="product-footer-actions quote-actions">
+              <button id="addQuote" class="primary-btn" type="button">＋ Add quote</button>
+              <span id="quoteStatus" class="form-status" aria-live="polite"></span>
+            </div>
+          </div>
+          <div id="quoteEditorList" class="quote-editor-list"></div>
+          <div class="quote-publish-note"><span>✓</span> Every saved quote is published immediately on the public website.</div>
+        </section>
+      </div>
+
+      <div id="tab-security" class="tab-panel" role="tabpanel" hidden>
+      <section class="panel">
+        <div class="section-title">
+          <div><h2>Security</h2><p>Change the admin password and recovery code used for password resets.</p></div>
+        </div>
+        <form id="securityForm" class="security-grid" novalidate>
+          <div>
+            <label class="field-label" for="currentPassword">Current password</label>
+            <input id="currentPassword" type="password" autocomplete="current-password" placeholder="Current password">
+          </div>
+          <div>
+            <label class="field-label" for="changePassword">New password</label>
+            <input id="changePassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+          </div>
+          <div>
+            <label class="field-label" for="changePasswordConfirm">Confirm password</label>
+            <input id="changePasswordConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password">
+          </div>
+          <div>
+            <label class="field-label" for="changeRecovery">New recovery code</label>
+            <input id="changeRecovery" type="password" autocomplete="off" placeholder="Keep this somewhere safe">
+          </div>
+          <div class="security-actions">
+            <button type="submit">Update security</button>
+            <span id="securityStatus" class="form-status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      </div>
+    </main>
+  </div>
+  <script src="data/products.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

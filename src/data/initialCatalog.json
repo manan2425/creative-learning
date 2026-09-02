@@ -1,0 +1,192 @@
+{
+  "catalogVersion": 2,
+  "company": {
+    "name": "Creative Learning",
+    "tagline": "Education can Transform a Nation",
+    "phone": "+91 97140 45096",
+    "whatsapp": "+91 97140 45096",
+    "email": "vhp10995@gmail.com",
+    "address": "Ahmedabad, Gujarat, India",
+    "heroImage": "images/source-pages/page-01.jpg"
+  },
+  "products": [
+    {
+      "id": "p02-1",
+      "name": "Arduino UNO with Cable",
+      "category": "Boards",
+      "page": 2,
+      "description": "Reliable board for learning and prototype development",
+      "specifications": "ATmega328P; 14 digital I/O (6 PWM); 6 analog inputs; 32 KB flash; 2 KB SRAM; 16 MHz",
+      "applications": "Electronics projects; robotics; IoT applications; education; DIY prototyping",
+      "image": "images/components/p02-1.jpg",
+      "images": ["images/components/p02-1.jpg", "images/source-pages/page-02.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P02-1"
+    },
+    {
+      "id": "p02-2",
+      "name": "Arduino Nano with Cable",
+      "category": "Boards",
+      "page": 2,
+      "description": "Compact and powerful board for smart applications",
+      "specifications": "ATmega328P; 3.3V/5V operation; 14 digital I/O; 8 analog inputs; 32 KB flash; 2 KB SRAM; 16 MHz",
+      "applications": "Portable projects; wearable devices; IoT nodes; embedded systems; prototypes",
+      "image": "images/components/p02-2.jpg",
+      "images": ["images/components/p02-2.jpg", "images/source-pages/page-02.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P02-2"
+    },
+    {
+      "id": "p02-3",
+      "name": "Arduino Mega with Cable",
+      "category": "Boards",
+      "page": 2,
+      "description": "High-performance Arduino board for advanced projects",
+      "specifications": "ATmega2560; 54 digital I/O; 16 analog inputs; 256 KB flash; 8 KB SRAM; 16 MHz",
+      "applications": "Advanced robotics; industrial automation; 3D printers & CNC; large projects",
+      "image": "images/components/p02-3.jpg",
+      "images": ["images/components/p02-3.jpg", "images/source-pages/page-02.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P02-3"
+    },
+    {
+      "id": "p17-kit",
+      "name": "Arduino Beginner Starter Kit V2",
+      "category": "Starter Kits",
+      "page": 17,
+      "description": "Hands-on Arduino learning and prototyping kit with board, breadboard, jumper wires, LEDs, resistors, servo, LDR, IR sensor, buttons and buzzer.",
+      "specifications": "Arduino UNO; USB cable; 840-point breadboard; jumper wires; LEDs; resistors; push buttons; potentiometer; buzzer; LDR; IR sensor; SG90 servo",
+      "applications": "Electronics basics; DIY projects; coding skills; sensor and module learning; robotics prototypes",
+      "image": "images/components/p17-kit.jpg",
+      "images": ["images/components/p17-kit.jpg", "images/source-pages/page-17.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P17-KIT",
+      "pdf": "docs/kits/p17-kit.pdf"
+    },
+    {
+      "id": "p18-kit",
+      "name": "Arduino Beginner Starter Kit V1",
+      "category": "Starter Kits",
+      "page": 18,
+      "description": "Beginner-friendly Arduino kit for programming, prototyping and basic sensor projects.",
+      "specifications": "Arduino UNO R3; USB cable; breadboard; jumper wires; LEDs; resistors; push buttons; potentiometer; buzzer; LDR; RGB LED; small on/off switch",
+      "applications": "Electronics learning; hands-on practice; creative projects; beginner robotics; sensor interfacing",
+      "image": "images/components/p18-kit.jpg",
+      "images": ["images/components/p18-kit.jpg", "images/source-pages/page-18.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P18-KIT",
+      "pdf": "docs/kits/p18-kit.pdf"
+    },
+    {
+      "id": "p19-kit",
+      "name": "Electronics Components Kit V1",
+      "category": "Starter Kits",
+      "page": 19,
+      "description": "General-purpose component kit for breadboard prototyping and basic electronics development.",
+      "specifications": "5V adapter; LEDs; resistors; jumper-wire sets; two 400-point breadboards; 5V breadboard power supply; capacitors; headers and connectors",
+      "applications": "Power/electronics prototyping; indicators; custom circuits; breadboard development",
+      "image": "images/components/p19-kit.jpg",
+      "images": ["images/components/p19-kit.jpg", "images/source-pages/page-19.jpg"],
+      "price": "Contact for price",
+      "sku": "CL-P19-KIT",
+      "pdf": "docs/kits/p19-kit.pdf"
+    }
+  ],
+  "practicals": [
+    {
+      "key": "ultrasonic-distance-lab",
+      "title": "Ultrasonic Distance Lab",
+      "product": "p02-1",
+      "level": "Beginner",
+      "time": "25 min",
+      "goal": "Understand distance sensing and threshold logic.",
+      "steps": [
+        "Wire VCC, GND and TRIG/ECHO pins to Arduino",
+        "Trigger high pulse on TRIG to emit ultrasonic burst",
+        "Read echo duration and calculate distance in cm",
+        "Set a threshold rule to trigger an alert LED or buzzer"
+      ],
+      "images": ["images/components/p02-1.jpg", "images/source-pages/page-02.jpg"]
+    },
+    {
+      "key": "soil-moisture-test",
+      "title": "Soil Moisture Test",
+      "product": "p02-2",
+      "level": "Beginner",
+      "time": "30 min",
+      "goal": "Learn how an analog sensor becomes a useful automated decision.",
+      "steps": [
+        "Insert the soil moisture sensor probe into sample soil",
+        "Connect VCC, GND and analog output A0 to Arduino Nano",
+        "Read raw analog values and map dry vs. wet thresholds",
+        "Trigger an automatic pump or status LED based on moisture levels"
+      ],
+      "images": ["images/components/p02-2.jpg", "images/source-pages/page-02.jpg"]
+    },
+    {
+      "key": "temperature-monitoring",
+      "title": "Temperature Monitoring",
+      "product": "p02-3",
+      "level": "Beginner",
+      "time": "25 min",
+      "goal": "Convert analog sensor voltage readings into a calibrated real-world temperature display.",
+      "steps": [
+        "Connect the analog temperature sensor (LM35/TMP36) to 5V and GND",
+        "Read sensor analog output on pin A0 of Arduino Mega",
+        "Convert voltage reading to Celsius using calibration formulas",
+        "Output live serial telemetry and trigger a cooling relay"
+      ],
+      "images": ["images/components/p02-3.jpg", "images/source-pages/page-02.jpg"]
+    }
+  ],
+  "projects": [
+    {
+      "key": "obstacle-avoiding-robot",
+      "title": "Obstacle Avoiding Robot",
+      "product": "p02-1",
+      "kit": "Arduino UNO + Ultrasonic Sensor + L298N Motor Driver + DC Gear Motors",
+      "summary": "A mobile robot chassis that continuously scans ahead, measures distance in real-time, and navigates autonomously around obstacles.",
+      "learn": "Ultrasonic sensing • PWM motor speed control • Directional decision algorithms • Embedded systems",
+      "upgrade": "Add Bluetooth/WiFi remote override and an OLED dashboard displaying distance.",
+      "images": ["images/components/p02-1.jpg", "images/components/p17-kit.jpg"]
+    },
+    {
+      "key": "smart-plant-watering",
+      "title": "Smart Plant Watering",
+      "product": "p02-2",
+      "kit": "Arduino Nano + Soil Moisture Sensor + 5V Relay + Submersible Micro Pump",
+      "summary": "Automate plant care using real-time soil moisture feedback to trigger a water pump only when needed.",
+      "learn": "Analog sensor calibration • Relay switching • Power isolation • Threshold logic",
+      "upgrade": "Add a water reservoir level sensor and IoT mobile notifications.",
+      "images": ["images/components/p02-2.jpg", "images/components/p18-kit.jpg"]
+    },
+    {
+      "key": "wireless-appliance-controller",
+      "title": "Wireless Appliance Controller",
+      "product": "p02-3",
+      "kit": "Arduino Mega + Multi-channel Relay Module + Wireless Transceiver",
+      "summary": "Build a home automation controller that safely switches AC/DC appliances with multi-point control.",
+      "learn": "Relay safety • Optical isolation • Microcontroller multi-tasking • State retention",
+      "upgrade": "Integrate ESP8266/ESP32 web server and voice control integration.",
+      "images": ["images/components/p02-3.jpg", "images/components/p19-kit.jpg"]
+    }
+  ],
+  "quotes": [
+    {
+      "id": "q-1",
+      "text": "The future belongs to people who build what they imagine.",
+      "author": "Creative Learning"
+    },
+    {
+      "id": "q-2",
+      "text": "Innovation begins when a learner asks: What if I build it myself?",
+      "author": "Creative Learning"
+    },
+    {
+      "id": "q-3",
+      "text": "Learning becomes powerful when ideas turn into working prototypes.",
+      "author": "Creative Learning"
+    }
+  ],
+  "heroQuoteId": "q-1"
+}
