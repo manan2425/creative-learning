@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getCatalogData, saveCatalogData } from '@/lib/storage';
+import { getCatalogDataAsync, saveCatalogDataAsync } from '@/lib/storage';
 import { CatalogData } from '@/types';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const data = getCatalogData();
+    const data = await getCatalogDataAsync();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('API GET /api/catalog error:', error);
     return NextResponse.json({ error: 'Failed to retrieve catalog data' }, { status: 500 });
   }
 }
@@ -17,13 +20,14 @@ export async function POST(request: Request) {
     if (!body || !Array.isArray(body.products)) {
       return NextResponse.json({ error: 'Invalid catalog data structure' }, { status: 400 });
     }
-    const success = saveCatalogData(body);
+    const success = await saveCatalogDataAsync(body);
     if (success) {
       return NextResponse.json({ success: true, data: body });
     } else {
       return NextResponse.json({ error: 'Failed to save catalog data' }, { status: 500 });
     }
   } catch (error) {
+    console.error('API POST /api/catalog error:', error);
     return NextResponse.json({ error: 'Failed to update catalog data' }, { status: 500 });
   }
 }
