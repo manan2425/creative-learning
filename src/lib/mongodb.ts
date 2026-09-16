@@ -1,6 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || '';
 const options = {};
 
 let client: MongoClient;
@@ -11,25 +10,30 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-if (uri) {
+export function getClientPromise(): Promise<MongoClient> | null {
+  const uri = process.env.MONGODB_URI || 'mongodb+srv://mananpatel448_db_user:vAtpX9yemnMy9NM9@cluster0.0ucha5x.mongodb.net/creative_learning?retryWrites=true&w=majority';
+  if (!uri) return null;
+
   if (process.env.NODE_ENV === 'development') {
-    // In development mode, use a global variable so the MongoClient is not repeated on hot-reloading
     if (!global._mongoClientPromise) {
       client = new MongoClient(uri, options);
       global._mongoClientPromise = client.connect();
     }
-    clientPromise = global._mongoClientPromise;
+    return global._mongoClientPromise;
   } else {
-    // In production mode, create a standard client
-    client = new MongoClient(uri, options);
-    clientPromise = client.connect();
+    if (!clientPromise) {
+      client = new MongoClient(uri, options);
+      clientPromise = client.connect();
+    }
+    return clientPromise;
   }
 }
 
 export async function getDb(): Promise<Db | null> {
-  if (!clientPromise) return null;
+  const promise = getClientPromise();
+  if (!promise) return null;
   try {
-    const connectedClient = await clientPromise;
+    const connectedClient = await promise;
     const dbName = process.env.MONGODB_DB || 'creative_learning';
     return connectedClient.db(dbName);
   } catch (err) {
@@ -38,4 +42,4 @@ export async function getDb(): Promise<Db | null> {
   }
 }
 
-export default clientPromise;
+export default getClientPromise();

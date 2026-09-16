@@ -13,8 +13,29 @@ export default function InquiryModal() {
 
   if (!inquiryProduct) return null;
 
+  const logInquiry = async (channel: string) => {
+    try {
+      fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'product_inquiry',
+          channel,
+          productId: inquiryProduct.id,
+          productName: inquiryProduct.name,
+          sku: inquiryProduct.sku || inquiryProduct.id,
+          name: name || 'Customer',
+          email: email || '',
+          phone: phone || '',
+          message: message || '',
+        }),
+      }).catch(() => {});
+    } catch {}
+  };
+
   const handleWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
+    logInquiry('whatsapp');
     const rawPhone = catalog.company.whatsapp || catalog.company.phone || '919714045096';
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
     const text = `Hello Creative Learning Robotics Team,\n\nI am inquiring about hardware module: ${inquiryProduct.name} (SKU: ${inquiryProduct.sku || inquiryProduct.id})\n\nName: ${name || 'Customer'}\nEmail: ${email || 'N/A'}\nPhone: ${phone || 'N/A'}\nMessage: ${message || 'Please provide quotation, pinout details, and delivery timeline.'}`;
@@ -23,6 +44,7 @@ export default function InquiryModal() {
   };
 
   const handleEmail = () => {
+    logInquiry('email');
     const targetEmail = catalog.company.email || 'vhp10995@gmail.com';
     const subject = encodeURIComponent(`Robotics Hardware Inquiry: ${inquiryProduct.name}`);
     const body = encodeURIComponent(

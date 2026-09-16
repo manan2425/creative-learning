@@ -20,8 +20,30 @@ export default function CartDrawer() {
   const [dispatchingWhatsApp, setDispatchingWhatsApp] = useState(false);
   const [dispatchingEmail, setDispatchingEmail] = useState(false);
 
+  const logCartOrder = (channel: string) => {
+    try {
+      fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'cart_order_requisition',
+          channel,
+          totalItems,
+          items: items.map(({ product, quantity }) => ({
+            id: product.id,
+            name: product.name,
+            sku: product.sku || product.id,
+            price: product.price || '',
+            quantity,
+          })),
+        }),
+      }).catch(() => {});
+    } catch {}
+  };
+
   const handleWhatsAppDispatch = () => {
     setDispatchingWhatsApp(true);
+    logCartOrder('whatsapp');
     setTimeout(() => {
       openWhatsAppOrder();
       setDispatchingWhatsApp(false);
@@ -30,6 +52,7 @@ export default function CartDrawer() {
 
   const handleEmailDispatch = () => {
     setDispatchingEmail(true);
+    logCartOrder('email');
     setTimeout(() => {
       openEmailOrder();
       setDispatchingEmail(false);
