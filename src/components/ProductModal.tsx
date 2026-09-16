@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { X, FileText, ShoppingCart, MessageSquare, Check } from 'lucide-react';
+import { X, FileText, ShoppingCart, MessageSquare, Check, Cpu, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 export default function ProductModal() {
   const { selectedProduct, setSelectedProduct, setInquiryProduct } = useData();
   const { addToCart } = useCart();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [added, setAdded] = useState(false);
 
   if (!selectedProduct) return null;
 
@@ -28,6 +29,15 @@ export default function ProductModal() {
   const appsList = selectedProduct.applications
     ? selectedProduct.applications.split(';').map((s) => s.trim()).filter(Boolean)
     : [];
+
+  const handleAddToCart = () => {
+    addToCart(selectedProduct);
+    setAdded(true);
+    setTimeout(() => {
+      setAdded(false);
+      setSelectedProduct(null);
+    }, 1000);
+  };
 
   return (
     <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}>
@@ -58,6 +68,7 @@ export default function ProductModal() {
                     type="button"
                     className={`product-thumb ${activeImageIndex === idx ? 'active' : ''}`}
                     onClick={() => setActiveImageIndex(idx)}
+                    aria-label={`View image ${idx + 1}`}
                   >
                     <img src={img.startsWith('/') ? img : `/${img}`} alt="" />
                   </button>
@@ -66,7 +77,7 @@ export default function ProductModal() {
             )}
 
             {selectedProduct.pdf && (
-              <div style={{ marginTop: '16px' }}>
+              <div style={{ marginTop: '18px' }}>
                 <a
                   href={
                     selectedProduct.pdf.startsWith('/')
@@ -81,50 +92,82 @@ export default function ProductModal() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '6px',
-                    borderColor: '#0872c9',
-                    color: '#0872c9',
-                    fontWeight: 800,
+                    gap: '8px',
+                    borderColor: 'var(--cyan)',
+                    color: 'var(--cyan)',
+                    fontWeight: 700,
+                    fontFamily: 'JetBrains Mono',
+                    background: 'rgba(0, 240, 255, 0.1)',
                   }}
                 >
-                  <FileText size={16} /> Open Official Datasheet / Manual (PDF)
+                  <FileText size={16} /> Technical Datasheet / Manual (PDF)
                 </a>
               </div>
             )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="tag">{selectedProduct.category}</span>
-            <h2 style={{ margin: '8px 0', fontSize: '26px' }}>{selectedProduct.name}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="tag">
+                <Cpu size={11} /> {selectedProduct.category}
+              </span>
+              <span
+                style={{
+                  fontSize: '11px',
+                  color: '#00ff9d',
+                  fontWeight: 700,
+                  fontFamily: 'JetBrains Mono',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                ● 100% VERIFIED IC
+              </span>
+            </div>
+
+            <h2 style={{ margin: '10px 0 6px', fontSize: '26px', lineHeight: '1.2', color: '#ffffff' }}>
+              {selectedProduct.name}
+            </h2>
             <div className="sku-line">SKU: {selectedProduct.sku || `CL-${selectedProduct.id}`}</div>
 
-            <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: '1.6' }}>
+            <p style={{ color: '#94a3b8', fontSize: '13.5px', lineHeight: '1.65' }}>
               {selectedProduct.description}
             </p>
 
             <div
               style={{
-                fontSize: '18px',
-                fontWeight: 900,
+                fontSize: '20px',
+                fontWeight: 800,
                 color: 'var(--orange)',
-                margin: '12px 0',
+                fontFamily: 'JetBrains Mono',
+                margin: '12px 0 16px',
               }}
             >
               {selectedProduct.price || 'Contact for price'}
             </div>
 
             {specsList.length > 0 && (
-              <div style={{ margin: '10px 0' }}>
-                <h4 style={{ margin: '0 0 6px', fontSize: '13px', color: '#1e293b' }}>
-                  Specifications:
+              <div
+                style={{
+                  margin: '10px 0',
+                  background: 'rgba(3, 7, 18, 0.7)',
+                  padding: '14px 18px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0, 240, 255, 0.15)',
+                }}
+              >
+                <h4 style={{ margin: '0 0 8px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+                  // HARDWARE SPECIFICATIONS:
                 </h4>
                 <ul
                   style={{
                     paddingLeft: '18px',
                     margin: 0,
                     fontSize: '12px',
-                    color: '#475569',
+                    color: '#cbd5e1',
                     lineHeight: '1.6',
+                    fontFamily: 'JetBrains Mono',
                   }}
                 >
                   {specsList.map((spec, i) => (
@@ -136,15 +179,15 @@ export default function ProductModal() {
 
             {appsList.length > 0 && (
               <div style={{ margin: '10px 0' }}>
-                <h4 style={{ margin: '0 0 6px', fontSize: '13px', color: '#1e293b' }}>
-                  Applications & Use Cases:
+                <h4 style={{ margin: '0 0 6px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+                  // ROBOTICS USE CASES:
                 </h4>
                 <ul
                   style={{
                     paddingLeft: '18px',
                     margin: 0,
                     fontSize: '12px',
-                    color: '#475569',
+                    color: '#94a3b8',
                     lineHeight: '1.6',
                   }}
                 >
@@ -155,17 +198,26 @@ export default function ProductModal() {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '20px' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '22px', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 className="primary"
-                style={{ flex: 1 }}
-                onClick={() => {
-                  addToCart(selectedProduct);
-                  setSelectedProduct(null);
+                style={{
+                  flex: 1,
+                  background: added ? '#00ff9d' : undefined,
+                  color: added ? '#030712' : undefined,
                 }}
+                onClick={handleAddToCart}
               >
-                <ShoppingCart size={16} /> Add to Cart
+                {added ? (
+                  <>
+                    <Check size={16} /> Added to Cart!
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={16} /> Add to Cart
+                  </>
+                )}
               </button>
 
               <button
@@ -177,7 +229,7 @@ export default function ProductModal() {
                   setSelectedProduct(null);
                 }}
               >
-                <MessageSquare size={16} /> Send Inquiry
+                <MessageSquare size={16} /> Tech Inquiry
               </button>
             </div>
           </div>

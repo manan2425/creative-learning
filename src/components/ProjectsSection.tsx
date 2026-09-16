@@ -2,18 +2,23 @@
 
 import React from 'react';
 import { useData } from '@/context/DataContext';
-import { Cpu, Lightbulb, Zap, FileText, ArrowUpRight } from 'lucide-react';
+import { Cpu, Lightbulb, Zap, FileText, ArrowUpRight, Rocket, Bot } from 'lucide-react';
 
 export default function ProjectsSection() {
   const { catalog, setSelectedProduct } = useData();
 
   return (
-    <section className="learning-page page-section" id="projects" style={{ background: '#f8fafc' }}>
+    <section className="learning-page page-section" id="projects">
       <div className="section-head">
         <div>
-          <p className="eyebrow">CAPSTONE PROTOTYPES</p>
-          <h2>Real-World Robotics & IoT Projects</h2>
-          <p>Complete project builds from circuit diagrams to working code and firmware.</p>
+          <p className="eyebrow">
+            <Rocket size={14} /> CAPSTONE PROTOTYPES // BLUEPRINTS
+          </p>
+          <h2>Robotics & IoT Engineering Blueprints</h2>
+          <p>
+            Complete end-to-end autonomous builds featuring circuit schematics, firmware code, and real-world
+            actuation mechanisms.
+          </p>
         </div>
       </div>
 
@@ -30,55 +35,93 @@ export default function ProjectsSection() {
             <article key={proj.key} className="project-card">
               <img src={img.startsWith('/') ? img : `/${img}`} alt={proj.title} loading="lazy" />
               <div className="project-body">
-                <span
-                  className="tag"
-                  style={{
-                    background: '#f0fdf4',
-                    color: '#15803d',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <Zap size={11} /> Project Guide
-                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span
+                    className="tag"
+                    style={{
+                      background: 'rgba(0, 255, 157, 0.1)',
+                      color: '#00ff9d',
+                      borderColor: 'rgba(0, 255, 157, 0.3)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <Zap size={12} /> BLUEPRINT
+                  </span>
+                </div>
 
                 <h3>{proj.title}</h3>
                 <p>{proj.summary}</p>
 
                 <div
                   style={{
-                    background: '#f8fafc',
-                    border: '1px solid var(--line)',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    margin: '10px 0',
+                    background: 'rgba(3, 7, 18, 0.7)',
+                    border: '1px solid rgba(0, 240, 255, 0.15)',
+                    borderRadius: '10px',
+                    padding: '12px 14px',
+                    margin: '12px 0',
                     fontSize: '12px',
+                    fontFamily: 'JetBrains Mono',
                   }}
                 >
-                  <div style={{ color: '#0872c9', fontWeight: 800, marginBottom: '4px' }}>
-                    📦 Required Kit / Hardware:
+                  <div
+                    style={{
+                      color: 'var(--cyan)',
+                      fontWeight: 700,
+                      marginBottom: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    <Cpu size={13} /> // REQUIRED HARDWARE:
                   </div>
-                  <div style={{ color: '#334155' }}>{proj.kit}</div>
+                  <div style={{ color: '#f1f5f9' }}>{proj.kit}</div>
                 </div>
 
-                <div style={{ fontSize: '11px', color: '#475569', margin: '8px 0' }}>
-                  <b>💡 What you learn:</b> {proj.learn}
+                <div
+                  style={{
+                    fontSize: '12px',
+                    color: '#94a3b8',
+                    margin: '6px 0',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '6px',
+                  }}
+                >
+                  <Lightbulb size={14} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <span>
+                    <strong style={{ color: '#ffffff' }}>What you learn:</strong> {proj.learn}
+                  </span>
                 </div>
 
                 {proj.upgrade && (
-                  <div style={{ fontSize: '11px', color: '#64748b', margin: '6px 0 16px' }}>
-                    <b>🚀 Upgrade idea:</b> {proj.upgrade}
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      color: '#cbd5e1',
+                      margin: '6px 0 18px',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '6px',
+                    }}
+                  >
+                    <Rocket size={14} color="#a855f7" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>
+                      <strong style={{ color: '#a855f7' }}>Upgrade Idea:</strong> {proj.upgrade}
+                    </span>
                   </div>
                 )}
 
                 <div
                   style={{
                     display: 'flex',
-                    gap: '8px',
+                    flexWrap: 'wrap',
+                    gap: '10px',
                     marginTop: 'auto',
-                    paddingTop: '12px',
-                    borderTop: '1px solid var(--line)',
+                    paddingTop: '16px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                   }}
                 >
                   {linkedProduct && (
@@ -86,7 +129,7 @@ export default function ProjectsSection() {
                       type="button"
                       className="secondary"
                       onClick={() => setSelectedProduct(linkedProduct)}
-                      style={{ fontSize: '11px', padding: '8px 12px', width: '100%' }}
+                      style={{ fontSize: '11.5px', padding: '10px 14px', width: '100%' }}
                     >
                       View Board <ArrowUpRight size={13} />
                     </button>
@@ -98,14 +141,15 @@ export default function ProjectsSection() {
                       rel="noopener noreferrer"
                       className="primary"
                       style={{
-                        fontSize: '11px',
-                        padding: '8px 12px',
+                        fontSize: '11.5px',
+                        padding: '10px 14px',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '4px',
+                        gap: '6px',
+                        whiteSpace: 'nowrap',
                       }}
                     >
-                      <FileText size={13} /> Project PDF
+                      <FileText size={14} /> Blueprint PDF
                     </a>
                   )}
                 </div>

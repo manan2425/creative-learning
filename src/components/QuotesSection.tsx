@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useData } from '@/context/DataContext';
-import { Quote as QuoteIcon, Sparkles } from 'lucide-react';
+import { Quote as QuoteIcon, Sparkles, Terminal } from 'lucide-react';
 
 export default function QuotesSection() {
   const { catalog } = useData();
@@ -11,11 +11,13 @@ export default function QuotesSection() {
     <section className="catalogue page-section" id="inspiration">
       <div className="section-head">
         <div>
-          <p className="eyebrow">WORDS OF INSPIRATION</p>
-          <h2>Ideas Worth Building</h2>
+          <p className="eyebrow">
+            <Terminal size={14} /> INSPIRATION // LOG
+          </p>
+          <h2>Makers & Engineering Vision</h2>
           <p>
-            Insights and motivation from Creative Learning to empower students, educators, and
-            innovators.
+            Insights and motivation from Creative Learning to empower students, robotics teams, and
+            innovators to build what they imagine.
           </p>
         </div>
       </div>
@@ -23,8 +25,9 @@ export default function QuotesSection() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '20px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+          gap: '24px',
+          width: '100%',
         }}
       >
         {catalog.quotes.map((q) => {
@@ -34,44 +37,57 @@ export default function QuotesSection() {
               key={q.id}
               style={{
                 background: isHero
-                  ? 'linear-gradient(135deg, #07152f, #0c3870)'
-                  : 'linear-gradient(135deg, #ffffff, #f7faff)',
-                color: isHero ? '#fff' : 'var(--ink)',
-                border: isHero ? '1px solid #1a4d8c' : '1px solid var(--line)',
-                borderRadius: '20px',
-                padding: '28px',
-                boxShadow: isHero ? 'var(--shadow-lg)' : '0 8px 24px rgba(7,21,47,0.04)',
+                  ? 'linear-gradient(145deg, #071026 0%, #0d1e47 100%)'
+                  : 'rgba(8, 15, 34, 0.85)',
+                color: '#ffffff',
+                border: isHero
+                  ? '1px solid var(--cyan)'
+                  : '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '18px',
+                padding: '32px',
+                boxShadow: isHero
+                  ? '0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.25)'
+                  : 'var(--shadow-hud)',
                 position: 'relative',
                 overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
               }}
             >
               {isHero && (
                 <span
                   style={{
                     position: 'absolute',
-                    top: '14px',
-                    right: '16px',
-                    background: '#ff7b19',
-                    color: '#fff',
+                    top: '16px',
+                    right: '18px',
+                    background: 'rgba(0, 240, 255, 0.15)',
+                    border: '1px solid var(--cyan-border)',
+                    color: 'var(--cyan)',
                     fontSize: '10px',
-                    fontWeight: 900,
-                    padding: '4px 8px',
-                    borderRadius: '999px',
+                    fontWeight: 800,
+                    padding: '4px 10px',
+                    borderRadius: '4px',
                     letterSpacing: '0.08em',
+                    fontFamily: 'JetBrains Mono',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
                   }}
                 >
-                  FEATURED QUOTE
+                  <Sparkles size={11} /> FEATURED LOG
                 </span>
               )}
 
               <div
                 style={{
-                  fontSize: '38px',
+                  fontSize: '44px',
                   lineHeight: '1',
-                  color: isHero ? '#0cc5e8' : '#0872c9',
-                  opacity: 0.4,
-                  marginBottom: '8px',
+                  color: isHero ? '#00f0ff' : '#38bdf8',
+                  opacity: isHero ? 0.9 : 0.4,
+                  marginBottom: '10px',
                   fontFamily: 'Space Grotesk',
+                  textShadow: isHero ? '0 0 15px #00f0ff' : 'none',
                 }}
               >
                 “
@@ -80,10 +96,12 @@ export default function QuotesSection() {
               <p
                 style={{
                   fontSize: '16px',
-                  fontWeight: 600,
-                  lineHeight: '1.5',
-                  margin: '0 0 16px',
+                  fontWeight: 500,
+                  lineHeight: '1.65',
+                  margin: '0 0 20px',
                   fontStyle: 'italic',
+                  color: '#e2e8f0',
+                  flex: 1,
                 }}
               >
                 {q.text}
@@ -91,9 +109,13 @@ export default function QuotesSection() {
 
               <div
                 style={{
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  color: isHero ? '#8fe7ff' : '#64748b',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: 'var(--cyan)',
+                  fontFamily: 'JetBrains Mono',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
               >
                 — {q.author}

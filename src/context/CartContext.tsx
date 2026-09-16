@@ -4,6 +4,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem } from '@/types';
 import { useData } from './DataContext';
 
+interface ToastNotification {
+  id: number;
+  title: string;
+  message: string;
+  image?: string;
+}
+
 interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
@@ -15,6 +22,9 @@ interface CartContextType {
   totalItems: number;
   openWhatsAppOrder: () => void;
   openEmailOrder: () => void;
+  toasts: ToastNotification[];
+  dismissToast: (id: number) => void;
+  cartBump: boolean;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -22,6 +32,8 @@ const CartContext = createContext<CartContextType | null>(null);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
+  const [cartBump, setCartBump] = useState(false);
   const { catalog } = useData();
 
   // Load cart from localStorage on client
@@ -45,6 +57,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items]);
 
+  const dismissToast = (id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const triggerToast = (title: string, message: string, image?: string) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev.slice(-2), { id, title, message, image }]);
+    setTimeout(() => {
+      dismissToast(id);
+    }, 3800);
+  };
+
   const addToCart = (product: Product, quantity: number = 1) => {
     setItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
@@ -57,7 +81,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { product, quantity }];
     });
-    setIsCartOpen(true);
+
+    // Trigger cart bump animation
+    setCartBump(true);
+    setTimeout(() => setCartBump(false), 800);
+
+    // Trigger HUD Toast
+    const img = product.images?.[0] || product.image || '/images/branding/creative-learning-logo.png';
+    triggerToast("ADDED TO ENGINEER'S CART", `${product.name} added (+${quantity})`, img);
   };
 
   const removeFromCart = (productId: string) => {
@@ -83,11 +114,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const buildOrderSummary = () => {
-    let text = `Hello ${catalog.company.name},\nI would like to inquire/order the following items:\n\n`;
+    let text = `Hello ${catalog.company.name},\nI would like to inquire/order the following robotics & hardware items:\n\n`;
     items.forEach((item, index) => {
-      text += `${index + 1}. ${item.product.name} (SKU: ${item.product.sku}) - Qty: ${item.quantity}\n`;
+      text += `${index + 1}. ${item.product.name} (SKU: ${item.product.sku || item.product.id}) - Qty: ${item.quantity}\n`;
     });
-    text += `\nPlease provide price and availability details. Thank you!`;
+    text += `\nPlease share quotation, pinout details, and availability. Thank you!`;
     return text;
   };
 
@@ -100,7 +131,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const openEmailOrder = () => {
     const email = catalog.company.email || 'vhp10995@gmail.com';
-    const subject = encodeURIComponent(`Product Inquiry - ${catalog.company.name}`);
+    const subject = encodeURIComponent(`Robotics Hardware Requisition - ${catalog.company.name}`);
     const body = encodeURIComponent(buildOrderSummary());
     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   };
@@ -118,6 +149,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         totalItems,
         openWhatsAppOrder,
         openEmailOrder,
+        toasts,
+        dismissToast,
+        cartBump,
       }}
     >
       {children}

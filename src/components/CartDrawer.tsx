@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
-import { X, Trash2, Plus, Minus, MessageCircle, Mail, ShoppingBag } from 'lucide-react';
+import { X, Trash2, Plus, Minus, MessageCircle, Mail, Terminal, Bot, Check, Sparkles, Loader2 } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -17,6 +17,25 @@ export default function CartDrawer() {
     openEmailOrder,
   } = useCart();
 
+  const [dispatchingWhatsApp, setDispatchingWhatsApp] = useState(false);
+  const [dispatchingEmail, setDispatchingEmail] = useState(false);
+
+  const handleWhatsAppDispatch = () => {
+    setDispatchingWhatsApp(true);
+    setTimeout(() => {
+      openWhatsAppOrder();
+      setDispatchingWhatsApp(false);
+    }, 600);
+  };
+
+  const handleEmailDispatch = () => {
+    setDispatchingEmail(true);
+    setTimeout(() => {
+      openEmailOrder();
+      setDispatchingEmail(false);
+    }, 600);
+  };
+
   if (!isCartOpen) return null;
 
   return (
@@ -24,9 +43,29 @@ export default function CartDrawer() {
       <div className="cart-drawer-backdrop" onClick={() => setIsCartOpen(false)} />
       <aside className="cart-drawer">
         <div className="drawer-head">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShoppingBag size={20} color="#0872c9" />
-            <h3 style={{ margin: 0 }}>Your Cart ({totalItems})</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                background: 'rgba(0, 240, 255, 0.12)',
+                color: 'var(--cyan)',
+                border: '1px solid var(--cyan-border)',
+                display: 'grid',
+                placeItems: 'center',
+              }}
+            >
+              <Terminal size={18} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '18px', fontFamily: 'Space Grotesk' }}>
+                Engineer&apos;s Cart
+              </h3>
+              <span style={{ fontSize: '11px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+                [ {totalItems} {totalItems === 1 ? 'MODULE' : 'MODULES'} QUEUED ]
+              </span>
+            </div>
           </div>
           <button
             type="button"
@@ -35,7 +74,7 @@ export default function CartDrawer() {
             onClick={() => setIsCartOpen(false)}
             aria-label="Close cart"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -51,8 +90,8 @@ export default function CartDrawer() {
                   <div>
                     <h4>{product.name}</h4>
                     <p>SKU: {product.sku || product.id}</p>
-                    <div style={{ fontWeight: 800, color: 'var(--orange)', fontSize: '11px', marginTop: '2px' }}>
-                      {product.price}
+                    <div style={{ fontWeight: 800, color: 'var(--orange)', fontSize: '12px', marginTop: '3px', fontFamily: 'JetBrains Mono' }}>
+                      {product.price || 'Contact for price'}
                     </div>
 
                     <div className="qty-controls">
@@ -80,9 +119,11 @@ export default function CartDrawer() {
                     style={{
                       border: 0,
                       background: 'none',
-                      color: '#94a3b8',
+                      color: '#64748b',
                       cursor: 'pointer',
-                      padding: '6px',
+                      padding: '8px',
+                      borderRadius: '6px',
+                      transition: 'color 0.2s',
                     }}
                     aria-label="Remove item"
                   >
@@ -92,10 +133,28 @@ export default function CartDrawer() {
               );
             })
           ) : (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted)' }}>
-              <ShoppingBag size={48} style={{ opacity: 0.3, margin: '0 auto 12px' }} />
-              <p style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Your cart is empty</p>
-              <small>Add components or kits from the catalogue to start your inquiry.</small>
+            <div style={{ textAlign: 'center', padding: '80px 24px', color: '#64748b' }}>
+              <div
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  background: 'rgba(0, 240, 255, 0.08)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  margin: '0 auto 16px',
+                  color: 'var(--cyan)',
+                  border: '1px solid var(--cyan-border)',
+                }}
+              >
+                <Bot size={32} />
+              </div>
+              <p style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#ffffff' }}>
+                Engineer&apos;s Cart is Empty
+              </p>
+              <small style={{ display: 'block', marginTop: '6px', fontSize: '12.5px', fontFamily: 'JetBrains Mono' }}>
+                Add robotics modules, kits, or sensors to submit your hardware requisition.
+              </small>
             </div>
           )}
         </div>
@@ -106,13 +165,14 @@ export default function CartDrawer() {
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                marginBottom: '14px',
+                marginBottom: '16px',
                 fontSize: '13px',
-                fontWeight: 800,
+                fontWeight: 700,
+                fontFamily: 'JetBrains Mono',
               }}
             >
-              <span>Total Items:</span>
-              <span>{totalItems} items</span>
+              <span>TOTAL HARDWARE UNITS:</span>
+              <span style={{ color: 'var(--cyan)' }}>{totalItems} items</span>
             </div>
 
             <button
@@ -121,14 +181,26 @@ export default function CartDrawer() {
               style={{
                 background: 'linear-gradient(135deg, #25D366, #128C7E)',
                 border: 0,
+                color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
+                boxShadow: '0 0 25px rgba(37, 211, 102, 0.4)',
+                opacity: dispatchingWhatsApp ? 0.8 : 1,
               }}
-              onClick={openWhatsAppOrder}
+              onClick={handleWhatsAppDispatch}
+              disabled={dispatchingWhatsApp}
             >
-              <MessageCircle size={18} /> Order / Inquire via WhatsApp
+              {dispatchingWhatsApp ? (
+                <>
+                  <Loader2 size={18} className="spin-animation" /> TRANSMITTING REQUISITION...
+                </>
+              ) : (
+                <>
+                  <MessageCircle size={18} /> Order & Inquire via WhatsApp
+                </>
+              )}
             </button>
 
             <button
@@ -140,9 +212,18 @@ export default function CartDrawer() {
                 justifyContent: 'center',
                 gap: '8px',
               }}
-              onClick={openEmailOrder}
+              onClick={handleEmailDispatch}
+              disabled={dispatchingEmail}
             >
-              <Mail size={18} /> Inquire via Email
+              {dispatchingEmail ? (
+                <>
+                  <Loader2 size={18} className="spin-animation" /> PREPARING EMAIL...
+                </>
+              ) : (
+                <>
+                  <Mail size={18} /> Inquire via Email
+                </>
+              )}
             </button>
 
             <button
@@ -152,13 +233,15 @@ export default function CartDrawer() {
                 width: '100%',
                 background: 'none',
                 border: 0,
-                color: '#94a3b8',
+                color: '#64748b',
                 fontSize: '11px',
                 cursor: 'pointer',
-                marginTop: '6px',
+                marginTop: '4px',
+                fontWeight: 600,
+                fontFamily: 'JetBrains Mono',
               }}
             >
-              Clear Cart
+              [ CLEAR ENGINEER&apos;S CART ]
             </button>
           </div>
         )}

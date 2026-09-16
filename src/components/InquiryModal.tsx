@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useData } from '@/context/DataContext';
-import { X, Send, MessageCircle, Mail } from 'lucide-react';
+import { X, Send, MessageCircle, Mail, Terminal, Bot } from 'lucide-react';
 
 export default function InquiryModal() {
   const { inquiryProduct, setInquiryProduct, catalog } = useData();
@@ -17,16 +17,16 @@ export default function InquiryModal() {
     e.preventDefault();
     const rawPhone = catalog.company.whatsapp || catalog.company.phone || '919714045096';
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
-    const text = `Hello Creative Learning,\n\nI am inquiring about: ${inquiryProduct.name} (SKU: ${inquiryProduct.sku || inquiryProduct.id})\n\nName: ${name || 'Customer'}\nEmail: ${email || 'N/A'}\nPhone: ${phone || 'N/A'}\nMessage: ${message || 'Please provide price and delivery timeline.'}`;
+    const text = `Hello Creative Learning Robotics Team,\n\nI am inquiring about hardware module: ${inquiryProduct.name} (SKU: ${inquiryProduct.sku || inquiryProduct.id})\n\nName: ${name || 'Customer'}\nEmail: ${email || 'N/A'}\nPhone: ${phone || 'N/A'}\nMessage: ${message || 'Please provide quotation, pinout details, and delivery timeline.'}`;
     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
     setInquiryProduct(null);
   };
 
   const handleEmail = () => {
     const targetEmail = catalog.company.email || 'vhp10995@gmail.com';
-    const subject = encodeURIComponent(`Inquiry for ${inquiryProduct.name}`);
+    const subject = encodeURIComponent(`Robotics Hardware Inquiry: ${inquiryProduct.name}`);
     const body = encodeURIComponent(
-      `Hello Creative Learning Team,\n\nI would like to inquire about ${inquiryProduct.name} (SKU: ${inquiryProduct.sku || inquiryProduct.id}).\n\nName: ${name || 'Customer'}\nContact: ${phone || 'N/A'}\nDetails: ${message || 'Please share product details and quote.'}\n\nThank you!`
+      `Hello Creative Learning Team,\n\nI would like to inquire about ${inquiryProduct.name} (SKU: ${inquiryProduct.sku || inquiryProduct.id}).\n\nName: ${name || 'Customer'}\nContact: ${phone || 'N/A'}\nDetails: ${message || 'Please share module specifications and pricing.'}\n\nThank you!`
     );
     window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
     setInquiryProduct(null);
@@ -36,7 +36,7 @@ export default function InquiryModal() {
     <div className="modal-backdrop" onClick={() => setInquiryProduct(null)}>
       <div
         className="modal"
-        style={{ maxWidth: '560px' }}
+        style={{ maxWidth: '580px' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -48,101 +48,171 @@ export default function InquiryModal() {
           <X size={20} />
         </button>
 
-        <h3 style={{ margin: '0 0 4px', fontSize: '22px' }}>Inquire About Product</h3>
-        <p style={{ color: 'var(--muted)', fontSize: '13px', margin: '0 0 18px' }}>
-          Interested in <b>{inquiryProduct.name}</b>? Send us a message and our team will get back
-          to you immediately.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <span className="tag">
+            <Terminal size={12} /> HARDWARE INQUIRY // DESK
+          </span>
+        </div>
+
+        <h3 style={{ margin: '4px 0 6px', fontSize: '24px', letterSpacing: '-0.02em', color: '#ffffff' }}>
+          Inquire: {inquiryProduct.name}
+        </h3>
+        <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px', lineHeight: '1.5' }}>
+          Submit your requirements for <b>{inquiryProduct.name}</b> and our engineering team will respond with quotations and specs.
         </p>
 
         <form onSubmit={handleWhatsApp}>
-          <div style={{ display: 'grid', gap: '12px' }}>
+          <div style={{ display: 'grid', gap: '14px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>
-                Your Name
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  marginBottom: '6px',
+                  color: 'var(--cyan)',
+                  fontFamily: 'JetBrains Mono',
+                }}
+              >
+                // YOUR FULL NAME
               </label>
               <input
                 type="text"
-                placeholder="Enter your name"
+                placeholder="e.g. Rahul Sharma"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--line)',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(0, 240, 255, 0.2)',
+                  background: 'rgba(3, 7, 18, 0.9)',
+                  color: '#ffffff',
+                  fontSize: '13.5px',
+                  fontFamily: 'JetBrains Mono',
+                  outline: 'none',
+                  boxSizing: 'border-box',
                 }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '12px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>
-                  Email
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    marginBottom: '6px',
+                    color: 'var(--cyan)',
+                    fontFamily: 'JetBrains Mono',
+                  }}
+                >
+                  // EMAIL
                 </label>
                 <input
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1px solid var(--line)',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(0, 240, 255, 0.2)',
+                    background: 'rgba(3, 7, 18, 0.9)',
+                    color: '#ffffff',
+                    fontSize: '13.5px',
+                    fontFamily: 'JetBrains Mono',
+                    outline: 'none',
+                    boxSizing: 'border-box',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>
-                  Phone / WhatsApp
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    marginBottom: '6px',
+                    color: 'var(--cyan)',
+                    fontFamily: 'JetBrains Mono',
+                  }}
+                >
+                  // PHONE / WHATSAPP
                 </label>
                 <input
                   type="tel"
                   placeholder="+91 98765 43210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  required
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1px solid var(--line)',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(0, 240, 255, 0.2)',
+                    background: 'rgba(3, 7, 18, 0.9)',
+                    color: '#ffffff',
+                    fontSize: '13.5px',
+                    fontFamily: 'JetBrains Mono',
+                    outline: 'none',
+                    boxSizing: 'border-box',
                   }}
                 />
               </div>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>
-                Message / Quantity
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  marginBottom: '6px',
+                  color: 'var(--cyan)',
+                  fontFamily: 'JetBrains Mono',
+                }}
+              >
+                // REQUIRED UNITS / SPECIFICATIONS
               </label>
               <textarea
                 rows={3}
-                placeholder="Enter required quantities, questions, or project specs..."
+                placeholder="Enter required quantities, voltage levels, or school robotics lab requirements..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--line)',
-                  fontFamily: 'inherit',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(0, 240, 255, 0.2)',
+                  background: 'rgba(3, 7, 18, 0.9)',
+                  color: '#ffffff',
+                  fontSize: '13.5px',
+                  fontFamily: 'JetBrains Mono',
+                  outline: 'none',
+                  boxSizing: 'border-box',
                 }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
             <button
               type="submit"
               className="primary"
               style={{
                 flex: 1,
                 background: 'linear-gradient(135deg, #25D366, #128C7E)',
-                borderColor: '#128C7E',
+                border: 0,
+                color: '#ffffff',
+                boxShadow: '0 0 25px rgba(37, 211, 102, 0.4)',
               }}
             >
-              <MessageCircle size={16} /> Send via WhatsApp
+              <MessageCircle size={17} /> Send via WhatsApp
             </button>
 
             <button
@@ -151,7 +221,7 @@ export default function InquiryModal() {
               style={{ flex: 1 }}
               onClick={handleEmail}
             >
-              <Mail size={16} /> Send via Email
+              <Mail size={17} /> Send via Email
             </button>
           </div>
         </form>

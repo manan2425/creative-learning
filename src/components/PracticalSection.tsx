@@ -2,18 +2,34 @@
 
 import React from 'react';
 import { useData } from '@/context/DataContext';
-import { Clock, Award, CheckCircle2, FileText, ArrowUpRight } from 'lucide-react';
+import { Clock, Award, CheckCircle2, FileText, ArrowUpRight, Terminal, Cpu } from 'lucide-react';
 
 export default function PracticalSection() {
   const { catalog, setSelectedProduct } = useData();
+
+  const getLevelColor = (level: string) => {
+    const l = level.toLowerCase();
+    if (l.includes('beginner') || l.includes('basic')) {
+      return { bg: 'rgba(0, 240, 255, 0.1)', text: 'var(--cyan)', border: 'var(--cyan-border)' };
+    }
+    if (l.includes('inter') || l.includes('medium')) {
+      return { bg: 'rgba(255, 123, 0, 0.12)', text: 'var(--orange)', border: 'rgba(255, 123, 0, 0.3)' };
+    }
+    return { bg: 'rgba(168, 85, 247, 0.12)', text: 'var(--purple)', border: 'rgba(168, 85, 247, 0.3)' };
+  };
 
   return (
     <section className="learning-page page-section" id="practical">
       <div className="section-head">
         <div>
-          <p className="eyebrow">PRACTICAL EXPERIMENTS</p>
-          <h2>Guided Hardware Labs</h2>
-          <p>Clear, step-by-step lab exercises designed to build strong foundations in electronics.</p>
+          <p className="eyebrow">
+            <Terminal size={14} /> GUIDED LAB SCHEMATICS
+          </p>
+          <h2>Hands-on Robotics & Sensor Labs</h2>
+          <p>
+            Structured, step-by-step experiment modules designed for engineering colleges, robotics clubs,
+            and self-paced innovators.
+          </p>
         </div>
       </div>
 
@@ -32,28 +48,33 @@ export default function PracticalSection() {
             linkedProduct?.image ||
             '/images/branding/creative-learning-logo.png';
 
+          const levelStyle = getLevelColor(prac.level || 'Beginner');
+
           return (
             <article key={prac.key} className="practical-card">
               <img src={img.startsWith('/') ? img : `/${img}`} alt={prac.title} loading="lazy" />
               <div className="practical-body">
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                   <span
                     className="tag"
                     style={{
-                      background: '#eef8fd',
-                      color: '#0872c9',
+                      background: levelStyle.bg,
+                      color: levelStyle.text,
+                      borderColor: levelStyle.border,
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
                     }}
                   >
-                    <Award size={12} /> {prac.level}
+                    <Award size={12} /> {prac.level.toUpperCase()}
                   </span>
+
                   <span
                     className="tag"
                     style={{
-                      background: '#f1f5f9',
-                      color: '#475569',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#cbd5e1',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
@@ -65,33 +86,45 @@ export default function PracticalSection() {
 
                 <h3>{prac.title}</h3>
                 <p>
-                  <b>Goal:</b> {prac.goal}
+                  <strong style={{ color: 'var(--cyan)', fontFamily: 'JetBrains Mono', fontSize: '12px' }}>
+                    [ OBJECTIVE ]:
+                  </strong>{' '}
+                  {prac.goal}
                 </p>
 
                 <div style={{ marginTop: 'auto' }}>
                   <div
                     style={{
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#334155',
-                      marginBottom: '6px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      color: '#cbd5e1',
+                      marginBottom: '8px',
+                      fontFamily: 'JetBrains Mono',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
                     }}
                   >
-                    Step-by-step procedure:
+                    <Terminal size={13} color="var(--cyan)" /> CIRCUIT PROCEDURE:
                   </div>
+
                   <ul className="steps-list">
                     {stepsArray.map((step, idx) => (
-                      <li key={idx}>{step}</li>
+                      <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                        <span style={{ color: 'var(--cyan)', fontWeight: 800 }}>&gt;</span>
+                        <span>{step}</span>
+                      </li>
                     ))}
                   </ul>
 
                   <div
                     style={{
                       display: 'flex',
-                      gap: '8px',
-                      marginTop: '16px',
-                      paddingTop: '12px',
-                      borderTop: '1px solid var(--line)',
+                      flexWrap: 'wrap',
+                      gap: '10px',
+                      marginTop: '18px',
+                      paddingTop: '16px',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                     }}
                   >
                     {linkedProduct && (
@@ -99,7 +132,7 @@ export default function PracticalSection() {
                         type="button"
                         className="secondary"
                         onClick={() => setSelectedProduct(linkedProduct)}
-                        style={{ fontSize: '11px', padding: '8px 12px', width: '100%' }}
+                        style={{ fontSize: '11.5px', padding: '10px 14px', width: '100%' }}
                       >
                         Board: {linkedProduct.name} <ArrowUpRight size={13} />
                       </button>
@@ -111,14 +144,15 @@ export default function PracticalSection() {
                         rel="noopener noreferrer"
                         className="primary"
                         style={{
-                          fontSize: '11px',
-                          padding: '8px 12px',
+                          fontSize: '11.5px',
+                          padding: '10px 14px',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '4px',
+                          gap: '6px',
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        <FileText size={13} /> Lab Sheet
+                        <FileText size={14} /> Lab Sheet
                       </a>
                     )}
                   </div>

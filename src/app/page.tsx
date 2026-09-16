@@ -13,10 +13,20 @@ import Footer from '@/components/Footer';
 import ProductModal from '@/components/ProductModal';
 import InquiryModal from '@/components/InquiryModal';
 import CartDrawer from '@/components/CartDrawer';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import FloatingCartTrigger from '@/components/FloatingCartTrigger';
+import RoboticsBackground from '@/components/RoboticsBackground';
+import HudToast from '@/components/HudToast';
 
 export default function Home() {
   return (
     <>
+      {/* Animated Robotics Circuit & Laser Motion Background */}
+      <RoboticsBackground />
+
+      {/* Floating HUD Telemetry Notifications */}
+      <HudToast />
+
       <Header />
       <main id="home">
         <Hero />
@@ -29,10 +39,12 @@ export default function Home() {
       </main>
       <Footer />
 
-      {/* Global Modals & Drawers */}
+      {/* Global Modals, Drawers & Widgets */}
       <ProductModal />
       <InquiryModal />
       <CartDrawer />
+      <FloatingCartTrigger />
+      <FloatingWhatsApp />
     </>
   );
 }
