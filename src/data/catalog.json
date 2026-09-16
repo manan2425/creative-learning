@@ -1,5 +1,5 @@
 {
-  "catalogVersion": 2,
+  "catalogVersion": 4,
   "company": {
     "name": "Creative Learning",
     "tagline": "Education can Transform a Nation",
@@ -12,199 +12,714 @@
   "products": [
     {
       "id": "p02-1",
-      "name": "Arduino UNO with Cable",
+      "name": "Arduino UNO R3 with Cable",
       "category": "Boards",
       "page": 2,
-      "description": "Reliable board for learning and prototype development",
-      "specifications": "ATmega328P; 14 digital I/O (6 PWM); 6 analog inputs; 32 KB flash; 2 KB SRAM; 16 MHz",
-      "applications": "Electronics projects; robotics; IoT applications; education; DIY prototyping",
+      "description": "Standard industry microcontroller board for robotics learning, algorithm testing, and rapid hardware prototype development.",
+      "specifications": "ATmega328P MCU; 14 Digital I/O (6 PWM outputs); 6 Analog Inputs; 32 KB Flash; 2 KB SRAM; 16 MHz Crystal Oscillator; 5V Operating Voltage",
+      "applications": "Robotics chassis control; Sensor interfacing; IoT gateways; DIY automation; STEM education labs",
       "image": "images/components/p02-1.jpg",
       "images": [
         "images/components/p02-1.jpg",
         "images/source-pages/page-02.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P02-1"
+      "sku": "CL-P02-UNO"
     },
     {
       "id": "p02-2",
-      "name": "Arduino Nano with Cable",
+      "name": "Arduino Nano V3.0 with Cable",
       "category": "Boards",
       "page": 2,
-      "description": "Compact and powerful board for smart applications",
-      "specifications": "ATmega328P; 3.3V/5V operation; 14 digital I/O; 8 analog inputs; 32 KB flash; 2 KB SRAM; 16 MHz",
-      "applications": "Portable projects; wearable devices; IoT nodes; embedded systems; prototypes",
+      "description": "Compact, breadboard-friendly microcontroller engineered for space-constrained autonomous robotics and embedded nodes.",
+      "specifications": "ATmega328P MCU; 14 Digital I/O (6 PWM); 8 Analog Inputs (10-bit ADC); Mini-USB interface; 5V logic; 16 MHz clock",
+      "applications": "Wearable sensors; Drone avionics; Compact line-follower robots; Smart agricultural nodes",
       "image": "images/components/p02-2.jpg",
       "images": [
         "images/components/p02-2.jpg",
         "images/source-pages/page-02.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P02-2"
+      "sku": "CL-P02-NANO"
     },
     {
       "id": "p02-3",
-      "name": "Arduino Mega with Cable",
+      "name": "Arduino Mega 2560 R3 with Cable",
       "category": "Boards",
       "page": 2,
-      "description": "High-performance Arduino board for advanced projects",
-      "specifications": "ATmega2560; 54 digital I/O; 16 analog inputs; 256 KB flash; 8 KB SRAM; 16 MHz",
-      "applications": "Advanced robotics; industrial automation; 3D printers & CNC; large projects",
+      "description": "High-density I/O microcontroller board designed for complex multi-axis robotics, 3D printers, and industrial automation benches.",
+      "specifications": "ATmega2560 MCU; 54 Digital I/O (15 PWM); 16 Analog Inputs; 4 Hardware UART Serial Ports; 256 KB Flash; 8 KB SRAM; 16 MHz",
+      "applications": "Multi-DOF Robotic arms; Quadcopter flight controllers; CNC machines & 3D printers; Multi-sensor telemetry hubs",
       "image": "images/components/p02-3.jpg",
       "images": [
         "images/components/p02-3.jpg",
         "images/source-pages/page-02.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P02-3"
+      "sku": "CL-P02-MEGA"
+    },
+    {
+      "id": "p03-1",
+      "name": "NodeMCU ESP8266 WiFi Development Board",
+      "category": "Wireless & IoT",
+      "page": 3,
+      "description": "Open-source IoT development platform featuring integrated 802.11 b/g/n WiFi and Lua / Arduino C++ firmware support.",
+      "specifications": "Tensilica 32-bit L106 CPU @ 80/160 MHz; Integrated TCP/IP stack; 4MB Flash; 10 GPIOs (PWM, I2C, 1-Wire); Micro-USB",
+      "applications": "Smart home automation; Cloud telemetry upload; Web-controlled robot vehicles; Remote sensor monitoring",
+      "image": "images/components/p03-1.jpg",
+      "images": [
+        "images/components/p03-1.jpg",
+        "images/source-pages/page-03.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P03-ESP8266"
+    },
+    {
+      "id": "p03-2",
+      "name": "ESP32 Dual-Core WiFi + Bluetooth Dev Module",
+      "category": "Wireless & IoT",
+      "page": 3,
+      "description": "Ultra-high performance dual-core microcontroller equipped with high-speed 2.4 GHz WiFi and Bluetooth 4.2 / BLE for AIoT edge computing.",
+      "specifications": "Dual-core Xtensa 32-bit LX6 @ 240 MHz; 520 KB SRAM; 4MB Flash; WiFi 802.11 b/g/n + BLE 4.2; Capacitive touch pins; DAC, ADC, SPI, I2C, UART",
+      "applications": "Edge AI robotics; Real-time video processing; Industrial IoT nodes; Bluetooth BLE beacon tracking",
+      "image": "images/components/p03-2.jpg",
+      "images": [
+        "images/components/p03-2.jpg",
+        "images/source-pages/page-03.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P03-ESP32"
+    },
+    {
+      "id": "p04-1",
+      "name": "HC-SR04 Ultrasonic Distance Sensor Module",
+      "category": "Sensors",
+      "page": 4,
+      "description": "Non-contact sonar distance sensor providing stable 2cm to 400cm measurement range with millimeter accuracy.",
+      "specifications": "Operating Voltage: 5V DC; Working Current: 15mA; Measuring Angle: 15°; Range: 2cm – 400cm; Resolution: 0.3cm; Trigger: 10µs TTL pulse",
+      "applications": "Obstacle detection robots; Liquid level monitoring; Security distance alarms; Automation radar",
+      "image": "images/components/p04-1.jpg",
+      "images": [
+        "images/components/p04-1.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P04-SR04"
+    },
+    {
+      "id": "p04-2",
+      "name": "PIR Motion Detection Sensor Module (HC-SR501)",
+      "category": "Sensors",
+      "page": 4,
+      "description": "Pyroelectric infrared motion detector module featuring adjustable delay time and sensitivity controls for security automation.",
+      "specifications": "Operating Voltage: 4.5V – 20V; Output: High 3.3V / Low 0V; Detection Range: Up to 7m (120° cone); Delay Time: 0.3s – 200s adjustable",
+      "applications": "Burglar alarms; Human presence lighting; Automated corridor robotics; Energy management systems",
+      "image": "images/components/p04-2.jpg",
+      "images": [
+        "images/components/p04-2.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P04-PIR"
+    },
+    {
+      "id": "p04-3",
+      "name": "Capacitive Soil Moisture Sensor Module",
+      "category": "Sensors",
+      "page": 4,
+      "description": "Corrosion-resistant capacitive soil humidity sensor designed for precision agricultural sensing and automated greenhouse irrigation.",
+      "specifications": "Operating Voltage: 3.3V – 5.5V DC; Output Voltage: 0 – 3.0V DC; Interface: PH2.0-3P; High corrosion resistance circuit",
+      "applications": "Smart irrigation systems; Automated plant watering; Soil health analysis; Precision agriculture",
+      "image": "images/components/p04-3.jpg",
+      "images": [
+        "images/components/p04-3.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P04-SOIL"
+    },
+    {
+      "id": "p05-1",
+      "name": "DHT11 Digital Temperature & Humidity Sensor",
+      "category": "Sensors",
+      "page": 5,
+      "description": "Calibrated digital composite sensor measuring ambient temperature and relative humidity with single-wire serial output.",
+      "specifications": "Humidity Range: 20-90% RH (±5% RH accuracy); Temperature Range: 0-50°C (±2°C accuracy); Operating Voltage: 3V-5.5V",
+      "applications": "Weather stations; HVAC monitoring; Greenhouse climate control; Environmental telemetry",
+      "image": "images/components/p05-1.jpg",
+      "images": [
+        "images/components/p05-1.jpg",
+        "images/source-pages/page-05.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P05-DHT11"
+    },
+    {
+      "id": "p05-2",
+      "name": "MQ-2 Flammable Gas & Smoke Detector Sensor",
+      "category": "Sensors",
+      "page": 5,
+      "description": "High-sensitivity electrochemical sensor for detecting LPG, smoke, methane, butane, propane, and hydrogen gases.",
+      "specifications": "Operating Voltage: 5V DC; Detection Concentration: 300 - 10000 ppm; Dual Output: Analog (0-5V) and Digital TTL (potentiometer adjustable)",
+      "applications": "Industrial gas leak alarms; Kitchen safety systems; Fire hazard detection; Air pollution monitoring",
+      "image": "images/components/p05-2.jpg",
+      "images": [
+        "images/components/p05-2.jpg",
+        "images/source-pages/page-05.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P05-MQ2"
+    },
+    {
+      "id": "p06-1",
+      "name": "L298N Dual H-Bridge DC & Stepper Motor Driver",
+      "category": "Motors & Drivers",
+      "page": 6,
+      "description": "High-power dual motor driver module capable of driving two DC motors independently or one 4-phase bipolar stepper motor with PWM speed control.",
+      "specifications": "Driver Chip: L298N; Driver Voltage: 5V-35V; Peak Current: 2A per bridge; Logic Voltage: 5V; Maximum Power: 25W; Onboard 78M05 regulator",
+      "applications": "4WD & 2WD robotic rovers; Stepper motor positioning; Heavy-duty conveyor mechanisms; Industrial actuators",
+      "image": "images/components/p06-1.jpg",
+      "images": [
+        "images/components/p06-1.jpg",
+        "images/source-pages/page-06.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P06-L298N"
+    },
+    {
+      "id": "p06-2",
+      "name": "SG90 9g Micro Servo Motor with Horns",
+      "category": "Motors & Drivers",
+      "page": 6,
+      "description": "Lightweight, high-torque micro servo motor with 180-degree rotation control for robotic arms, steering knuckles, and sensor pan-tilts.",
+      "specifications": "Weight: 9g; Operating Voltage: 4.8V – 6.0V; Stall Torque: 1.8 kg-cm @ 4.8V; Operating Speed: 0.1s / 60 degrees; Gear Type: POM nylon",
+      "applications": "Robotic gripper arms; Ultrasonic sensor turret rotation; Camera pan-tilt gimbals; RC aeromodels",
+      "image": "images/components/p06-2.jpg",
+      "images": [
+        "images/components/p06-2.jpg",
+        "images/source-pages/page-06.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P06-SG90"
+    },
+    {
+      "id": "p07-1",
+      "name": "16x2 Character LCD Display with I2C Backpack",
+      "category": "Displays",
+      "page": 7,
+      "description": "High-contrast blue backlight alphanumeric LCD with pre-soldered PCF8574 I2C adapter, reducing pin requirement to only 2 wire lines (SDA/SCL).",
+      "specifications": "Display: 16 characters x 2 lines; Backlight: Blue with white text; Interface: I2C (Address 0x27 or 0x3F); Voltage: 5V DC; Potentiometer contrast",
+      "applications": "System telemetry dashboards; Real-time sensor readout; Scoreboards; Embedded device interfaces",
+      "image": "images/components/p07-1.jpg",
+      "images": [
+        "images/components/p07-1.jpg",
+        "images/source-pages/page-07.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P07-LCD1602"
+    },
+    {
+      "id": "p07-2",
+      "name": "0.96 inch I2C OLED Display Module (128x64)",
+      "category": "Displays",
+      "page": 7,
+      "description": "Self-luminous high-resolution graphic OLED display featuring crisp pixel clarity, wide viewing angles, and ultra-low power consumption.",
+      "specifications": "Resolution: 128 x 64 pixels; Driver IC: SSD1306; Interface: I2C (4-pin); Viewing Angle: >160°; Operating Voltage: 3.3V – 5V; Color: Cyber Cyan/White",
+      "applications": "Wearable smart watches; Mini telemetry HUDs; Graphical oscilloscope displays; Battery telemetry monitors",
+      "image": "images/components/p07-2.jpg",
+      "images": [
+        "images/components/p07-2.jpg",
+        "images/source-pages/page-07.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P07-OLED"
+    },
+    {
+      "id": "p08-1",
+      "name": "HC-05 Wireless Bluetooth Serial Transceiver",
+      "category": "Wireless & IoT",
+      "page": 8,
+      "description": "Full-duplex Bluetooth SPP (Serial Port Protocol) module for wireless bidirectional serial communication with smartphones and PCs.",
+      "specifications": "Bluetooth Standard: v2.0+EDR; Operating Voltage: 3.6V – 6V (3.3V logic); Default Baud Rate: 9600; AT Command mode; Range: Up to 10m",
+      "applications": "Smartphone robot control apps; Wireless telemetry link; Cable replacement; Remote diagnostic debugging",
+      "image": "images/components/p08-1.jpg",
+      "images": [
+        "images/components/p08-1.jpg",
+        "images/source-pages/page-08.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P08-HC05"
+    },
+    {
+      "id": "p09-1",
+      "name": "MPU-6050 6-Axis Gyroscope & Accelerometer",
+      "category": "Sensors",
+      "page": 9,
+      "description": "Integrated 3-axis angular rate sensor (gyro) and 3-axis accelerometer with onboard Digital Motion Processor (DMP) for IMU orientation tracking.",
+      "specifications": "Gyroscope Range: ±250, 500, 1000, 2000 °/sec; Acceleration Range: ±2, ±4, ±8, ±16g; Communication: I2C (Fast Mode 400kHz); Voltage: 3.3V-5V",
+      "applications": "Self-balancing two-wheel robots; Quadcopter flight stabilization; Motion gesture controllers; VR orientation trackers",
+      "image": "images/components/p09-1.jpg",
+      "images": [
+        "images/components/p09-1.jpg",
+        "images/source-pages/page-09.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P09-MPU6050"
+    },
+    {
+      "id": "p10-1",
+      "name": "Sound Detection Sensor Microphone Module",
+      "category": "Sensors",
+      "page": 10,
+      "description": "Electret condenser microphone sensor module with LM393 comparator for acoustic noise threshold and voice triggering.",
+      "specifications": "Operating Voltage: 4V - 6V; Sensitivity: Adjustable with potentiometer; Dual output: AO analog real-time voltage and DO digital threshold switch",
+      "applications": "Clap switch automation; Noise level alarms; Acoustic security triggers; Interactive robotics",
+      "image": "images/components/p10-1.jpg",
+      "images": [
+        "images/components/p10-1.jpg",
+        "images/source-pages/page-10.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P10-SOUND"
+    },
+    {
+      "id": "p11-1",
+      "name": "TCRT5000 Infrared Reflective Line Tracking Sensor",
+      "category": "Sensors",
+      "page": 11,
+      "description": "Optoelectronic infrared emitter and phototransistor sensor for precision line tracking and edge detection on mobile rovers.",
+      "specifications": "Detection Range: 1mm - 25mm; Working Voltage: 3.3V - 5V; Output: Digital logic 0/1; Comparator: LM393 onboard",
+      "applications": "Autonomous line follower robots; Conveyor pulse counting; Paper detection; Black/white surface contrast sensing",
+      "image": "images/components/p11-1.jpg",
+      "images": [
+        "images/components/p11-1.jpg",
+        "images/source-pages/page-11.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P11-TCRT"
+    },
+    {
+      "id": "p12-1",
+      "name": "28BYJ-48 5V Stepper Motor + ULN2003 Driver Board",
+      "category": "Motors & Drivers",
+      "page": 12,
+      "description": "4-phase 5V geared stepper motor paired with ULN2003 Darlington transistor array driver for high-precision angular positioning.",
+      "specifications": "Rated Voltage: 5V DC; Step Angle: 5.625° / 64; Gear Reduction Ratio: 1/64; Onboard 4-channel LED status indicators",
+      "applications": "Robotic pan-tilt mechanisms; Precision dial pointers; Automated blinds; CNC prototyping",
+      "image": "images/components/p12-1.jpg",
+      "images": [
+        "images/components/p12-1.jpg",
+        "images/source-pages/page-12.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P12-STEPPER"
+    },
+    {
+      "id": "p13-1",
+      "name": "TM1637 4-Digit 7-Segment Digital Clock Display",
+      "category": "Displays",
+      "page": 13,
+      "description": "Compact 4-digit numeric LED display with decimal points and clock colon, controlled via simple 2-wire serial protocol (CLK, DIO).",
+      "specifications": "Display: 4 digits, 0.36 inch; Driver IC: TM1637; Operating Voltage: 3.3V - 5V; Adjustable brightness levels: 8 levels",
+      "applications": "Digital clocks; Stopwatches & count-down timers; Scoreboards; Temperature displays",
+      "image": "images/components/p13-1.jpg",
+      "images": [
+        "images/components/p13-1.jpg",
+        "images/source-pages/page-13.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P13-TM1637"
+    },
+    {
+      "id": "p14-1",
+      "name": "5V 1-Channel Optocoupler Relay Module",
+      "category": "Power & Relays",
+      "page": 14,
+      "description": "High-voltage isolated switching relay capable of controlling AC mains appliances up to 250V AC / 10A from a 5V microcontroller pin.",
+      "specifications": "Trigger Current: 5mA; Control Voltage: 5V DC; Maximum Load: AC 250V/10A, DC 30V/10A; Optocoupler isolation; Status LED",
+      "applications": "Smart home automation; High-power motor switching; Solenoid valve control; AC lamp switching",
+      "image": "images/components/p14-1.jpg",
+      "images": [
+        "images/components/p14-1.jpg",
+        "images/source-pages/page-14.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P14-RELAY1"
+    },
+    {
+      "id": "p15-1",
+      "name": "MB-102 Solderless Breadboard Power Supply 3.3V/5V",
+      "category": "Power & Relays",
+      "page": 15,
+      "description": "Dedicated dual-rail breadboard power supply module with DC barrel jack and USB input, providing selectable 3.3V and 5V regulated rails.",
+      "specifications": "Input Voltage: 6.5V - 12V DC via barrel jack or USB 5V; Output Voltage: 3.3V / 5V switchable per rail; Maximum Output Current: <700mA",
+      "applications": "Breadboard prototyping; Dual-voltage sensor circuits; Embedded lab test benches",
+      "image": "images/components/p15-1.jpg",
+      "images": [
+        "images/components/p15-1.jpg",
+        "images/source-pages/page-15.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P15-MB102"
     },
     {
       "id": "p17-kit",
-      "name": "Arduino Beginner Starter Kit V2",
+      "name": "Arduino Robotics Beginner Starter Kit V2",
       "category": "Starter Kits",
       "page": 17,
-      "description": "Hands-on Arduino learning and prototyping kit with board, breadboard, jumper wires, LEDs, resistors, servo, LDR, IR sensor, buttons and buzzer.",
-      "specifications": "Arduino UNO; USB cable; 840-point breadboard; jumper wires; LEDs; resistors; push buttons; potentiometer; buzzer; LDR; IR sensor; SG90 servo",
-      "applications": "Electronics basics; DIY projects; coding skills; sensor and module learning; robotics prototypes",
+      "description": "Complete hands-on robotics and microcontroller learning bundle with original Arduino board, sensor pack, jumper wires, servo motor, and guided lab manuals.",
+      "specifications": "Includes: Arduino UNO R3 + Cable; 830-point breadboard; SG90 servo; Ultrasonic sensor; LDR; IR receiver & remote; LEDs & Resistors; Active buzzer; 16x2 LCD module",
+      "applications": "College robotics labs; STEM school training; Embedded coding practice; Capstone prototype development",
       "image": "images/components/p17-kit.jpg",
       "images": [
         "images/components/p17-kit.jpg",
         "images/source-pages/page-17.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P17-KIT",
+      "sku": "CL-P17-ROBOKIT",
       "pdf": "docs/kits/p17-kit.pdf"
     },
     {
       "id": "p18-kit",
-      "name": "Arduino Beginner Starter Kit V1",
+      "name": "Arduino Sensor Explorer Kit V1",
       "category": "Starter Kits",
       "page": 18,
-      "description": "Beginner-friendly Arduino kit for programming, prototyping and basic sensor projects.",
-      "specifications": "Arduino UNO R3; USB cable; breadboard; jumper wires; LEDs; resistors; push buttons; potentiometer; buzzer; LDR; RGB LED; small on/off switch",
-      "applications": "Electronics learning; hands-on practice; creative projects; beginner robotics; sensor interfacing",
+      "description": "Comprehensive sensor experimenter bundle with 12 modular sensing units for physical computing and environmental monitoring.",
+      "specifications": "Includes: Arduino Nano; DHT11 temp/humidity; PIR motion sensor; Soil moisture; Flame sensor; Sound detector; Light dependent resistor; Relay switch; Breadboard wires",
+      "applications": "Environmental science projects; Automated home security; IoT sensor networks; Academic lab experiments",
       "image": "images/components/p18-kit.jpg",
       "images": [
         "images/components/p18-kit.jpg",
         "images/source-pages/page-18.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P18-KIT",
+      "sku": "CL-P18-SENSORKIT",
       "pdf": "docs/kits/p18-kit.pdf"
     },
     {
       "id": "p19-kit",
-      "name": "Electronics Components Kit V1",
+      "name": "Electronics Discrete Components Lab Kit V1",
       "category": "Starter Kits",
       "page": 19,
-      "description": "General-purpose component kit for breadboard prototyping and basic electronics development.",
-      "specifications": "5V adapter; LEDs; resistors; jumper-wire sets; two 400-point breadboards; 5V breadboard power supply; capacitors; headers and connectors",
-      "applications": "Power/electronics prototyping; indicators; custom circuits; breadboard development",
+      "description": "Extensive electronics workstation inventory containing 300+ passives, transistors, diodes, LEDs, power regulators, and dual solderless breadboards.",
+      "specifications": "Includes: 30 values of metal film resistors (300 pcs); Electrolytic & ceramic capacitors; BC547 & 2N2222 transistors; 1N4007 diodes; 5V breadboard power module; 9V DC battery snaps",
+      "applications": "Circuit theory experiments; Breadboard prototyping; Power supply filtering; Analog signal conditioning",
       "image": "images/components/p19-kit.jpg",
       "images": [
         "images/components/p19-kit.jpg",
         "images/source-pages/page-19.jpg"
       ],
       "price": "Contact for price",
-      "sku": "CL-P19-KIT",
+      "sku": "CL-P19-COMPKIT",
       "pdf": "docs/kits/p19-kit.pdf"
+    },
+    {
+      "id": "p20-kit",
+      "name": "IoT Smart Home & Automation Node Kit",
+      "category": "Starter Kits",
+      "page": 20,
+      "description": "Next-generation IoT experimentation kit with ESP32, multi-channel relays, OLED telemetry screen, and cloud sensor modules.",
+      "specifications": "Includes: ESP32 Dual-Core WiFi+BT Module; 4-Channel Relay; 0.96 inch I2C OLED; DHT11 Temp/Humidity; MQ-2 Smoke sensor; Jumper sets",
+      "applications": "Smart home hubs; Remote web telemetry; MQTT cloud bridges; Automated energy controllers",
+      "image": "images/components/p20-kit.jpg",
+      "images": [
+        "images/components/p20-kit.jpg",
+        "images/source-pages/page-20.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P20-IOTKIT",
+      "pdf": "docs/kits/p20-kit.pdf"
+    },
+    {
+      "id": "p21-kit",
+      "name": "Autonomous Obstacle Avoiding Smart Car Robot Kit",
+      "category": "Starter Kits",
+      "page": 21,
+      "description": "Full mechanical and electronic autonomous rover kit with 4WD robotic chassis, DC gear motors, ultrasonic radar servo turret, and L298N driver.",
+      "specifications": "Includes: 4WD Acrylic chassis; 4x TT DC Gear Motors + Wheels; L298N H-Bridge Driver; HC-SR04 Sensor; SG90 Servo mount; Arduino UNO; Battery holder; Hardware screws & spacers",
+      "applications": "Autonomous mobile robotics; PID line tracking; Maze solving rovers; Edge AI rover navigation",
+      "image": "images/components/p21-kit.jpg",
+      "images": [
+        "images/components/p21-kit.jpg",
+        "images/source-pages/page-21.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P21-AUTOROBOT",
+      "pdf": "docs/kits/p21-kit.pdf"
+    },
+    {
+      "id": "p22-kit",
+      "name": "4-DOF Robotic Arm Manipulator Assembly Kit",
+      "category": "Starter Kits",
+      "page": 22,
+      "description": "Precision laser-cut 4-axis robotic arm with 4x micro servos, mechanical claw gripper, and potentiometer control joystick shield.",
+      "specifications": "Includes: Laser-cut Acrylic Arm Chasis; 4x SG90 Micro Servos; 4x Analog Joystick Potentiometers; Arduino UNO R3; Power adapter; Acrylic base",
+      "applications": "Robotics kinematics; Pick-and-place automation; Teleoperation training; Industrial robotic simulations",
+      "image": "images/components/p22-kit.jpg",
+      "images": [
+        "images/components/p22-kit.jpg",
+        "images/source-pages/page-22.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P22-ARMKIT",
+      "pdf": "docs/kits/p22-kit.pdf"
+    },
+    {
+      "id": "p23-kit",
+      "name": "AIoT Edge Vision & ESP32 Dual-Core Lab Kit",
+      "category": "Starter Kits",
+      "page": 23,
+      "description": "Advanced edge artificial intelligence and computer vision kit equipped with ESP32-CAM module, OV2640 camera, and wireless telemetry radios.",
+      "specifications": "Includes: ESP32-CAM Board; OV2640 2MP Camera Sensor; FTDI USB-TTL Programmer; MPU-6050 6-Axis IMU; 0.96 inch OLED Display; Breadboard & Wires",
+      "applications": "Edge AI face detection; Autonomous visual navigation; Wireless video streaming; Security vision nodes",
+      "image": "images/components/p23-kit.jpg",
+      "images": [
+        "images/components/p23-kit.jpg",
+        "images/source-pages/page-23.jpg"
+      ],
+      "price": "Contact for price",
+      "sku": "CL-P23-AIOTKIT",
+      "pdf": "docs/kits/p23-kit.pdf"
     }
   ],
   "practicals": [
     {
       "key": "ultrasonic-distance-lab",
-      "title": "Ultrasonic Distance Lab",
-      "product": "p02-1",
+      "title": "Ultrasonic Distance Lab & Radar Sonar",
+      "product": "p04-1",
       "level": "Beginner",
       "time": "25 min",
-      "goal": "Understand distance sensing and threshold logic.",
+      "goal": "Understand ultrasonic pulse echo physics, speed-of-sound formula conversion, and threshold buzzer activation logic.",
       "steps": [
-        "Wire VCC, GND and TRIG/ECHO pins to Arduino",
-        "Trigger high pulse on TRIG to emit ultrasonic burst",
-        "Read echo duration and calculate distance in cm",
-        "Set a threshold rule to trigger an alert LED or buzzer"
+        "Connect VCC to 5V, GND to Ground, TRIG to Digital Pin 9, and ECHO to Digital Pin 10",
+        "Send a 10-microsecond HIGH trigger pulse to initiate 40kHz acoustic transmission",
+        "Capture duration using pulseIn() and compute distance: Distance (cm) = (Duration * 0.0343) / 2",
+        "Establish near/far proximity rules to trigger a safety alert LED and buzzer alert"
       ],
       "images": [
-        "images/components/p02-1.jpg",
-        "images/source-pages/page-02.jpg"
-      ]
+        "images/components/p04-1.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "pdf": "docs/practicals/ultrasonic-lab.pdf"
     },
     {
       "key": "soil-moisture-test",
-      "title": "Soil Moisture Test",
-      "product": "p02-2",
+      "title": "Soil Moisture & Automated Irrigation Experiment",
+      "product": "p04-3",
       "level": "Beginner",
       "time": "30 min",
-      "goal": "Learn how an analog sensor becomes a useful automated decision.",
+      "goal": "Convert analog dielectric soil measurements into automated water pump relay actuation algorithms.",
       "steps": [
-        "Insert the soil moisture sensor probe into sample soil",
-        "Connect VCC, GND and analog output A0 to Arduino Nano",
-        "Read raw analog values and map dry vs. wet thresholds",
-        "Trigger an automatic pump or status LED based on moisture levels"
+        "Insert the corrosion-resistant probe into soil and wire VCC/GND to 5V rail",
+        "Connect analog pin A0 to read raw ADC voltage values between 0 and 1023",
+        "Calibrate threshold readings: Dry Soil (>700), Optimal Moisture (400-600), Saturated (<350)",
+        "Trigger a 5V relay module to automatically actuate a micro water pump when dry"
       ],
       "images": [
-        "images/components/p02-2.jpg",
-        "images/source-pages/page-02.jpg"
-      ]
+        "images/components/p04-3.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "pdf": "docs/practicals/soil-moisture-lab.pdf"
     },
     {
       "key": "temperature-monitoring",
-      "title": "Temperature Monitoring",
-      "product": "p02-3",
+      "title": "DHT11 Climate & Environmental Telemetry Lab",
+      "product": "p05-1",
       "level": "Beginner",
       "time": "25 min",
-      "goal": "Convert analog sensor voltage readings into a calibrated real-world temperature display.",
+      "goal": "Interface digital single-bus protocols to extract ambient temperature (°C) and humidity (%RH) with live LCD telemetry.",
       "steps": [
-        "Connect the analog temperature sensor (LM35/TMP36) to 5V and GND",
-        "Read sensor analog output on pin A0 of Arduino Mega",
-        "Convert voltage reading to Celsius using calibration formulas",
-        "Output live serial telemetry and trigger a cooling relay"
+        "Connect DHT11 signal pin to Digital Pin 2 with a 10kΩ pull-up resistor to 5V",
+        "Include DHT sensor library and initialize communication at 9600 baud rate",
+        "Extract relative humidity (%) and temperature (°C) every 2000 milliseconds",
+        "Display real-time environmental metrics on a 16x2 I2C Character LCD module"
       ],
       "images": [
-        "images/components/p02-3.jpg",
-        "images/source-pages/page-02.jpg"
-      ]
+        "images/components/p05-1.jpg",
+        "images/source-pages/page-05.jpg"
+      ],
+      "pdf": "docs/practicals/climate-lab.pdf"
+    },
+    {
+      "key": "l298n-motor-steering",
+      "title": "L298N Dual H-Bridge Motor Control & PWM Steering",
+      "product": "p06-1",
+      "level": "Intermediate",
+      "time": "40 min",
+      "goal": "Master bidirectional DC motor speed regulation using Pulse Width Modulation (PWM) and H-Bridge polarity switching.",
+      "steps": [
+        "Connect motor power terminal to 12V battery and logic power terminal to Arduino 5V",
+        "Connect IN1, IN2, IN3, IN4 to microcontroller digital pins and ENA/ENB to PWM pins",
+        "Set logic HIGH/LOW combinations across IN pins to control Forward, Reverse, and Pivot turns",
+        "Adjust analogWrite() PWM values (0 to 255) to modulate smooth deceleration and acceleration curves"
+      ],
+      "images": [
+        "images/components/p06-1.jpg",
+        "images/source-pages/page-06.jpg"
+      ],
+      "pdf": "docs/practicals/motor-control-lab.pdf"
+    },
+    {
+      "key": "mpu6050-gyro-stabilizer",
+      "title": "MPU-6050 6-Axis Motion & Balance Lab",
+      "product": "p09-1",
+      "level": "Advanced",
+      "time": "45 min",
+      "goal": "Implement I2C register communication and complementary filtering to compute real-time Roll, Pitch, and Yaw orientation angles.",
+      "steps": [
+        "Connect SDA and SCL to Arduino A4 and A5 pins (or dedicated I2C pins) with 3.3V/5V supply",
+        "Initialize MPU6050 accelerometer and gyroscope registers via I2C Wire protocol at 400kHz",
+        "Read 6-axis raw registers and apply complementary filter: Angle = 0.98 * (Angle + Gyro*dt) + 0.02 * Accel",
+        "Output live orientation angles to 0.96 inch OLED HUD display for stabilizing servo balance"
+      ],
+      "images": [
+        "images/components/p09-1.jpg",
+        "images/source-pages/page-09.jpg"
+      ],
+      "pdf": "docs/practicals/gyro-lab.pdf"
+    },
+    {
+      "key": "bluetooth-telemetry-link",
+      "title": "HC-05 Bluetooth Wireless Telemetry & Smartphone Control",
+      "product": "p08-1",
+      "level": "Intermediate",
+      "time": "35 min",
+      "goal": "Establish bidirectional wireless serial communication between microcontroller and mobile smartphone app.",
+      "steps": [
+        "Connect HC-05 TXD to Arduino RX and HC-05 RXD to Arduino TX through a voltage divider",
+        "Pair smartphone with HC-05 module (Default PIN: 1234)",
+        "Write serial event listener in firmware to process command packets ('F', 'B', 'L', 'R')",
+        "Transmit real-time telemetry back to smartphone display terminal"
+      ],
+      "images": [
+        "images/components/p08-1.jpg",
+        "images/source-pages/page-08.jpg"
+      ],
+      "pdf": "docs/practicals/bluetooth-lab.pdf"
+    },
+    {
+      "key": "tm1637-timer-lab",
+      "title": "TM1637 4-Digit Real-Time Clock & Stopwatch",
+      "product": "p13-1",
+      "level": "Beginner",
+      "time": "20 min",
+      "goal": "Drive multiplexed 7-segment digital displays using a 2-wire serial clock protocol for timing and counter systems.",
+      "steps": [
+        "Connect CLK to Arduino Pin 2 and DIO to Arduino Pin 3 with 5V/GND power",
+        "Initialize TM1637 library and set display brightness to level 5",
+        "Construct millis() timer loop to increment minutes and seconds accurately",
+        "Flash the central colon dot every 1000 milliseconds to simulate digital chronometer"
+      ],
+      "images": [
+        "images/components/p13-1.jpg",
+        "images/source-pages/page-13.jpg"
+      ],
+      "pdf": "docs/practicals/timer-lab.pdf"
+    },
+    {
+      "key": "pir-light-automation",
+      "title": "PIR Infrared Smart Corridor Lighting Controller",
+      "product": "p04-2",
+      "level": "Beginner",
+      "time": "20 min",
+      "goal": "Implement passive pyroelectric human motion sensing to actuate isolated 250V AC relay circuits with auto-timeout.",
+      "steps": [
+        "Connect PIR sensor OUT pin to Arduino Pin 4 and power from 5V rail",
+        "Wire relay module control pin to Arduino Pin 8 to switch lamp circuit",
+        "Implement non-blocking software timer to keep light active for 15 seconds after last motion",
+        "Add LDR light sensor override so lighting only triggers during dark hours"
+      ],
+      "images": [
+        "images/components/p04-2.jpg",
+        "images/source-pages/page-04.jpg"
+      ],
+      "pdf": "docs/practicals/pir-lighting.pdf"
     }
   ],
   "projects": [
     {
       "key": "obstacle-avoiding-robot",
-      "title": "Obstacle Avoiding Robot",
-      "product": "p02-1",
-      "kit": "Arduino UNO + Ultrasonic Sensor + L298N Motor Driver + DC Gear Motors",
-      "summary": "A mobile robot chassis that continuously scans ahead, measures distance in real-time, and navigates autonomously around obstacles.",
-      "learn": "Ultrasonic sensing • PWM motor speed control • Directional decision algorithms • Embedded systems",
-      "upgrade": "Add Bluetooth/WiFi remote override and an OLED dashboard displaying distance.",
+      "title": "Autonomous Obstacle Avoiding & Mapping Rover",
+      "product": "p21-kit",
+      "kit": "4WD Smart Chassis + Arduino UNO + HC-SR04 Ultrasonic Sensor + SG90 Pan Turret + L298N Driver",
+      "summary": "An autonomous mobile ground robot that continuously sweeps its ultrasonic turret across 180 degrees, maps forward clearance, and executes predictive evasion routes in real time.",
+      "learn": "Ultrasonic Sonar • Directional Decision Algorithms • PWM Motor Control • Mobile Robotics Architecture",
+      "upgrade": "Add Bluetooth manual smartphone override, 0.96-inch OLED telemetry HUD, and front bumper microswitches.",
       "images": [
-        "images/components/p02-1.jpg",
-        "images/components/p17-kit.jpg"
-      ]
+        "images/components/p21-kit.jpg",
+        "images/components/p04-1.jpg"
+      ],
+      "pdf": "docs/projects/obstacle-avoiding-robot.pdf"
     },
     {
       "key": "smart-plant-watering",
-      "title": "Smart Plant Watering",
-      "product": "p02-2",
-      "kit": "Arduino Nano + Soil Moisture Sensor + 5V Relay + Submersible Micro Pump",
-      "summary": "Automate plant care using real-time soil moisture feedback to trigger a water pump only when needed.",
-      "learn": "Analog sensor calibration • Relay switching • Power isolation • Threshold logic",
-      "upgrade": "Add a water reservoir level sensor and IoT mobile notifications.",
+      "title": "Smart Solar Automated Agricultural Irrigation Hub",
+      "product": "p04-3",
+      "kit": "Arduino Nano + Capacitive Soil Sensor + 5V Optical Relay + Submersible Micro Water Pump",
+      "summary": "Automated solar-powered smart farm node that monitors soil moisture, temperature, and water levels, delivering precision micro-irrigation only when thresholds require.",
+      "learn": "Analog Sensor Calibration • Relay Optical Isolation • Power Management • Closed-Loop Feedback",
+      "upgrade": "Add ESP8266 cloud telemetry, water tank ultrasonic level gauge, and automated SMS irrigation alerts.",
       "images": [
-        "images/components/p02-2.jpg",
-        "images/components/p18-kit.jpg"
-      ]
+        "images/components/p04-3.jpg",
+        "images/components/p05-1.jpg"
+      ],
+      "pdf": "docs/projects/smart-irrigation.pdf"
     },
     {
       "key": "wireless-appliance-controller",
-      "title": "Wireless Appliance Controller",
-      "product": "p02-3",
-      "kit": "Arduino Mega + Multi-channel Relay Module + Wireless Transceiver",
-      "summary": "Build a home automation controller that safely switches AC/DC appliances with multi-point control.",
-      "learn": "Relay safety • Optical isolation • Microcontroller multi-tasking • State retention",
-      "upgrade": "Integrate ESP8266/ESP32 web server and voice control integration.",
+      "title": "ESP32 Cyber Smart Home & Industrial Power Controller",
+      "product": "p03-2",
+      "kit": "ESP32 Dual-Core Dev Board + 4-Channel Optoisolated Relay Module + OLED Display + Current Sensor",
+      "summary": "A secure smart home controller that allows browser and smartphone control of high-voltage AC/DC loads with real-time wattage telemetry and automated scheduling.",
+      "learn": "Web Server Architecture • WebSocket Protocols • AC Power Safety • Optocoupler Isolation",
+      "upgrade": "Integrate MQTT broker connection, voice assistant commands, and automatic overload circuit breaker.",
       "images": [
-        "images/components/p02-3.jpg",
-        "images/components/p19-kit.jpg"
-      ]
+        "images/components/p03-2.jpg",
+        "images/components/p07-2.jpg"
+      ],
+      "pdf": "docs/projects/smart-home-hub.pdf"
+    },
+    {
+      "key": "self-balancing-robot",
+      "title": "Two-Wheeled Inverted Pendulum Self-Balancing Robot",
+      "product": "p09-1",
+      "kit": "Arduino UNO + MPU-6050 6-Axis IMU + High-Torque DC Gear Motors + L298N Motor Driver",
+      "summary": "A dynamically stabilized inverted pendulum robot that continuously measures its tilt angle at 200Hz and calculates precision PID motor counter-torque to maintain perfect vertical balance.",
+      "learn": "PID Control Loop Tuning • Sensor Fusion & Complementary Filtering • High-Speed Interrupts • Inertial Dynamics",
+      "upgrade": "Add Bluetooth directional steering commands and an OLED battery voltage monitor.",
+      "images": [
+        "images/components/p09-1.jpg",
+        "images/components/p06-1.jpg"
+      ],
+      "pdf": "docs/projects/self-balancing-robot.pdf"
+    },
+    {
+      "key": "gesture-controlled-arm",
+      "title": "4-DOF Robotic Arm Manipulator with Glove Controller",
+      "product": "p22-kit",
+      "kit": "4x SG90 Micro Servos + 4-DOF Acrylic Arm + MPU-6050 Sensor Glove + NRF24L01+ Wireless Link",
+      "summary": "A wireless tele-operated robotic manipulator arm that mirrors human hand and wrist gestures in real time using inertial sensors and high-speed radio transceivers.",
+      "learn": "Multi-Servo Kinematics • Wireless Packet Transmission • Angle Mapping • PWM Signal Synchronization",
+      "upgrade": "Add mechanical gripper claw with pressure feedback sensor and preset trajectory recording.",
+      "images": [
+        "images/components/p22-kit.jpg",
+        "images/components/p06-2.jpg"
+      ],
+      "pdf": "docs/projects/gesture-robotic-arm.pdf"
+    },
+    {
+      "key": "iot-weather-station",
+      "title": "Cloud Connected Edge AI Climate & Air Quality Station",
+      "product": "p03-1",
+      "kit": "NodeMCU ESP8266 + DHT11 Temp/Humidity + MQ-2 Gas/Air Quality Sensor + 0.96 inch OLED Display",
+      "summary": "A solar-backed environmental monitoring station that collects temperature, humidity, and air pollution index metrics, displaying data locally on OLED and publishing live to cloud dashboard.",
+      "learn": "IoT REST APIs • Environmental Sensing • Power Optimization • Cloud Visualization",
+      "upgrade": "Add rain drop sensor, wind speed anemometer, and automatic extreme weather buzzer alarms.",
+      "images": [
+        "images/components/p03-1.jpg",
+        "images/components/p05-1.jpg"
+      ],
+      "pdf": "docs/projects/iot-weather-station.pdf"
     }
   ],
   "quotes": [
@@ -220,8 +735,18 @@
     },
     {
       "id": "q-3",
-      "text": "Learning becomes powerful when ideas turn into working prototypes.",
+      "text": "Learning becomes powerful when theoretical formulas turn into working hardware prototypes.",
       "author": "Creative Learning"
+    },
+    {
+      "id": "q-4",
+      "text": "Every complex autonomous robot starts with a single breadboard wire.",
+      "author": "Creative Learning Robotics Bench"
+    },
+    {
+      "id": "q-5",
+      "text": "Engineering is the closest thing to real magic that exists in the world.",
+      "author": "Creative Learning Makerspace"
     }
   ],
   "heroQuoteId": "q-1"

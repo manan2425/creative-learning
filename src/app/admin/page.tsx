@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useData } from '@/context/DataContext';
 import { Product, PracticalActivity, Project, Quote, CompanyConfig } from '@/types';
@@ -22,11 +22,28 @@ import {
   AlertCircle,
   ExternalLink,
   ArrowLeft,
+  Inbox,
+  RefreshCw,
+  Database,
+  FileText,
+  Image as ImageIcon,
 } from 'lucide-react';
+
+interface InquiryRecord {
+  _id?: string;
+  name?: string;
+  phone?: string;
+  email?: string;
+  college?: string;
+  message?: string;
+  items?: Array<{ name: string; quantity: number; price?: string }>;
+  createdAt?: string;
+}
 
 export default function AdminPage() {
   const {
     catalog,
+    refreshCatalog,
     saveProduct,
     deleteProduct,
     savePractical,
@@ -49,21 +66,53 @@ export default function AdminPage() {
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<
-    'products' | 'kits' | 'practicals' | 'projects' | 'quotes' | 'company'
+    'products' | 'kits' | 'practicals' | 'projects' | 'quotes' | 'inquiries' | 'company'
   >('products');
 
-  // Product Editing State
+  // Modals & Editing State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingPractical, setEditingPractical] = useState<PracticalActivity | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [companyForm, setCompanyForm] = useState<CompanyConfig>(catalog.company);
   const [toastMessage, setToastMessage] = useState('');
+  const [inquiries, setInquiries] = useState<InquiryRecord[]>([]);
+  const [loadingInquiries, setLoadingInquiries] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  useEffect(() => {
+    if (catalog?.company) {
+      setCompanyForm(catalog.company);
+    }
+  }, [catalog]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
   };
+
+  const fetchInquiries = async () => {
+    setLoadingInquiries(true);
+    try {
+      const res = await fetch('/api/inquiries');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.inquiries)) {
+          setInquiries(data.inquiries);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch inquiries:', e);
+    } finally {
+      setLoadingInquiries(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === 'inquiries') {
+      fetchInquiries();
+    }
+  }, [isAuthenticated, activeTab]);
 
   // Login handler
   const handleLogin = async (e: React.FormEvent) => {
@@ -127,6 +176,13 @@ export default function AdminPage() {
     return null;
   };
 
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    await refreshCatalog();
+    showToast('Catalog refreshed from MongoDB Atlas online!');
+    setIsSyncing(false);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className={styles.loginWrapper}>
@@ -136,9 +192,9 @@ export default function AdminPage() {
             alt="Logo"
             className={styles.loginLogo}
           />
-          <h2 style={{ margin: '0 0 6px', fontSize: '24px' }}>Creative Learning</h2>
+          <h2 style={{ margin: '0 0 6px', fontSize: '24px', fontWeight: 800 }}>Creative Learning</h2>
           <p style={{ color: '#64748b', fontSize: '13px', margin: '0 0 24px' }}>
-            Enter your admin credentials to manage catalogue and settings.
+            Enter your admin credentials to manage hardware catalogue and cloud settings.
           </p>
 
           {!showForgot ? (
@@ -150,6 +206,7 @@ export default function AdminPage() {
                     fontSize: '12px',
                     fontWeight: 800,
                     marginBottom: '6px',
+                    color: '#334155',
                   }}
                 >
                   Admin Password
@@ -165,6 +222,7 @@ export default function AdminPage() {
                     borderRadius: '12px',
                     border: '1px solid #cbd5e1',
                     fontSize: '14px',
+                    outline: 'none',
                   }}
                   required
                 />
@@ -186,7 +244,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 className="primary"
-                style={{ width: '100%', padding: '12px', fontSize: '14px' }}
+                style={{ width: '100%', padding: '12px', fontSize: '14px', borderRadius: '10px' }}
               >
                 Login to Dashboard
               </button>
@@ -279,7 +337,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 className="primary"
-                style={{ width: '100%', padding: '12px', fontSize: '13px' }}
+                style={{ width: '100%', padding: '12px', fontSize: '13px', borderRadius: '10px' }}
               >
                 Reset Password
               </button>
@@ -311,6 +369,10 @@ export default function AdminPage() {
     );
   }
 
+  const starterKits = catalog.products.filter(
+    (p) => p.category.includes('Kit') || p.id.includes('kit') || p.category === 'Starter Kits'
+  );
+
   return (
     <div className={styles.adminContainer}>
       {/* Header */}
@@ -319,17 +381,39 @@ export default function AdminPage() {
           <img
             src="/images/branding/creative-learning-logo.png"
             alt="Logo"
-            style={{ width: '38px', height: '38px' }}
+            style={{ width: '38px', height: '38px', objectFit: 'contain' }}
           />
           <div>
             <strong style={{ fontSize: '16px', letterSpacing: '0.05em' }}>
               CREATIVE LEARNING ADMIN
             </strong>
-            <div style={{ fontSize: '11px', color: '#93c5fd' }}>Management Control Center</div>
+            <div style={{ fontSize: '11px', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#00ff9d', display: 'inline-block' }}></span>
+              MongoDB Atlas Cloud Connected
+            </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={handleManualSync}
+            disabled={isSyncing}
+            style={{
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              color: '#fff',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <RefreshCw size={13} className={isSyncing ? 'spin' : ''} /> Sync Cloud
+          </button>
           <Link
             href="/"
             style={{
@@ -339,6 +423,10 @@ export default function AdminPage() {
               alignItems: 'center',
               gap: '4px',
               fontWeight: 700,
+              background: 'rgba(0,240,255,0.15)',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: '1px solid rgba(0,240,255,0.3)',
             }}
           >
             <ArrowLeft size={14} /> View Live Storefront
@@ -347,9 +435,9 @@ export default function AdminPage() {
             type="button"
             onClick={() => setIsAuthenticated(false)}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff',
+              background: 'rgba(239,68,68,0.2)',
+              border: '1px solid rgba(239,68,68,0.4)',
+              color: '#fca5a5',
               padding: '6px 12px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -364,7 +452,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Tabs */}
+      {/* Navigation Tabs */}
       <div className={styles.adminNavTabs}>
         <button
           type="button"
@@ -379,9 +467,7 @@ export default function AdminPage() {
           className={`${styles.tabBtn} ${activeTab === 'kits' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('kits')}
         >
-          <Layers size={16} /> Starter Kits (
-          {catalog.products.filter((p) => p.category.includes('Kit') || p.id.includes('kit')).length}
-          )
+          <Layers size={16} /> Starter Kits ({starterKits.length})
         </button>
 
         <button
@@ -410,6 +496,14 @@ export default function AdminPage() {
 
         <button
           type="button"
+          className={`${styles.tabBtn} ${activeTab === 'inquiries' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('inquiries')}
+        >
+          <Inbox size={16} /> Inquiries & Orders ({inquiries.length})
+        </button>
+
+        <button
+          type="button"
           className={`${styles.tabBtn} ${activeTab === 'company' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('company')}
         >
@@ -428,16 +522,17 @@ export default function AdminPage() {
             color: '#fff',
             padding: '12px 20px',
             borderRadius: '12px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
             fontWeight: 700,
-            zIndex: 100,
+            zIndex: 9999,
+            border: '1px solid rgba(0,255,157,0.3)',
           }}
         >
-          <CheckCircle size={16} color="#22c55e" /> {toastMessage}
+          <CheckCircle size={16} color="#00ff9d" /> {toastMessage}
         </div>
       )}
 
@@ -446,18 +541,18 @@ export default function AdminPage() {
         {/* PRODUCTS TAB */}
         {activeTab === 'products' && (
           <div className={styles.cardPanel}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '20px' }}>Products & Components Management</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Add, update specifications, upload photos and attach PDF datasheets.
+                  Add new hardware modules, update specifications, upload photos and attach PDF datasheets.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px' }}
+                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
                 onClick={() =>
                   setEditingProduct({
                     id: `p-${Date.now().toString().slice(-4)}`,
@@ -477,92 +572,94 @@ export default function AdminPage() {
             </div>
 
             {/* Products Table */}
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>PDF Attached</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catalog.products.map((p) => {
-                  const img = p.images?.[0] || p.image || '/images/branding/creative-learning-logo.png';
-                  return (
-                    <tr key={p.id}>
-                      <td>
-                        <img
-                          src={img.startsWith('/') ? img : `/${img}`}
-                          alt=""
-                          style={{
-                            width: '44px',
-                            height: '44px',
-                            objectFit: 'contain',
-                            borderRadius: '8px',
-                            background: '#f8fafc',
-                            border: '1px solid #e2e8f0',
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <b>{p.name}</b>
-                      </td>
-                      <td>
-                        <span className="tag">{p.category}</span>
-                      </td>
-                      <td>{p.sku || p.id}</td>
-                      <td>{p.price}</td>
-                      <td>{p.pdf ? '✓ Yes' : '—'}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button
-                            type="button"
-                            className={`${styles.actionBtn} ${styles.actionEdit}`}
-                            onClick={() => setEditingProduct({ ...p })}
-                          >
-                            <Edit2 size={13} /> Edit
-                          </button>
-                          <button
-                            type="button"
-                            className={`${styles.actionBtn} ${styles.actionDelete}`}
-                            onClick={() => {
-                              if (confirm(`Delete ${p.name}?`)) {
-                                deleteProduct(p.id);
-                                showToast(`Deleted ${p.name}`);
-                              }
+            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>PDF Datasheet</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {catalog.products.map((p) => {
+                    const img = p.images?.[0] || p.image || '/images/branding/creative-learning-logo.png';
+                    return (
+                      <tr key={p.id}>
+                        <td>
+                          <img
+                            src={img.startsWith('/') ? img : `/${img}`}
+                            alt=""
+                            style={{
+                              width: '44px',
+                              height: '44px',
+                              objectFit: 'contain',
+                              borderRadius: '8px',
+                              background: '#f8fafc',
+                              border: '1px solid #e2e8f0',
                             }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                          />
+                        </td>
+                        <td>
+                          <b>{p.name}</b>
+                        </td>
+                        <td>
+                          <span className="tag" style={{ fontSize: '11px' }}>{p.category}</span>
+                        </td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{p.sku || p.id}</td>
+                        <td>{p.price}</td>
+                        <td>{p.pdf ? '✓ Attached' : '—'}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.actionEdit}`}
+                              onClick={() => setEditingProduct({ ...p })}
+                            >
+                              <Edit2 size={13} /> Edit
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.actionDelete}`}
+                              onClick={() => {
+                                if (confirm(`Delete ${p.name}?`)) {
+                                  deleteProduct(p.id);
+                                  showToast(`Deleted ${p.name}`);
+                                }
+                              }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* KITS TAB */}
         {activeTab === 'kits' && (
           <div className={styles.cardPanel}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '20px' }}>Starter Kits Management</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Manage bundled starter kits, components inclusions and user manuals.
+                  Manage bundled educational kits, component inclusions, and guided lab manuals.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px' }}
+                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
                 onClick={() =>
                   setEditingProduct({
                     id: `kit-${Date.now().toString().slice(-4)}`,
@@ -581,21 +678,20 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Kit Name</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>PDF Manual</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catalog.products
-                  .filter((p) => p.category.includes('Kit') || p.id.includes('kit'))
-                  .map((kit) => {
+            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Kit Name</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>PDF Manual</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {starterKits.map((kit) => {
                     const img =
                       kit.images?.[0] ||
                       kit.image ||
@@ -619,7 +715,7 @@ export default function AdminPage() {
                         <td>
                           <b>{kit.name}</b>
                         </td>
-                        <td>{kit.sku || kit.id}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{kit.sku || kit.id}</td>
                         <td>{kit.price}</td>
                         <td>{kit.pdf ? '✓ Attached' : '—'}</td>
                         <td>
@@ -648,31 +744,32 @@ export default function AdminPage() {
                       </tr>
                     );
                   })}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* PRACTICALS TAB */}
         {activeTab === 'practicals' && (
           <div className={styles.cardPanel}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '20px' }}>Practical Experiments</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Manage guided hardware labs, time duration, and step-by-step procedures.
+                  Manage guided hardware labs, time duration, learning goals, and step-by-step circuit procedures.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px' }}
+                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
                 onClick={() =>
                   setEditingPractical({
                     key: `prac-${Date.now().toString().slice(-4)}`,
                     title: '',
-                    product: catalog.products[0]?.id || '',
+                    product: catalog.products[0]?.id || 'p02-1',
                     level: 'Beginner',
                     time: '25 min',
                     goal: '',
@@ -684,79 +781,81 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Difficulty</th>
-                  <th>Duration</th>
-                  <th>Linked Board</th>
-                  <th>Goal</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catalog.practicals.map((prac) => (
-                  <tr key={prac.key}>
-                    <td>
-                      <b>{prac.title}</b>
-                    </td>
-                    <td>
-                      <span className="tag">{prac.level}</span>
-                    </td>
-                    <td>{prac.time}</td>
-                    <td>{catalog.products.find((p) => p.id === prac.product)?.name || prac.product}</td>
-                    <td style={{ maxWidth: '300px' }}>{prac.goal}</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
-                          type="button"
-                          className={`${styles.actionBtn} ${styles.actionEdit}`}
-                          onClick={() => setEditingPractical({ ...prac })}
-                        >
-                          <Edit2 size={13} /> Edit
-                        </button>
-                        <button
-                          type="button"
-                          className={`${styles.actionBtn} ${styles.actionDelete}`}
-                          onClick={() => {
-                            if (confirm(`Delete practical ${prac.title}?`)) {
-                              deletePractical(prac.key);
-                              showToast(`Deleted ${prac.title}`);
-                            }
-                          }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </td>
+            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Difficulty</th>
+                    <th>Duration</th>
+                    <th>Linked Board</th>
+                    <th>Goal / Objective</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {catalog.practicals.map((prac) => (
+                    <tr key={prac.key}>
+                      <td>
+                        <b>{prac.title}</b>
+                      </td>
+                      <td>
+                        <span className="tag" style={{ fontSize: '11px' }}>{prac.level}</span>
+                      </td>
+                      <td>{prac.time}</td>
+                      <td>{catalog.products.find((p) => p.id === prac.product)?.name || prac.product}</td>
+                      <td style={{ maxWidth: '300px', fontSize: '12px' }}>{prac.goal}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionEdit}`}
+                            onClick={() => setEditingPractical({ ...prac })}
+                          >
+                            <Edit2 size={13} /> Edit
+                          </button>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionDelete}`}
+                            onClick={() => {
+                              if (confirm(`Delete practical ${prac.title}?`)) {
+                                deletePractical(prac.key);
+                                showToast(`Deleted ${prac.title}`);
+                              }
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* PROJECTS TAB */}
         {activeTab === 'projects' && (
           <div className={styles.cardPanel}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '20px' }}>Robotics & IoT Projects</h3>
+                <h3 style={{ margin: 0, fontSize: '20px' }}>Robotics & IoT Projects (Blueprints)</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Manage capstone projects, required hardware lists, and learning outcomes.
+                  Manage capstone projects, required hardware lists, learning outcomes, and downloadable blueprint PDFs.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px' }}
+                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
                 onClick={() =>
                   setEditingProject({
                     key: `proj-${Date.now().toString().slice(-4)}`,
                     title: '',
-                    product: catalog.products[0]?.id || '',
+                    product: catalog.products[0]?.id || 'p02-1',
                     kit: '',
                     summary: '',
                     learn: '',
@@ -768,68 +867,72 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Hardware Kit</th>
-                  <th>Summary</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catalog.projects.map((proj) => (
-                  <tr key={proj.key}>
-                    <td>
-                      <b>{proj.title}</b>
-                    </td>
-                    <td>{proj.kit}</td>
-                    <td style={{ maxWidth: '340px' }}>{proj.summary}</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
-                          type="button"
-                          className={`${styles.actionBtn} ${styles.actionEdit}`}
-                          onClick={() => setEditingProject({ ...proj })}
-                        >
-                          <Edit2 size={13} /> Edit
-                        </button>
-                        <button
-                          type="button"
-                          className={`${styles.actionBtn} ${styles.actionDelete}`}
-                          onClick={() => {
-                            if (confirm(`Delete project ${proj.title}?`)) {
-                              deleteProject(proj.key);
-                              showToast(`Deleted ${proj.title}`);
-                            }
-                          }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </td>
+            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Hardware Kit</th>
+                    <th>Summary</th>
+                    <th>PDF Blueprint</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {catalog.projects.map((proj) => (
+                    <tr key={proj.key}>
+                      <td>
+                        <b>{proj.title}</b>
+                      </td>
+                      <td style={{ fontSize: '12px' }}>{proj.kit}</td>
+                      <td style={{ maxWidth: '340px', fontSize: '12px' }}>{proj.summary}</td>
+                      <td>{proj.pdf ? '✓ Attached' : '—'}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionEdit}`}
+                            onClick={() => setEditingProject({ ...proj })}
+                          >
+                            <Edit2 size={13} /> Edit
+                          </button>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionDelete}`}
+                            onClick={() => {
+                              if (confirm(`Delete project ${proj.title}?`)) {
+                                deleteProject(proj.key);
+                                showToast(`Deleted ${proj.title}`);
+                              }
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* QUOTES TAB */}
         {activeTab === 'quotes' && (
           <div className={styles.cardPanel}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '20px' }}>Inspiration & Quotes Manager</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Update live quotes appearing on the hero banner and inspiration gallery.
+                  Update quotes appearing on the live hero banner and inspiration gallery.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px' }}
+                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
                 onClick={() =>
                   setEditingQuote({
                     id: `q-${Date.now().toString().slice(-4)}`,
@@ -842,84 +945,170 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Quote Text</th>
-                  <th>Author</th>
-                  <th>Featured on Hero</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catalog.quotes.map((q) => {
-                  const isHero = q.id === catalog.heroQuoteId;
-                  return (
-                    <tr key={q.id}>
-                      <td style={{ fontStyle: 'italic' }}>“{q.text}”</td>
-                      <td>{q.author}</td>
-                      <td>
-                        {isHero ? (
-                          <span
-                            style={{
-                              background: '#dcfce7',
-                              color: '#15803d',
-                              padding: '4px 8px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 800,
-                            }}
-                          >
-                            ★ Live Hero Quote
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setHeroQuote(q.id);
-                              showToast('Updated Featured Hero Quote!');
-                            }}
-                            style={{
-                              fontSize: '11px',
-                              padding: '4px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid #cbd5e1',
-                              background: '#fff',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Set as Hero Quote
-                          </button>
-                        )}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button
-                            type="button"
-                            className={`${styles.actionBtn} ${styles.actionEdit}`}
-                            onClick={() => setEditingQuote({ ...q })}
-                          >
-                            <Edit2 size={13} /> Edit
-                          </button>
-                          <button
-                            type="button"
-                            className={`${styles.actionBtn} ${styles.actionDelete}`}
-                            onClick={() => {
-                              if (confirm(`Delete quote?`)) {
-                                deleteQuote(q.id);
-                                showToast('Quote deleted');
-                              }
-                            }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
+            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Quote Text</th>
+                    <th>Author</th>
+                    <th>Featured on Hero</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {catalog.quotes.map((q) => {
+                    const isHero = q.id === catalog.heroQuoteId;
+                    return (
+                      <tr key={q.id}>
+                        <td style={{ fontStyle: 'italic' }}>“{q.text}”</td>
+                        <td>{q.author}</td>
+                        <td>
+                          {isHero ? (
+                            <span
+                              style={{
+                                background: '#dcfce7',
+                                color: '#15803d',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              ★ Live Hero Quote
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setHeroQuote(q.id);
+                                showToast('Updated Featured Hero Quote!');
+                              }}
+                              style={{
+                                fontSize: '11px',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid #cbd5e1',
+                                background: '#fff',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Set as Hero Quote
+                            </button>
+                          )}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.actionEdit}`}
+                              onClick={() => setEditingQuote({ ...q })}
+                            >
+                              <Edit2 size={13} /> Edit
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.actionDelete}`}
+                              onClick={() => {
+                                if (confirm(`Delete quote?`)) {
+                                  deleteQuote(q.id);
+                                  showToast('Quote deleted');
+                                }
+                              }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* INQUIRIES & ORDERS TAB */}
+        {activeTab === 'inquiries' && (
+          <div className={styles.cardPanel}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '20px' }}>Customer Inquiries & Engineer Orders</h3>
+                <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
+                  Live customer quote requests and engineer cart orders received from the storefront.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={fetchInquiries}
+                disabled={loadingInquiries}
+                className="secondary"
+                style={{ fontSize: '12px', padding: '8px 14px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <RefreshCw size={14} className={loadingInquiries ? 'spin' : ''} /> Refresh Leads
+              </button>
+            </div>
+
+            {inquiries.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                <Inbox size={40} style={{ margin: '0 auto 12px', opacity: 0.5 }} />
+                <p style={{ margin: 0, fontWeight: 700 }}>No inquiries recorded in MongoDB yet.</p>
+                <p style={{ fontSize: '12px', margin: '4px 0 0' }}>When visitors submit quote requests or orders on the storefront, they will show up here.</p>
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Customer Name</th>
+                      <th>Phone / WhatsApp</th>
+                      <th>Email</th>
+                      <th>College / Org</th>
+                      <th>Inquiry / Cart Items</th>
+                      <th>Message</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {inquiries.map((inq, idx) => (
+                      <tr key={inq._id || idx}>
+                        <td style={{ fontSize: '11px', whiteSpace: 'nowrap' }}>
+                          {inq.createdAt ? new Date(inq.createdAt).toLocaleString() : 'Recent'}
+                        </td>
+                        <td><b>{inq.name || 'Anonymous'}</b></td>
+                        <td>
+                          {inq.phone ? (
+                            <a
+                              href={`https://wa.me/${inq.phone.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: '#0872c9', fontWeight: 700 }}
+                            >
+                              {inq.phone}
+                            </a>
+                          ) : '—'}
+                        </td>
+                        <td>{inq.email || '—'}</td>
+                        <td>{inq.college || '—'}</td>
+                        <td style={{ fontSize: '12px', maxWidth: '280px' }}>
+                          {Array.isArray(inq.items) && inq.items.length > 0 ? (
+                            <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                              {inq.items.map((it, i) => (
+                                <li key={i}>{it.name} (x{it.quantity})</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            'Direct Quote Request'
+                          )}
+                        </td>
+                        <td style={{ fontSize: '12px', maxWidth: '200px' }}>{inq.message || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
@@ -928,15 +1117,14 @@ export default function AdminPage() {
           <div className={styles.cardPanel}>
             <h3 style={{ margin: '0 0 6px', fontSize: '20px' }}>Company Information & Contact</h3>
             <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: '13px' }}>
-              These details are reflected across the header, footer, WhatsApp links, and enquiry
-              forms.
+              These details are reflected across the header, footer, WhatsApp links, and enquiry forms.
             </p>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 saveCompany(companyForm);
-                showToast('Company information saved successfully!');
+                showToast('Company information saved to MongoDB Atlas successfully!');
               }}
               className={styles.formGrid}
             >
@@ -1003,9 +1191,9 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   className="primary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', borderRadius: '10px', padding: '12px 20px' }}
                 >
-                  <Save size={16} /> Save Company Settings
+                  <Save size={16} /> Save Company Settings to Cloud
                 </button>
               </div>
             </form>
@@ -1022,7 +1210,9 @@ export default function AdminPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>
-              {editingProduct.id.includes('kit') ? 'Edit Starter Kit' : 'Edit Product / Component'}
+              {editingProduct.id.includes('kit') || editingProduct.category.includes('Kit')
+                ? 'Edit Starter Kit'
+                : 'Edit Product / Component'}
             </h3>
 
             <form
@@ -1030,7 +1220,7 @@ export default function AdminPage() {
                 e.preventDefault();
                 saveProduct(editingProduct);
                 setEditingProduct(null);
-                showToast(`Saved ${editingProduct.name}`);
+                showToast(`Saved ${editingProduct.name} to MongoDB Atlas!`);
               }}
               className={styles.formGrid}
             >
@@ -1049,6 +1239,7 @@ export default function AdminPage() {
                 <input
                   type="text"
                   value={editingProduct.category}
+                  placeholder="Boards, Sensors, Starter Kits, etc."
                   onChange={(e) =>
                     setEditingProduct({ ...editingProduct, category: e.target.value })
                   }
@@ -1070,6 +1261,7 @@ export default function AdminPage() {
                 <input
                   type="text"
                   value={editingProduct.price}
+                  placeholder="e.g. Contact for price or ₹450"
                   onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
                 />
               </div>
@@ -1110,12 +1302,12 @@ export default function AdminPage() {
 
               {/* Upload Image */}
               <div className={styles.formGroup}>
-                <label>Product Image</label>
+                <label>Product Image URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProduct.images?.[0] || editingProduct.image || ''}
-                    placeholder="/images/components/p02-1.jpg"
+                    placeholder="images/components/p02-1.jpg"
                     onChange={(e) =>
                       setEditingProduct({
                         ...editingProduct,
@@ -1132,6 +1324,8 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     <Upload size={14} /> Upload
@@ -1160,12 +1354,12 @@ export default function AdminPage() {
 
               {/* Upload PDF */}
               <div className={styles.formGroup}>
-                <label>PDF Datasheet / Manual</label>
+                <label>PDF Datasheet / Manual URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProduct.pdf || ''}
-                    placeholder="/docs/kits/guide.pdf"
+                    placeholder="docs/kits/guide.pdf"
                     onChange={(e) => setEditingProduct({ ...editingProduct, pdf: e.target.value })}
                   />
                   <label
@@ -1176,6 +1370,8 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     <Upload size={14} /> Upload PDF
@@ -1237,11 +1433,11 @@ export default function AdminPage() {
                 e.preventDefault();
                 savePractical(editingPractical);
                 setEditingPractical(null);
-                showToast(`Saved ${editingPractical.title}`);
+                showToast(`Saved ${editingPractical.title} to MongoDB!`);
               }}
               className={styles.formGrid}
             >
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Experiment Title</label>
                 <input
                   type="text"
@@ -1279,7 +1475,7 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Linked Product/Board</label>
                 <select
                   value={editingPractical.product}
@@ -1289,14 +1485,14 @@ export default function AdminPage() {
                 >
                   {catalog.products.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name}
+                      {p.name} ({p.category})
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Experiment Goal</label>
+                <label>Experiment Goal / Objective</label>
                 <textarea
                   rows={2}
                   value={editingPractical.goal}
@@ -1324,6 +1520,96 @@ export default function AdminPage() {
                   }
                   required
                 />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Lab Image URL / Upload</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={editingPractical.images?.[0] || ''}
+                    placeholder="images/components/p04-1.jpg"
+                    onChange={(e) =>
+                      setEditingPractical({
+                        ...editingPractical,
+                        images: [e.target.value],
+                      })
+                    }
+                  />
+                  <label
+                    className="secondary"
+                    style={{
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} /> Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await handleFileUpload(file);
+                          if (url) {
+                            setEditingPractical({
+                              ...editingPractical,
+                              images: [url, ...(editingPractical.images || [])],
+                            });
+                            showToast('Lab image uploaded!');
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Lab Sheet PDF URL / Upload</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={editingPractical.pdf || ''}
+                    placeholder="docs/practicals/lab.pdf"
+                    onChange={(e) => setEditingPractical({ ...editingPractical, pdf: e.target.value })}
+                  />
+                  <label
+                    className="secondary"
+                    style={{
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} /> Upload PDF
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await handleFileUpload(file);
+                          if (url) {
+                            setEditingPractical({ ...editingPractical, pdf: url });
+                            showToast('Lab PDF uploaded!');
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div
@@ -1365,7 +1651,7 @@ export default function AdminPage() {
                 e.preventDefault();
                 saveProject(editingProject);
                 setEditingProject(null);
-                showToast(`Saved ${editingProject.title}`);
+                showToast(`Saved ${editingProject.title} to MongoDB!`);
               }}
               className={styles.formGrid}
             >
@@ -1379,18 +1665,35 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className={`${styles.formGroup} ${styles.fullCol}`}>
+              <div className={styles.formGroup}>
+                <label>Linked Board / Starter Kit</label>
+                <select
+                  value={editingProject.product}
+                  onChange={(e) =>
+                    setEditingProject({ ...editingProject, product: e.target.value })
+                  }
+                >
+                  {catalog.products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
                 <label>Hardware Kit Required</label>
                 <input
                   type="text"
                   value={editingProject.kit}
                   onChange={(e) => setEditingProject({ ...editingProject, kit: e.target.value })}
+                  placeholder="e.g. 4WD Chassis + Arduino UNO + Ultrasonic"
                   required
                 />
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Summary</label>
+                <label>Summary / Abstract</label>
                 <textarea
                   rows={2}
                   value={editingProject.summary}
@@ -1407,6 +1710,7 @@ export default function AdminPage() {
                   type="text"
                   value={editingProject.learn}
                   onChange={(e) => setEditingProject({ ...editingProject, learn: e.target.value })}
+                  placeholder="Sensors • Motor Control • Architecture"
                   required
                 />
               </div>
@@ -1419,7 +1723,98 @@ export default function AdminPage() {
                   onChange={(e) =>
                     setEditingProject({ ...editingProject, upgrade: e.target.value })
                   }
+                  placeholder="Add Bluetooth override, OLED HUD, etc."
                 />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Project Blueprint Image URL / Upload</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={editingProject.images?.[0] || ''}
+                    placeholder="images/components/p21-kit.jpg"
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        images: [e.target.value],
+                      })
+                    }
+                  />
+                  <label
+                    className="secondary"
+                    style={{
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} /> Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await handleFileUpload(file);
+                          if (url) {
+                            setEditingProject({
+                              ...editingProject,
+                              images: [url, ...(editingProject.images || [])],
+                            });
+                            showToast('Project image uploaded!');
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Blueprint PDF URL / Upload</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={editingProject.pdf || ''}
+                    placeholder="docs/projects/blueprint.pdf"
+                    onChange={(e) => setEditingProject({ ...editingProject, pdf: e.target.value })}
+                  />
+                  <label
+                    className="secondary"
+                    style={{
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} /> Upload PDF
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await handleFileUpload(file);
+                          if (url) {
+                            setEditingProject({ ...editingProject, pdf: url });
+                            showToast('Blueprint PDF uploaded!');
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div
@@ -1461,7 +1856,7 @@ export default function AdminPage() {
                 e.preventDefault();
                 saveQuote(editingQuote);
                 setEditingQuote(null);
-                showToast('Saved quote!');
+                showToast('Saved quote to MongoDB!');
               }}
               style={{ display: 'grid', gap: '14px' }}
             >
