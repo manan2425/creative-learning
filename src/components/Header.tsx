@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useData } from '@/context/DataContext';
-import { useCart } from '@/context/CartContext';
-import { ShoppingBag, Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X, Phone, Mail } from 'lucide-react';
 
 export default function Header() {
   const { catalog } = useData();
-  const { totalItems, setIsCartOpen, cartBump } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -66,21 +64,6 @@ export default function Header() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Header Cart Button */}
-          <button
-            id="cartBtn"
-            className={`cart-button ${cartBump ? 'bump' : ''}`}
-            onClick={() => {
-              setIsCartOpen(true);
-              setMobileMenuOpen(false);
-            }}
-            aria-label="Open Engineer's Cart"
-          >
-            <ShoppingBag size={16} />
-            <span className="cart-btn-label">ENGINEER&apos;S CART</span>
-            <span>{totalItems}</span>
-          </button>
-
           <button
             className="menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -91,10 +74,7 @@ export default function Header() {
         </div>
 
         <nav className={mobileMenuOpen ? 'open' : ''}>
-          <Link href="#home" className="active" onClick={() => setMobileMenuOpen(false)}>
-            Terminal
-          </Link>
-          <Link href="#products" onClick={() => setMobileMenuOpen(false)}>
+          <Link href="#products" className="active" onClick={() => setMobileMenuOpen(false)}>
             Hardware Storefront
           </Link>
           <Link href="#kits" className="tab-link" onClick={() => setMobileMenuOpen(false)}>
