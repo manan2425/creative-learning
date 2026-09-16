@@ -11,6 +11,7 @@ interface DataContextType {
   setActiveCategory: (cat: string) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  refreshCatalog: () => Promise<void>;
   saveCatalog: (updated: CatalogData) => Promise<boolean>;
   saveProduct: (product: Product) => Promise<boolean>;
   deleteProduct: (id: string) => Promise<boolean>;
@@ -38,24 +39,40 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
 
-  // Fetch catalog on mount
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch('/api/catalog');
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.products)) {
-            setCatalog(data);
-          }
+  const fetchFreshCatalog = async () => {
+    try {
+      const res = await fetch('/api/catalog', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.products)) {
+          setCatalog(data);
         }
-      } catch (e) {
-        console.error('Error fetching catalog data:', e);
-      } finally {
-        setLoading(false);
       }
+    } catch (e) {
+      console.error('Error fetching catalog data from MongoDB:', e);
+    } finally {
+      setLoading(false);
     }
-    load();
+  };
+
+  // Fetch catalog on mount and listen to window focus / visibility events
+  useEffect(() => {
+    fetchFreshCatalog();
+
+    const handleFocus = () => {
+      fetchFreshCatalog();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        fetchFreshCatalog();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const saveCatalog = async (updated: CatalogData): Promise<boolean> => {
@@ -155,6 +172,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         setActiveCategory,
         searchQuery,
         setSearchQuery,
+        refreshCatalog: fetchFreshCatalog,
         saveCatalog,
         saveProduct,
         deleteProduct,
