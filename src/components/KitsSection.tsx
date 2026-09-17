@@ -46,7 +46,15 @@ export default function KitsSection() {
 
           return (
             <article key={kit.id} className="kit-card">
-              <img src={imgUrl} alt={kit.name} loading="lazy" />
+              <img
+                src={imgUrl}
+                alt={kit.name}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                }}
+              />
               <div className="kit-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span

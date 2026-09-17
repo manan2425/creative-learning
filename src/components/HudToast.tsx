@@ -17,9 +17,13 @@ export default function HudToast() {
 
           {toast.image ? (
             <img
-              src={toast.image.startsWith('/') ? toast.image : `/${toast.image}`}
+              src={toast.image.startsWith('http') || toast.image.startsWith('data:') || toast.image.startsWith('/') ? toast.image : `/${toast.image}`}
               alt=""
               className="hud-toast-img"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+              }}
             />
           ) : (
             <div className="hud-toast-icon">

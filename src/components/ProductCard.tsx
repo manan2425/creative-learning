@@ -31,6 +31,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={mainImage}
           alt={product.name}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+          }}
         />
       </div>
 

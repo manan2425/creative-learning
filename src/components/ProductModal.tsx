@@ -54,6 +54,10 @@ export default function ProductModal() {
               <img
                 src={currentImage}
                 alt={selectedProduct.name}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                }}
               />
             </div>
 
@@ -67,7 +71,14 @@ export default function ProductModal() {
                     onClick={() => setActiveImageIndex(idx)}
                     aria-label={`View image ${idx + 1}`}
                   >
-                    <img src={img} alt="" />
+                    <img
+                      src={img}
+                      alt=""
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                      }}
+                    />
                   </button>
                 ))}
               </div>

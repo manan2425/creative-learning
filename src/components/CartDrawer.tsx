@@ -108,7 +108,14 @@ export default function CartDrawer() {
               const imgUrl = formatMediaUrl(product.images?.[0] || product.image);
               return (
                 <div key={product.id} className="cart-row">
-                  <img src={imgUrl} alt={product.name} />
+                  <img
+                    src={imgUrl}
+                    alt={product.name}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                    }}
+                  />
 
                   <div>
                     <h4>{product.name}</h4>

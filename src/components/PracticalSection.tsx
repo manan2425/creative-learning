@@ -49,7 +49,15 @@ export default function PracticalSection() {
 
           return (
             <article key={prac.key} className="practical-card">
-              <img src={imgUrl} alt={prac.title} loading="lazy" />
+              <img
+                src={imgUrl}
+                alt={prac.title}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                }}
+              />
               <div className="practical-body">
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                   <span

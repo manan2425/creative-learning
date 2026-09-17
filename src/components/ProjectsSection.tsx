@@ -34,7 +34,15 @@ export default function ProjectsSection() {
 
           return (
             <article key={proj.key} className="project-card">
-              <img src={imgUrl} alt={proj.title} loading="lazy" />
+              <img
+                src={imgUrl}
+                alt={proj.title}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                }}
+              />
               <div className="project-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span
