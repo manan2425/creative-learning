@@ -86,7 +86,7 @@ export default function PracticalSection() {
 
                 <h3>{prac.title}</h3>
                 <p>
-                  <strong style={{ color: 'var(--cyan)', fontFamily: 'JetBrains Mono', fontSize: '12px' }}>
+                  <strong style={{ color: 'var(--cyan)', fontFamily: 'var(--font-heading)', fontSize: '12.5px', letterSpacing: '0.04em' }}>
                     [ OBJECTIVE ]:
                   </strong>{' '}
                   {prac.goal}
@@ -95,11 +95,12 @@ export default function PracticalSection() {
                 <div style={{ marginTop: 'auto' }}>
                   <div
                     style={{
-                      fontSize: '11.5px',
+                      fontSize: '12px',
                       fontWeight: 700,
                       color: '#cbd5e1',
                       marginBottom: '8px',
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: 'var(--font-heading)',
+                      letterSpacing: '0.04em',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',

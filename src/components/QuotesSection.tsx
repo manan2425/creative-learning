@@ -64,12 +64,12 @@ export default function QuotesSection() {
                     background: 'rgba(0, 240, 255, 0.15)',
                     border: '1px solid var(--cyan-border)',
                     color: 'var(--cyan)',
-                    fontSize: '10px',
+                    fontSize: '10.5px',
                     fontWeight: 800,
                     padding: '4px 10px',
                     borderRadius: '4px',
-                    letterSpacing: '0.08em',
-                    fontFamily: 'JetBrains Mono',
+                    letterSpacing: '0.06em',
+                    fontFamily: 'var(--font-primary)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
@@ -86,7 +86,7 @@ export default function QuotesSection() {
                   color: isHero ? '#00f0ff' : '#38bdf8',
                   opacity: isHero ? 0.9 : 0.4,
                   marginBottom: '10px',
-                  fontFamily: 'Space Grotesk',
+                  fontFamily: 'var(--font-heading)',
                   textShadow: isHero ? '0 0 15px #00f0ff' : 'none',
                 }}
               >
@@ -101,6 +101,7 @@ export default function QuotesSection() {
                   margin: '0 0 20px',
                   fontStyle: 'italic',
                   color: '#e2e8f0',
+                  fontFamily: 'var(--font-primary)',
                   flex: 1,
                 }}
               >
@@ -109,10 +110,10 @@ export default function QuotesSection() {
 
               <div
                 style={{
-                  fontSize: '13px',
+                  fontSize: '13.5px',
                   fontWeight: 700,
                   color: 'var(--cyan)',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'var(--font-heading)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',

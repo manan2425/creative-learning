@@ -96,7 +96,7 @@ export default function ProductModal() {
                     borderColor: 'var(--cyan)',
                     color: 'var(--cyan)',
                     fontWeight: 700,
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: 'var(--font-heading)',
                     background: 'rgba(0, 240, 255, 0.1)',
                   }}
                 >
@@ -116,7 +116,7 @@ export default function ProductModal() {
                   fontSize: '11px',
                   color: '#00ff9d',
                   fontWeight: 700,
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'var(--font-primary)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px',
@@ -126,7 +126,7 @@ export default function ProductModal() {
               </span>
             </div>
 
-            <h2 style={{ margin: '10px 0 6px', fontSize: '26px', lineHeight: '1.2', color: '#ffffff' }}>
+            <h2 style={{ margin: '10px 0 6px', fontSize: '26px', lineHeight: '1.2', color: '#ffffff', fontFamily: 'var(--font-heading)' }}>
               {selectedProduct.name}
             </h2>
             <div className="sku-line">SKU: {selectedProduct.sku || `CL-${selectedProduct.id}`}</div>
@@ -137,10 +137,10 @@ export default function ProductModal() {
 
             <div
               style={{
-                fontSize: '20px',
+                fontSize: '22px',
                 fontWeight: 800,
                 color: 'var(--orange)',
-                fontFamily: 'JetBrains Mono',
+                fontFamily: 'var(--font-heading)',
                 margin: '12px 0 16px',
               }}
             >
@@ -157,17 +157,17 @@ export default function ProductModal() {
                   border: '1px solid rgba(0, 240, 255, 0.15)',
                 }}
               >
-                <h4 style={{ margin: '0 0 8px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+                <h4 style={{ margin: '0 0 8px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'var(--font-heading)', letterSpacing: '0.04em' }}>
                   // HARDWARE SPECIFICATIONS:
                 </h4>
                 <ul
                   style={{
                     paddingLeft: '18px',
                     margin: 0,
-                    fontSize: '12px',
+                    fontSize: '12.5px',
                     color: '#cbd5e1',
                     lineHeight: '1.6',
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: 'var(--font-primary)',
                   }}
                 >
                   {specsList.map((spec, i) => (
@@ -179,7 +179,7 @@ export default function ProductModal() {
 
             {appsList.length > 0 && (
               <div style={{ margin: '10px 0' }}>
-                <h4 style={{ margin: '0 0 6px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+                <h4 style={{ margin: '0 0 6px', fontSize: '12px', color: 'var(--cyan)', fontFamily: 'var(--font-heading)', letterSpacing: '0.04em' }}>
                   // ROBOTICS USE CASES:
                 </h4>
                 <ul

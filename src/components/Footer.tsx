@@ -37,7 +37,8 @@ export default function Footer() {
               alignItems: 'center',
               gap: '5px',
               color: 'var(--cyan)',
-              fontFamily: 'JetBrains Mono',
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
             }}
           >
             <Lock size={12} /> Admin Portal
@@ -55,9 +56,9 @@ export default function Footer() {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '16px',
-          fontSize: '12px',
+          fontSize: '12.5px',
           color: '#94a3b8',
-          fontFamily: 'JetBrains Mono',
+          fontFamily: 'var(--font-primary)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -88,7 +89,9 @@ export default function Footer() {
               gap: '4px',
               cursor: 'pointer',
               fontSize: '11px',
-              fontFamily: 'JetBrains Mono',
+              fontWeight: 800,
+              fontFamily: 'var(--font-heading)',
+              letterSpacing: '0.04em',
             }}
           >
             <ArrowUp size={12} /> TOP

@@ -156,7 +156,7 @@ export default function Hero() {
             alt="Creative Learning — Robotics & Electronics Innovation"
           />
 
-          <p style={{ color: '#38bdf8', fontSize: '13.5px', margin: '4px 0 0', fontWeight: 600, fontFamily: 'JetBrains Mono' }}>
+          <p style={{ color: '#38bdf8', fontSize: '14px', margin: '6px 0 0', fontWeight: 600, fontFamily: 'var(--font-heading)', letterSpacing: '0.02em' }}>
             {catalog.company.tagline}
           </p>
 

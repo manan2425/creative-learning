@@ -82,10 +82,10 @@ export default function CartDrawer() {
               <Terminal size={18} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '18px', fontFamily: 'Space Grotesk' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontFamily: 'var(--font-heading)' }}>
                 Engineer&apos;s Cart
               </h3>
-              <span style={{ fontSize: '11px', color: 'var(--cyan)', fontFamily: 'JetBrains Mono' }}>
+              <span style={{ fontSize: '11px', color: 'var(--cyan)', fontFamily: 'var(--font-heading)', letterSpacing: '0.04em' }}>
                 [ {totalItems} {totalItems === 1 ? 'MODULE' : 'MODULES'} QUEUED ]
               </span>
             </div>
@@ -113,7 +113,7 @@ export default function CartDrawer() {
                   <div>
                     <h4>{product.name}</h4>
                     <p>SKU: {product.sku || product.id}</p>
-                    <div style={{ fontWeight: 800, color: 'var(--orange)', fontSize: '12px', marginTop: '3px', fontFamily: 'JetBrains Mono' }}>
+                    <div style={{ fontWeight: 800, color: 'var(--orange)', fontSize: '13px', marginTop: '3px', fontFamily: 'var(--font-heading)' }}>
                       {product.price || 'Contact for price'}
                     </div>
 
@@ -172,10 +172,10 @@ export default function CartDrawer() {
               >
                 <Bot size={32} />
               </div>
-              <p style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#ffffff' }}>
+              <p style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#ffffff', fontFamily: 'var(--font-heading)' }}>
                 Engineer&apos;s Cart is Empty
               </p>
-              <small style={{ display: 'block', marginTop: '6px', fontSize: '12.5px', fontFamily: 'JetBrains Mono' }}>
+              <small style={{ display: 'block', marginTop: '6px', fontSize: '12.5px', fontFamily: 'var(--font-primary)' }}>
                 Add robotics modules, kits, or sensors to submit your hardware requisition.
               </small>
             </div>
@@ -191,7 +191,8 @@ export default function CartDrawer() {
                 marginBottom: '16px',
                 fontSize: '13px',
                 fontWeight: 700,
-                fontFamily: 'JetBrains Mono',
+                fontFamily: 'var(--font-heading)',
+                letterSpacing: '0.04em',
               }}
             >
               <span>TOTAL HARDWARE UNITS:</span>
@@ -260,8 +261,9 @@ export default function CartDrawer() {
                 fontSize: '11px',
                 cursor: 'pointer',
                 marginTop: '4px',
-                fontWeight: 600,
-                fontFamily: 'JetBrains Mono',
+                fontWeight: 700,
+                fontFamily: 'var(--font-heading)',
+                letterSpacing: '0.04em',
               }}
             >
               [ CLEAR ENGINEER&apos;S CART ]

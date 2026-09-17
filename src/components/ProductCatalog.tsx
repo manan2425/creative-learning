@@ -119,14 +119,14 @@ export default function ProductCatalog() {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '8px',
-          fontSize: '12.5px',
+          fontSize: '13px',
           color: 'var(--text-dim)',
-          fontFamily: 'JetBrains Mono',
+          fontFamily: 'var(--font-primary)',
           margin: '18px 0 10px',
         }}
       >
         <div>
-          STATUS: <b>{filteredProducts.length}</b> verified hardware modules ready
+          STATUS: <b style={{ fontFamily: 'var(--font-heading)', color: '#ffffff' }}>{filteredProducts.length}</b> verified hardware modules ready
         </div>
         {activeCategory !== 'all' && (
           <button
@@ -138,8 +138,9 @@ export default function ProductCatalog() {
               color: 'var(--cyan)',
               cursor: 'pointer',
               fontWeight: 700,
-              fontSize: '12px',
-              fontFamily: 'JetBrains Mono',
+              fontSize: '12.5px',
+              fontFamily: 'var(--font-heading)',
+              letterSpacing: '0.04em',
             }}
           >
             [ RESET FILTER ]

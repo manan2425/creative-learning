@@ -61,8 +61,8 @@ export default function ProjectsSection() {
                     borderRadius: '10px',
                     padding: '12px 14px',
                     margin: '12px 0',
-                    fontSize: '12px',
-                    fontFamily: 'JetBrains Mono',
+                    fontSize: '12.5px',
+                    fontFamily: 'var(--font-primary)',
                   }}
                 >
                   <div

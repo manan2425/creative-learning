@@ -93,7 +93,8 @@ export default function InquiryModal() {
                   fontWeight: 700,
                   marginBottom: '6px',
                   color: 'var(--cyan)',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'var(--font-heading)',
+                  letterSpacing: '0.04em',
                 }}
               >
                 // YOUR FULL NAME
@@ -111,8 +112,8 @@ export default function InquiryModal() {
                   border: '1px solid rgba(0, 240, 255, 0.2)',
                   background: 'rgba(3, 7, 18, 0.9)',
                   color: '#ffffff',
-                  fontSize: '13.5px',
-                  fontFamily: 'JetBrains Mono',
+                  fontSize: '14px',
+                  fontFamily: 'var(--font-primary)',
                   outline: 'none',
                   boxSizing: 'border-box',
                 }}
@@ -128,7 +129,8 @@ export default function InquiryModal() {
                     fontWeight: 700,
                     marginBottom: '6px',
                     color: 'var(--cyan)',
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: 'var(--font-heading)',
+                    letterSpacing: '0.04em',
                   }}
                 >
                   // EMAIL
@@ -145,8 +147,8 @@ export default function InquiryModal() {
                     border: '1px solid rgba(0, 240, 255, 0.2)',
                     background: 'rgba(3, 7, 18, 0.9)',
                     color: '#ffffff',
-                    fontSize: '13.5px',
-                    fontFamily: 'JetBrains Mono',
+                    fontSize: '14px',
+                    fontFamily: 'var(--font-primary)',
                     outline: 'none',
                     boxSizing: 'border-box',
                   }}
@@ -161,7 +163,8 @@ export default function InquiryModal() {
                     fontWeight: 700,
                     marginBottom: '6px',
                     color: 'var(--cyan)',
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: 'var(--font-heading)',
+                    letterSpacing: '0.04em',
                   }}
                 >
                   // PHONE / WHATSAPP
@@ -179,8 +182,8 @@ export default function InquiryModal() {
                     border: '1px solid rgba(0, 240, 255, 0.2)',
                     background: 'rgba(3, 7, 18, 0.9)',
                     color: '#ffffff',
-                    fontSize: '13.5px',
-                    fontFamily: 'JetBrains Mono',
+                    fontSize: '14px',
+                    fontFamily: 'var(--font-primary)',
                     outline: 'none',
                     boxSizing: 'border-box',
                   }}
@@ -196,7 +199,8 @@ export default function InquiryModal() {
                   fontWeight: 700,
                   marginBottom: '6px',
                   color: 'var(--cyan)',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'var(--font-heading)',
+                  letterSpacing: '0.04em',
                 }}
               >
                 // REQUIRED UNITS / SPECIFICATIONS
@@ -213,8 +217,8 @@ export default function InquiryModal() {
                   border: '1px solid rgba(0, 240, 255, 0.2)',
                   background: 'rgba(3, 7, 18, 0.9)',
                   color: '#ffffff',
-                  fontSize: '13.5px',
-                  fontFamily: 'JetBrains Mono',
+                  fontSize: '14px',
+                  fontFamily: 'var(--font-primary)',
                   outline: 'none',
                   boxSizing: 'border-box',
                 }}

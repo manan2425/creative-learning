@@ -47,7 +47,7 @@ export default function TrustStrip() {
           <div className="trust-icon-wrap" style={{ color: item.color, background: item.bg }}>
             {item.icon}
           </div>
-          <b style={{ fontFamily: 'JetBrains Mono', fontSize: '12px' }}>{item.title}</b>
+          <b style={{ fontFamily: 'var(--font-heading)', fontSize: '13px', letterSpacing: '0.02em' }}>{item.title}</b>
           <small>{item.subtitle}</small>
         </div>
       ))}
