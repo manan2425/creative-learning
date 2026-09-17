@@ -41,3 +41,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, warning: 'Saved locally' });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const db = await getDb();
+
+    if (!db) {
+      return NextResponse.json({ success: true, warning: 'MongoDB not connected' });
+    }
+
+    if (id) {
+      const { ObjectId } = await import('mongodb');
+      try {
+        await db.collection('inquiries').deleteOne({ _id: new ObjectId(id) });
+      } catch {
+        await db.collection('inquiries').deleteOne({ _id: id as any });
+      }
+      return NextResponse.json({ success: true, message: `Inquiry ${id} deleted` });
+    } else {
+      // Clear all inquiries if no specific ID passed
+      await db.collection('inquiries').deleteMany({});
+      return NextResponse.json({ success: true, message: 'All inquiries cleared' });
+    }
+  } catch (err: any) {
+    console.error('Error deleting inquiry:', err);
+    return NextResponse.json({ error: err?.message || 'Failed to delete inquiry' }, { status: 500 });
+  }
+}
+

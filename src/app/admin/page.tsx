@@ -25,6 +25,7 @@ import {
   ArrowLeft,
   Inbox,
   RefreshCw,
+  RotateCcw,
   Database,
   FileText,
   Image as ImageIcon,
@@ -103,6 +104,7 @@ export default function AdminPage() {
   const [inquiries, setInquiries] = useState<InquiryRecord[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
@@ -121,7 +123,7 @@ export default function AdminPage() {
         const data = await res.json();
         setDbStatus(data);
       }
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -231,6 +233,70 @@ export default function AdminPage() {
     await refreshCatalog();
     showToast('Catalog refreshed from MongoDB Atlas online!');
     setIsSyncing(false);
+  };
+
+  const handleResetDatabase = async (resetInquiries = false) => {
+    const confirmMsg = resetInquiries
+      ? '⚠️ CAUTION: Are you sure you want to completely RESET all database tables and CLEAR all inquiries?\n\nThis will re-seed products (28), practicals (8), projects (6), quotes (5), company settings, auth credentials, and wipe inquiries back to initial clean state.'
+      : '⚠️ Are you sure you want to RESET the database?\n\nThis will re-seed all tables (products, practicals, projects, quotes, company, auth) with the fresh initial hardware catalog and schematics.';
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsResetting(true);
+    try {
+      const res = await fetch('/api/reset-db', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resetInquiries }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await refreshCatalog();
+        await fetchDbStatus();
+        if (activeTab === 'inquiries') {
+          await fetchInquiries();
+        }
+        showToast('Database reset and re-seeded successfully across all tables!');
+      } else {
+        showToast(data.error || 'Failed to reset database');
+      }
+    } catch (err) {
+      console.error('Database reset error:', err);
+      showToast('Error resetting database');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const handleDeleteInquiry = async (id?: string) => {
+    if (!id) return;
+    if (!window.confirm('Delete this customer inquiry record?')) return;
+    try {
+      const res = await fetch(`/api/inquiries?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast('Inquiry record deleted from MongoDB.');
+        fetchInquiries();
+      } else {
+        showToast('Failed to delete inquiry.');
+      }
+    } catch {
+      showToast('Error deleting inquiry.');
+    }
+  };
+
+  const handleClearAllInquiries = async () => {
+    if (!window.confirm('Are you sure you want to CLEAR ALL customer inquiries from the database?')) return;
+    try {
+      const res = await fetch('/api/inquiries', { method: 'DELETE' });
+      if (res.ok) {
+        showToast('All inquiries cleared from database.');
+        fetchInquiries();
+      } else {
+        showToast('Failed to clear inquiries.');
+      }
+    } catch {
+      showToast('Error clearing inquiries.');
+    }
   };
 
   // Filtered Products for Table
@@ -609,7 +675,7 @@ export default function AdminPage() {
               await handleManualSync();
               await fetchDbStatus();
             }}
-            disabled={isSyncing}
+            disabled={isSyncing || isResetting}
             style={{
               background: 'rgba(255,255,255,0.12)',
               border: '1px solid rgba(255,255,255,0.25)',
@@ -624,6 +690,27 @@ export default function AdminPage() {
             }}
           >
             <RefreshCw size={13} className={isSyncing ? styles.spin : ''} /> Sync Database
+          </button>
+          <button
+            type="button"
+            onClick={() => handleResetDatabase(false)}
+            disabled={isSyncing || isResetting}
+            style={{
+              background: 'rgba(239,68,68,0.2)',
+              border: '1px solid rgba(239,68,68,0.45)',
+              color: '#fca5a5',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            title="Reset & Re-seed all collections (products, practicals, projects, quotes, auth)"
+          >
+            <RotateCcw size={13} className={isResetting ? styles.spin : ''} />
+            {isResetting ? 'Resetting DB...' : 'Reset DB'}
           </button>
           <Link
             href="/"
@@ -1363,15 +1450,36 @@ export default function AdminPage() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={fetchInquiries}
-                disabled={loadingInquiries}
-                className="secondary"
-                style={{ fontSize: '12px', padding: '8px 14px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <RefreshCw size={14} className={loadingInquiries ? styles.spin : ''} /> Refresh Leads
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={fetchInquiries}
+                  disabled={loadingInquiries}
+                  className="secondary"
+                  style={{ fontSize: '12px', padding: '8px 14px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <RefreshCw size={14} className={loadingInquiries ? styles.spin : ''} /> Refresh Leads
+                </button>
+                {inquiries.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAllInquiries}
+                    className="secondary"
+                    style={{
+                      fontSize: '12px',
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: '#dc2626',
+                      borderColor: 'rgba(239,68,68,0.3)',
+                    }}
+                  >
+                    <Trash2 size={14} /> Clear All
+                  </button>
+                )}
+              </div>
             </div>
 
             {inquiries.length === 0 ? (
@@ -1391,6 +1499,7 @@ export default function AdminPage() {
                       <th>Email</th>
                       <th>Inquiry / Cart Items</th>
                       <th>Message</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1425,6 +1534,16 @@ export default function AdminPage() {
                           )}
                         </td>
                         <td style={{ fontSize: '12px', maxWidth: '200px', color: '#475569' }}>{inq.message || '—'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.actionDelete}`}
+                            onClick={() => handleDeleteInquiry(inq._id)}
+                            title="Delete inquiry record"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1521,6 +1640,101 @@ export default function AdminPage() {
                 </button>
               </div>
             </form>
+
+            {/* Database Management & Danger Zone */}
+            <div
+              style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '2px dashed #e2e8f0',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <Database size={20} color="#0872c9" />
+                <h4 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>
+                  Database Tables & Reset Administration
+                </h4>
+              </div>
+              <p style={{ margin: '0 0 16px', color: '#64748b', fontSize: '13px' }}>
+                Manage full database re-seeding and sync across all MongoDB tables: <code>products</code>, <code>practicals</code>, <code>projects</code>, <code>quotes</code>, <code>company</code>, <code>auth</code>, and <code>inquiries</code>.
+              </p>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '12px',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                }}
+              >
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={async () => {
+                    await handleManualSync();
+                    await fetchDbStatus();
+                  }}
+                  disabled={isSyncing || isResetting}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <RefreshCw size={14} className={isSyncing ? styles.spin : ''} />
+                  Test & Sync Database
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleResetDatabase(false)}
+                  disabled={isResetting || isSyncing}
+                  style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '10px 18px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <RotateCcw size={14} className={isResetting ? styles.spin : ''} />
+                  {isResetting ? 'Resetting Database...' : 'Reset & Re-seed All Tables'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleResetDatabase(true)}
+                  disabled={isResetting || isSyncing}
+                  style={{
+                    background: '#450a0a',
+                    border: '1px solid #7f1d1d',
+                    color: '#fecaca',
+                    padding: '10px 18px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Trash2 size={14} />
+                  Reset Database + Wipe Inquiries
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => setShowDbModal(true)}
+                  style={{ fontSize: '13px' }}
+                >
+                  View Cloud Diagnostics
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>
@@ -2436,31 +2650,54 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '10px',
-                  textAlign: 'center',
-                }}
-              >
-                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
-                    {catalog.products.length}
+              <div>
+                <h4 style={{ margin: '0 0 10px', fontSize: '13px', color: '#0f172a' }}>
+                  📊 Database Collections & Tables Overview:
+                </h4>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                    gap: '10px',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      {catalog.products.length}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>products</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>Products & Kits</div>
-                </div>
-                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
-                    {catalog.practicals.length}
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      {catalog.practicals.length}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>practicals (labs)</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>Guided Labs</div>
-                </div>
-                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
-                    {catalog.projects.length}
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      {catalog.projects.length}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>projects (blueprints)</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>Blueprints</div>
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      {catalog.quotes.length}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>quotes</div>
+                  </div>
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      {inquiries.length}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>inquiries (leads)</div>
+                  </div>
+                  <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '10px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                      Ready
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>company & auth</div>
+                  </div>
                 </div>
               </div>
 
@@ -2468,7 +2705,9 @@ export default function AdminPage() {
                 style={{
                   display: 'flex',
                   gap: '10px',
-                  justifyContent: 'flex-end',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
                   marginTop: '10px',
                   paddingTop: '14px',
                   borderTop: '1px solid #f1f5f9',
@@ -2476,24 +2715,48 @@ export default function AdminPage() {
               >
                 <button
                   type="button"
-                  className="secondary"
-                  onClick={() => setShowDbModal(false)}
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="primary"
-                  onClick={async () => {
-                    await handleManualSync();
-                    await fetchDbStatus();
+                  onClick={() => handleResetDatabase(false)}
+                  disabled={isResetting || isSyncing}
+                  style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
                   }}
-                  disabled={isSyncing}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <RefreshCw size={14} className={isSyncing ? styles.spin : ''} />
-                  Test & Sync Database
+                  <RotateCcw size={13} className={isResetting ? styles.spin : ''} />
+                  {isResetting ? 'Resetting...' : 'Reset & Re-seed All Tables'}
                 </button>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => setShowDbModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={async () => {
+                      await handleManualSync();
+                      await fetchDbStatus();
+                    }}
+                    disabled={isSyncing}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <RefreshCw size={14} className={isSyncing ? styles.spin : ''} />
+                    Test & Sync Database
+                  </button>
+                </div>
               </div>
             </div>
           </div>

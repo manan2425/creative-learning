@@ -105,7 +105,28 @@ async function seedTables() {
     );
     console.log(` ✓ 'catalog' main table ready.`);
 
-    // 7. INQUIRIES TABLE
+    // 7. AUTH TABLE
+    const crypto = require('crypto');
+    const DEFAULT_PASS_HASH = crypto.createHash('sha256').update('admin123').digest('hex');
+    const DEFAULT_RECOVERY_HASH = crypto.createHash('sha256').update('CREATIVE-LEARNING-RESET').digest('hex');
+
+    console.log(`\n🔐 Seeding 'auth' table...`);
+    const authCol = db.collection('auth');
+    await authCol.updateOne(
+      { _id: 'admin_credentials' },
+      {
+        $set: {
+          _id: 'admin_credentials',
+          passHash: DEFAULT_PASS_HASH,
+          recoveryHash: DEFAULT_RECOVERY_HASH,
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true }
+    );
+    console.log(` ✓ 'auth' table ready (default password: admin123, recovery: CREATIVE-LEARNING-RESET).`);
+
+    // 8. INQUIRIES TABLE
     const inqCol = db.collection('inquiries');
     await inqCol.createIndex({ createdAt: -1 });
     console.log(` ✓ 'inquiries' table index verified.`);
@@ -119,6 +140,7 @@ async function seedTables() {
     console.log(' - projects   : Robotics & IoT capstone engineering blueprints');
     console.log(' - quotes     : Featured vision quotes & inspirational logs');
     console.log(' - company    : Company branding, phone, WhatsApp & email config');
+    console.log(' - auth       : Admin security credentials & recovery key');
     console.log(' - inquiries  : Customer quote submissions & cart orders');
     console.log(' - catalog    : Composite catalog root document');
     console.log('========================================\n');
