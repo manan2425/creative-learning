@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { formatMediaUrl } from '@/lib/utils';
 import { X, Trash2, Plus, Minus, MessageCircle, Mail, Terminal, Bot, Check, Sparkles, Loader2 } from 'lucide-react';
 
 export default function CartDrawer() {
@@ -104,11 +105,10 @@ export default function CartDrawer() {
         <div className="cart-items">
           {items.length > 0 ? (
             items.map(({ product, quantity }) => {
-              const img =
-                product.images?.[0] || product.image || '/images/branding/creative-learning-logo.png';
+              const imgUrl = formatMediaUrl(product.images?.[0] || product.image);
               return (
                 <div key={product.id} className="cart-row">
-                  <img src={img.startsWith('/') ? img : `/${img}`} alt={product.name} />
+                  <img src={imgUrl} alt={product.name} />
 
                   <div>
                     <h4>{product.name}</h4>

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useData } from '@/context/DataContext';
 import { Product, PracticalActivity, Project, Quote, CompanyConfig } from '@/types';
+import { formatMediaUrl } from '@/lib/utils';
 import styles from './admin.module.css';
 import {
   Package,
@@ -27,6 +28,13 @@ import {
   Database,
   FileText,
   Image as ImageIcon,
+  Search,
+  X,
+  Eye,
+  Check,
+  Loader2,
+  Cpu,
+  Sparkles,
 } from 'lucide-react';
 
 interface InquiryRecord {
@@ -39,6 +47,17 @@ interface InquiryRecord {
   items?: Array<{ name: string; quantity: number; price?: string }>;
   createdAt?: string;
 }
+
+const COMMON_CATEGORIES = [
+  'Boards',
+  'Sensors',
+  'Wireless & IoT',
+  'Actuators & Motors',
+  'Displays',
+  'Starter Kits',
+  'Accessories & Power',
+  'Components',
+];
 
 export default function AdminPage() {
   const {
@@ -69,8 +88,13 @@ export default function AdminPage() {
     'products' | 'kits' | 'practicals' | 'projects' | 'quotes' | 'inquiries' | 'company'
   >('products');
 
+  // Table Search & Filter
+  const [productSearch, setProductSearch] = useState('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
+
   // Modals & Editing State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [editingPractical, setEditingPractical] = useState<PracticalActivity | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
@@ -79,6 +103,9 @@ export default function AdminPage() {
   const [inquiries, setInquiries] = useState<InquiryRecord[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
 
   useEffect(() => {
     if (catalog?.company) {
@@ -183,6 +210,140 @@ export default function AdminPage() {
     setIsSyncing(false);
   };
 
+  // Filtered Products for Table
+  const filteredProducts = useMemo(() => {
+    const q = productSearch.toLowerCase().trim();
+    return catalog.products.filter((p) => {
+      const matchCat =
+        selectedCategoryFilter === 'all' || p.category === selectedCategoryFilter;
+      const matchQ =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (p.sku && p.sku.toLowerCase().includes(q)) ||
+        p.id.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+  }, [catalog.products, productSearch, selectedCategoryFilter]);
+
+  // Starter Kits list
+  const starterKits = useMemo(() => {
+    return catalog.products.filter(
+      (p) =>
+        p.category.toLowerCase().includes('kit') ||
+        p.id.toLowerCase().includes('kit') ||
+        p.category === 'Starter Kits'
+    );
+  }, [catalog.products]);
+
+  // Handle Product Save
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    if (!editingProduct.name.trim()) {
+      showToast('Product name is required');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const success = await saveProduct(editingProduct);
+      if (success) {
+        showToast(`Saved "${editingProduct.name}" to MongoDB Atlas!`);
+        setEditingProduct(null);
+      } else {
+        showToast('Error saving to cloud. Changes cached locally.');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save product');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle Practical Save
+  const handleSavePractical = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPractical) return;
+    setIsSaving(true);
+    try {
+      const success = await savePractical(editingPractical);
+      if (success) {
+        showToast(`Saved practical "${editingPractical.title}"!`);
+        setEditingPractical(null);
+      } else {
+        showToast('Error saving practical lab.');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save practical lab');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle Project Save
+  const handleSaveProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProject) return;
+    setIsSaving(true);
+    try {
+      const success = await saveProject(editingProject);
+      if (success) {
+        showToast(`Saved project "${editingProject.title}"!`);
+        setEditingProject(null);
+      } else {
+        showToast('Error saving project.');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save project');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle Quote Save
+  const handleSaveQuote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingQuote) return;
+    setIsSaving(true);
+    try {
+      const success = await saveQuote(editingQuote);
+      if (success) {
+        showToast('Quote saved to MongoDB Atlas!');
+        setEditingQuote(null);
+      } else {
+        showToast('Error saving quote.');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save quote');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle Company Save
+  const handleSaveCompany = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      const success = await saveCompany(companyForm);
+      if (success) {
+        showToast('Company information saved to MongoDB Atlas!');
+      } else {
+        showToast('Error saving company configuration.');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save company settings');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className={styles.loginWrapper}>
@@ -223,6 +384,7 @@ export default function AdminPage() {
                     border: '1px solid #cbd5e1',
                     fontSize: '14px',
                     outline: 'none',
+                    boxSizing: 'border-box',
                   }}
                   required
                 />
@@ -289,6 +451,7 @@ export default function AdminPage() {
                     borderRadius: '10px',
                     border: '1px solid #cbd5e1',
                     fontSize: '13px',
+                    boxSizing: 'border-box',
                   }}
                   required
                 />
@@ -316,6 +479,7 @@ export default function AdminPage() {
                     borderRadius: '10px',
                     border: '1px solid #cbd5e1',
                     fontSize: '13px',
+                    boxSizing: 'border-box',
                   }}
                   required
                 />
@@ -369,10 +533,6 @@ export default function AdminPage() {
     );
   }
 
-  const starterKits = catalog.products.filter(
-    (p) => p.category.includes('Kit') || p.id.includes('kit') || p.category === 'Starter Kits'
-  );
-
   return (
     <div className={styles.adminContainer}>
       {/* Header */}
@@ -412,7 +572,7 @@ export default function AdminPage() {
               gap: '6px',
             }}
           >
-            <RefreshCw size={13} className={isSyncing ? 'spin' : ''} /> Sync Cloud
+            <RefreshCw size={13} className={isSyncing ? styles.spin : ''} /> Sync Cloud
           </button>
           <Link
             href="/"
@@ -522,7 +682,7 @@ export default function AdminPage() {
             color: '#fff',
             padding: '12px 20px',
             borderRadius: '12px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -545,39 +705,82 @@ export default function AdminPage() {
               <div>
                 <h3 style={{ margin: 0, fontSize: '20px' }}>Products & Components Management</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
-                  Add new hardware modules, update specifications, upload photos and attach PDF datasheets.
+                  Add new hardware modules, update specifications, upload photos, and attach PDF datasheets.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
-                onClick={() =>
+                style={{ fontSize: '13px', padding: '10px 18px', borderRadius: '10px' }}
+                onClick={() => {
+                  const stamp = Date.now();
                   setEditingProduct({
-                    id: `p-${Date.now().toString().slice(-4)}`,
+                    id: `prod_${stamp}`,
                     name: '',
                     category: 'Boards',
                     description: '',
                     specifications: '',
                     applications: '',
                     price: 'Contact for price',
-                    sku: `CL-P${Date.now().toString().slice(-4)}`,
+                    sku: `CL-P${stamp.toString().slice(-4)}`,
+                    image: '',
                     images: [],
-                  })
-                }
+                    pdf: '',
+                  });
+                  setIsCustomCategory(false);
+                }}
               >
                 <Plus size={16} /> Add New Component
               </button>
             </div>
 
+            {/* Toolbar: Search and Category Filter */}
+            <div className={styles.adminToolbar}>
+              <div className={styles.adminSearchWrap}>
+                <Search size={15} color="#64748b" />
+                <input
+                  type="text"
+                  placeholder="Search by name, category, or SKU..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  className={styles.adminSearchInput}
+                />
+                {productSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setProductSearch('')}
+                    style={{ border: 0, background: 'none', cursor: 'pointer', color: '#64748b' }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Category:</span>
+                <select
+                  value={selectedCategoryFilter}
+                  onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                  className={styles.adminSelect}
+                >
+                  <option value="all">All Categories ({catalog.products.length})</option>
+                  {Array.from(new Set(catalog.products.map((p) => p.category).filter(Boolean))).map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Products Table */}
-            <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+            <div style={{ overflowX: 'auto' }}>
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Image</th>
-                    <th>Name</th>
+                    <th>Photo</th>
+                    <th>Component Name</th>
                     <th>Category</th>
                     <th>SKU</th>
                     <th>Price</th>
@@ -586,13 +789,13 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {catalog.products.map((p) => {
-                    const img = p.images?.[0] || p.image || '/images/branding/creative-learning-logo.png';
+                  {filteredProducts.map((p) => {
+                    const imgUrl = formatMediaUrl(p.images?.[0] || p.image);
                     return (
                       <tr key={p.id}>
                         <td>
                           <img
-                            src={img.startsWith('/') ? img : `/${img}`}
+                            src={imgUrl}
                             alt=""
                             style={{
                               width: '44px',
@@ -605,20 +808,46 @@ export default function AdminPage() {
                           />
                         </td>
                         <td>
-                          <b>{p.name}</b>
+                          <b style={{ color: '#0f172a' }}>{p.name}</b>
+                          {p.description && (
+                            <div style={{ fontSize: '11.5px', color: '#64748b', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {p.description}
+                            </div>
+                          )}
                         </td>
                         <td>
-                          <span className="tag" style={{ fontSize: '11px' }}>{p.category}</span>
+                          <span className={`${styles.badge} ${styles.badgeCategory}`}>
+                            {p.category}
+                          </span>
                         </td>
-                        <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{p.sku || p.id}</td>
-                        <td>{p.price}</td>
-                        <td>{p.pdf ? '✓ Attached' : '—'}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#334155' }}>
+                          {p.sku || p.id}
+                        </td>
+                        <td style={{ fontWeight: 700, color: '#0f172a' }}>{p.price}</td>
+                        <td>
+                          {p.pdf ? (
+                            <a
+                              href={formatMediaUrl(p.pdf)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`${styles.badge} ${styles.badgePdf}`}
+                              style={{ textDecoration: 'none' }}
+                            >
+                              <FileText size={12} /> PDF Attached
+                            </a>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '12px' }}>—</span>
+                          )}
+                        </td>
                         <td>
                           <div style={{ display: 'flex', gap: '6px' }}>
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionEdit}`}
-                              onClick={() => setEditingProduct({ ...p })}
+                              onClick={() => {
+                                setEditingProduct({ ...p });
+                                setIsCustomCategory(!COMMON_CATEGORIES.includes(p.category));
+                              }}
                             >
                               <Edit2 size={13} /> Edit
                             </button>
@@ -626,7 +855,7 @@ export default function AdminPage() {
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionDelete}`}
                               onClick={() => {
-                                if (confirm(`Delete ${p.name}?`)) {
+                                if (confirm(`Are you sure you want to delete "${p.name}"?`)) {
                                   deleteProduct(p.id);
                                   showToast(`Deleted ${p.name}`);
                                 }
@@ -639,6 +868,13 @@ export default function AdminPage() {
                       </tr>
                     );
                   })}
+                  {filteredProducts.length === 0 && (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                        No components match your search criteria.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -659,20 +895,24 @@ export default function AdminPage() {
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
-                onClick={() =>
+                style={{ fontSize: '13px', padding: '10px 18px', borderRadius: '10px' }}
+                onClick={() => {
+                  const stamp = Date.now();
                   setEditingProduct({
-                    id: `kit-${Date.now().toString().slice(-4)}`,
+                    id: `kit_${stamp}`,
                     name: '',
                     category: 'Starter Kits',
                     description: '',
                     specifications: '',
                     applications: '',
                     price: 'Contact for price',
-                    sku: `CL-KIT-${Date.now().toString().slice(-4)}`,
+                    sku: `CL-KIT-${stamp.toString().slice(-4)}`,
+                    image: '',
                     images: [],
-                  })
-                }
+                    pdf: '',
+                  });
+                  setIsCustomCategory(false);
+                }}
               >
                 <Plus size={16} /> Add New Starter Kit
               </button>
@@ -682,25 +922,22 @@ export default function AdminPage() {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Image</th>
+                    <th>Photo</th>
                     <th>Kit Name</th>
                     <th>SKU</th>
                     <th>Price</th>
-                    <th>PDF Manual</th>
+                    <th>PDF Lab Manual</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {starterKits.map((kit) => {
-                    const img =
-                      kit.images?.[0] ||
-                      kit.image ||
-                      '/images/branding/creative-learning-logo.png';
+                    const imgUrl = formatMediaUrl(kit.images?.[0] || kit.image);
                     return (
                       <tr key={kit.id}>
                         <td>
                           <img
-                            src={img.startsWith('/') ? img : `/${img}`}
+                            src={imgUrl}
                             alt=""
                             style={{
                               width: '44px',
@@ -713,17 +950,34 @@ export default function AdminPage() {
                           />
                         </td>
                         <td>
-                          <b>{kit.name}</b>
+                          <b style={{ color: '#0f172a' }}>{kit.name}</b>
                         </td>
                         <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{kit.sku || kit.id}</td>
-                        <td>{kit.price}</td>
-                        <td>{kit.pdf ? '✓ Attached' : '—'}</td>
+                        <td style={{ fontWeight: 700 }}>{kit.price}</td>
+                        <td>
+                          {kit.pdf ? (
+                            <a
+                              href={formatMediaUrl(kit.pdf)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`${styles.badge} ${styles.badgePdf}`}
+                              style={{ textDecoration: 'none' }}
+                            >
+                              <FileText size={12} /> PDF Attached
+                            </a>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '12px' }}>—</span>
+                          )}
+                        </td>
                         <td>
                           <div style={{ display: 'flex', gap: '6px' }}>
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionEdit}`}
-                              onClick={() => setEditingProduct({ ...kit })}
+                              onClick={() => {
+                                setEditingProduct({ ...kit });
+                                setIsCustomCategory(false);
+                              }}
                             >
                               <Edit2 size={13} /> Edit
                             </button>
@@ -731,7 +985,7 @@ export default function AdminPage() {
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionDelete}`}
                               onClick={() => {
-                                if (confirm(`Delete ${kit.name}?`)) {
+                                if (confirm(`Delete starter kit "${kit.name}"?`)) {
                                   deleteProduct(kit.id);
                                   showToast(`Deleted ${kit.name}`);
                                 }
@@ -744,6 +998,13 @@ export default function AdminPage() {
                       </tr>
                     );
                   })}
+                  {starterKits.length === 0 && (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                        No starter kits found. Click &quot;Add New Starter Kit&quot; above to create one.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -755,7 +1016,7 @@ export default function AdminPage() {
           <div className={styles.cardPanel}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '20px' }}>Practical Experiments</h3>
+                <h3 style={{ margin: 0, fontSize: '20px' }}>Practical Experiments & Labs</h3>
                 <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
                   Manage guided hardware labs, time duration, learning goals, and step-by-step circuit procedures.
                 </p>
@@ -764,18 +1025,21 @@ export default function AdminPage() {
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
-                onClick={() =>
+                style={{ fontSize: '13px', padding: '10px 18px', borderRadius: '10px' }}
+                onClick={() => {
+                  const stamp = Date.now();
                   setEditingPractical({
-                    key: `prac-${Date.now().toString().slice(-4)}`,
+                    key: `prac_${stamp}`,
                     title: '',
                     product: catalog.products[0]?.id || 'p02-1',
                     level: 'Beginner',
                     time: '25 min',
                     goal: '',
                     steps: [],
-                  })
-                }
+                    images: [],
+                    pdf: '',
+                  });
+                }}
               >
                 <Plus size={16} /> Add Practical Lab
               </button>
@@ -797,14 +1061,14 @@ export default function AdminPage() {
                   {catalog.practicals.map((prac) => (
                     <tr key={prac.key}>
                       <td>
-                        <b>{prac.title}</b>
+                        <b style={{ color: '#0f172a' }}>{prac.title}</b>
                       </td>
                       <td>
-                        <span className="tag" style={{ fontSize: '11px' }}>{prac.level}</span>
+                        <span className={`${styles.badge} ${styles.badgeCategory}`}>{prac.level}</span>
                       </td>
                       <td>{prac.time}</td>
                       <td>{catalog.products.find((p) => p.id === prac.product)?.name || prac.product}</td>
-                      <td style={{ maxWidth: '300px', fontSize: '12px' }}>{prac.goal}</td>
+                      <td style={{ maxWidth: '300px', fontSize: '12px', color: '#475569' }}>{prac.goal}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button
@@ -818,7 +1082,7 @@ export default function AdminPage() {
                             type="button"
                             className={`${styles.actionBtn} ${styles.actionDelete}`}
                             onClick={() => {
-                              if (confirm(`Delete practical ${prac.title}?`)) {
+                              if (confirm(`Delete practical "${prac.title}"?`)) {
                                 deletePractical(prac.key);
                                 showToast(`Deleted ${prac.title}`);
                               }
@@ -850,18 +1114,21 @@ export default function AdminPage() {
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
-                onClick={() =>
+                style={{ fontSize: '13px', padding: '10px 18px', borderRadius: '10px' }}
+                onClick={() => {
+                  const stamp = Date.now();
                   setEditingProject({
-                    key: `proj-${Date.now().toString().slice(-4)}`,
+                    key: `proj_${stamp}`,
                     title: '',
                     product: catalog.products[0]?.id || 'p02-1',
                     kit: '',
                     summary: '',
                     learn: '',
                     upgrade: '',
-                  })
-                }
+                    images: [],
+                    pdf: '',
+                  });
+                }}
               >
                 <Plus size={16} /> Add New Project
               </button>
@@ -872,7 +1139,7 @@ export default function AdminPage() {
                 <thead>
                   <tr>
                     <th>Title</th>
-                    <th>Hardware Kit</th>
+                    <th>Hardware BOM</th>
                     <th>Summary</th>
                     <th>PDF Blueprint</th>
                     <th>Actions</th>
@@ -882,11 +1149,25 @@ export default function AdminPage() {
                   {catalog.projects.map((proj) => (
                     <tr key={proj.key}>
                       <td>
-                        <b>{proj.title}</b>
+                        <b style={{ color: '#0f172a' }}>{proj.title}</b>
                       </td>
-                      <td style={{ fontSize: '12px' }}>{proj.kit}</td>
-                      <td style={{ maxWidth: '340px', fontSize: '12px' }}>{proj.summary}</td>
-                      <td>{proj.pdf ? '✓ Attached' : '—'}</td>
+                      <td style={{ fontSize: '12px', color: '#0369a1' }}>{proj.kit}</td>
+                      <td style={{ maxWidth: '340px', fontSize: '12px', color: '#475569' }}>{proj.summary}</td>
+                      <td>
+                        {proj.pdf ? (
+                          <a
+                            href={formatMediaUrl(proj.pdf)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`${styles.badge} ${styles.badgePdf}`}
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <FileText size={12} /> Attached
+                          </a>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontSize: '12px' }}>—</span>
+                        )}
+                      </td>
                       <td>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button
@@ -900,7 +1181,7 @@ export default function AdminPage() {
                             type="button"
                             className={`${styles.actionBtn} ${styles.actionDelete}`}
                             onClick={() => {
-                              if (confirm(`Delete project ${proj.title}?`)) {
+                              if (confirm(`Delete project "${proj.title}"?`)) {
                                 deleteProject(proj.key);
                                 showToast(`Deleted ${proj.title}`);
                               }
@@ -932,14 +1213,15 @@ export default function AdminPage() {
               <button
                 type="button"
                 className="primary"
-                style={{ fontSize: '13px', padding: '10px 16px', borderRadius: '10px' }}
-                onClick={() =>
+                style={{ fontSize: '13px', padding: '10px 18px', borderRadius: '10px' }}
+                onClick={() => {
+                  const stamp = Date.now();
                   setEditingQuote({
-                    id: `q-${Date.now().toString().slice(-4)}`,
+                    id: `q_${stamp}`,
                     text: '',
                     author: 'Creative Learning',
-                  })
-                }
+                  });
+                }}
               >
                 <Plus size={16} /> Add New Quote
               </button>
@@ -960,20 +1242,11 @@ export default function AdminPage() {
                     const isHero = q.id === catalog.heroQuoteId;
                     return (
                       <tr key={q.id}>
-                        <td style={{ fontStyle: 'italic' }}>“{q.text}”</td>
-                        <td>{q.author}</td>
+                        <td style={{ fontStyle: 'italic', color: '#0f172a' }}>“{q.text}”</td>
+                        <td style={{ fontWeight: 700 }}>{q.author}</td>
                         <td>
                           {isHero ? (
-                            <span
-                              style={{
-                                background: '#dcfce7',
-                                color: '#15803d',
-                                padding: '4px 8px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
-                                fontWeight: 800,
-                              }}
-                            >
+                            <span className={`${styles.badge} ${styles.badgeVerified}`}>
                               ★ Live Hero Quote
                             </span>
                           ) : (
@@ -1046,15 +1319,15 @@ export default function AdminPage() {
                 className="secondary"
                 style={{ fontSize: '12px', padding: '8px 14px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <RefreshCw size={14} className={loadingInquiries ? 'spin' : ''} /> Refresh Leads
+                <RefreshCw size={14} className={loadingInquiries ? styles.spin : ''} /> Refresh Leads
               </button>
             </div>
 
             {inquiries.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
-                <Inbox size={40} style={{ margin: '0 auto 12px', opacity: 0.5 }} />
-                <p style={{ margin: 0, fontWeight: 700 }}>No inquiries recorded in MongoDB yet.</p>
-                <p style={{ fontSize: '12px', margin: '4px 0 0' }}>When visitors submit quote requests or orders on the storefront, they will show up here.</p>
+              <div style={{ textAlign: 'center', padding: '50px 20px', color: '#64748b' }}>
+                <Inbox size={44} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
+                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>No inquiries recorded in MongoDB yet.</p>
+                <p style={{ fontSize: '12px', margin: '4px 0 0' }}>When visitors submit quote requests or orders on the storefront, they will show up here automatically.</p>
               </div>
             ) : (
               <div style={{ overflowX: 'auto', marginTop: '16px' }}>
@@ -1065,7 +1338,6 @@ export default function AdminPage() {
                       <th>Customer Name</th>
                       <th>Phone / WhatsApp</th>
                       <th>Email</th>
-                      <th>College / Org</th>
                       <th>Inquiry / Cart Items</th>
                       <th>Message</th>
                     </tr>
@@ -1073,7 +1345,7 @@ export default function AdminPage() {
                   <tbody>
                     {inquiries.map((inq, idx) => (
                       <tr key={inq._id || idx}>
-                        <td style={{ fontSize: '11px', whiteSpace: 'nowrap' }}>
+                        <td style={{ fontSize: '11.5px', whiteSpace: 'nowrap', color: '#64748b' }}>
                           {inq.createdAt ? new Date(inq.createdAt).toLocaleString() : 'Recent'}
                         </td>
                         <td><b>{inq.name || 'Anonymous'}</b></td>
@@ -1083,14 +1355,13 @@ export default function AdminPage() {
                               href={`https://wa.me/${inq.phone.replace(/[^0-9]/g, '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: '#0872c9', fontWeight: 700 }}
+                              style={{ color: '#0872c9', fontWeight: 700, textDecoration: 'none' }}
                             >
                               {inq.phone}
                             </a>
                           ) : '—'}
                         </td>
                         <td>{inq.email || '—'}</td>
-                        <td>{inq.college || '—'}</td>
                         <td style={{ fontSize: '12px', maxWidth: '280px' }}>
                           {Array.isArray(inq.items) && inq.items.length > 0 ? (
                             <ul style={{ margin: 0, paddingLeft: '16px' }}>
@@ -1102,7 +1373,7 @@ export default function AdminPage() {
                             'Direct Quote Request'
                           )}
                         </td>
-                        <td style={{ fontSize: '12px', maxWidth: '200px' }}>{inq.message || '—'}</td>
+                        <td style={{ fontSize: '12px', maxWidth: '200px', color: '#475569' }}>{inq.message || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1115,19 +1386,12 @@ export default function AdminPage() {
         {/* COMPANY SETTINGS TAB */}
         {activeTab === 'company' && (
           <div className={styles.cardPanel}>
-            <h3 style={{ margin: '0 0 6px', fontSize: '20px' }}>Company Information & Contact</h3>
+            <h3 style={{ margin: '0 0 6px', fontSize: '20px' }}>Company Information & Contact Settings</h3>
             <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: '13px' }}>
-              These details are reflected across the header, footer, WhatsApp links, and enquiry forms.
+              These details are reflected across the header, footer, WhatsApp links, and customer enquiry forms.
             </p>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                saveCompany(companyForm);
-                showToast('Company information saved to MongoDB Atlas successfully!');
-              }}
-              className={styles.formGrid}
-            >
+            <form onSubmit={handleSaveCompany} className={styles.formGrid}>
               <div className={styles.formGroup}>
                 <label>Company Name</label>
                 <input
@@ -1191,9 +1455,18 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   className="primary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', borderRadius: '10px', padding: '12px 20px' }}
+                  disabled={isSaving}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: '10px', padding: '12px 22px' }}
                 >
-                  <Save size={16} /> Save Company Settings to Cloud
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={16} className={styles.spin} /> Saving to Cloud...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} /> Save Company Settings to MongoDB
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -1203,48 +1476,85 @@ export default function AdminPage() {
 
       {/* PRODUCT / KIT EDIT MODAL */}
       {editingProduct && (
-        <div className="modal-backdrop" onClick={() => setEditingProduct(null)}>
-          <div
-            className="modal"
-            style={{ maxWidth: '680px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>
-              {editingProduct.id.includes('kit') || editingProduct.category.includes('Kit')
-                ? 'Edit Starter Kit'
-                : 'Edit Product / Component'}
-            </h3>
+        <div className={styles.adminModalBackdrop} onClick={() => setEditingProduct(null)}>
+          <div className={styles.adminModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.adminModalHead}>
+              <h3>
+                {editingProduct.id.includes('kit') || editingProduct.category.includes('Kit')
+                  ? 'Edit Starter Kit'
+                  : 'Edit Hardware Component'}
+              </h3>
+              <button
+                type="button"
+                className={styles.adminModalClose}
+                onClick={() => setEditingProduct(null)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                saveProduct(editingProduct);
-                setEditingProduct(null);
-                showToast(`Saved ${editingProduct.name} to MongoDB Atlas!`);
-              }}
-              className={styles.formGrid}
-            >
+            <form onSubmit={handleSaveProduct} className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label>Product Name</label>
+                <label>Product / Component Name *</label>
                 <input
                   type="text"
                   value={editingProduct.name}
+                  placeholder="e.g. Arduino UNO R3 or HC-SR04 Sensor"
                   onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
                   required
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Category</label>
-                <input
-                  type="text"
-                  value={editingProduct.category}
-                  placeholder="Boards, Sensors, Starter Kits, etc."
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, category: e.target.value })
-                  }
-                  required
-                />
+                <label>Category *</label>
+                {!isCustomCategory ? (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      value={editingProduct.category}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setIsCustomCategory(true);
+                          setEditingProduct({ ...editingProduct, category: '' });
+                        } else {
+                          setEditingProduct({ ...editingProduct, category: e.target.value });
+                        }
+                      }}
+                      style={{ width: '100%' }}
+                    >
+                      {COMMON_CATEGORIES.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                      <option value="__custom__">+ Enter Custom Category...</option>
+                    </select>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={editingProduct.category}
+                      placeholder="Type custom category name..."
+                      onChange={(e) =>
+                        setEditingProduct({ ...editingProduct, category: e.target.value })
+                      }
+                      required
+                      style={{ width: '100%' }}
+                    />
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={() => {
+                        setIsCustomCategory(false);
+                        setEditingProduct({ ...editingProduct, category: 'Boards' });
+                      }}
+                      style={{ fontSize: '11px', whiteSpace: 'nowrap', padding: '6px 10px' }}
+                    >
+                      List
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className={styles.formGroup}>
@@ -1252,6 +1562,7 @@ export default function AdminPage() {
                 <input
                   type="text"
                   value={editingProduct.sku}
+                  placeholder="e.g. CL-P02-UNO"
                   onChange={(e) => setEditingProduct({ ...editingProduct, sku: e.target.value })}
                 />
               </div>
@@ -1267,10 +1578,11 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Short Description</label>
+                <label>Short Overview Description *</label>
                 <textarea
                   rows={2}
                   value={editingProduct.description}
+                  placeholder="Brief description of the component architecture, MCU type, and core capabilities..."
                   onChange={(e) =>
                     setEditingProduct({ ...editingProduct, description: e.target.value })
                   }
@@ -1279,118 +1591,186 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Specifications (separate items with semicolon ;)</label>
+                <label>Hardware Specifications (separate items with semicolon ; or newlines)</label>
                 <textarea
                   rows={3}
                   value={editingProduct.specifications}
+                  placeholder="ATmega328P MCU; 14 Digital I/O (6 PWM); 6 Analog Inputs; 32 KB Flash; 5V Operating Voltage"
                   onChange={(e) =>
                     setEditingProduct({ ...editingProduct, specifications: e.target.value })
                   }
                 />
+                <span className={styles.formHelper}>
+                  Example: <code>Operating Voltage: 5V; Current: 15mA; Range: 2cm - 400cm</code>
+                </span>
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Applications & Uses (separate with semicolon ;)</label>
+                <label>Robotics & IoT Applications (separate items with semicolon ;)</label>
                 <textarea
                   rows={2}
                   value={editingProduct.applications}
+                  placeholder="Robotics chassis control; Sensor interfacing; IoT gateways; STEM education labs"
                   onChange={(e) =>
                     setEditingProduct({ ...editingProduct, applications: e.target.value })
                   }
                 />
               </div>
 
-              {/* Upload Image */}
-              <div className={styles.formGroup}>
+              {/* Upload Image with Live Preview */}
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Product Image URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProduct.images?.[0] || editingProduct.image || ''}
-                    placeholder="images/components/p02-1.jpg"
-                    onChange={(e) =>
+                    placeholder="images/components/p02-1.jpg or https://... or /uploads/..."
+                    onChange={(e) => {
+                      const val = e.target.value;
                       setEditingProduct({
                         ...editingProduct,
-                        image: e.target.value,
-                        images: [e.target.value],
-                      })
-                    }
+                        image: val,
+                        images: val ? [val] : [],
+                      });
+                    }}
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
-                      cursor: 'pointer',
+                      cursor: uploadingImage ? 'not-allowed' : 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <Upload size={14} /> Upload
+                    {uploadingImage ? (
+                      <Loader2 size={14} className={styles.spin} />
+                    ) : (
+                      <Upload size={14} />
+                    )}
+                    {uploadingImage ? 'Uploading...' : 'Upload Photo'}
                     <input
                       type="file"
                       accept="image/*"
+                      disabled={uploadingImage}
                       style={{ display: 'none' }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          setUploadingImage(true);
                           const url = await handleFileUpload(file);
+                          setUploadingImage(false);
                           if (url) {
                             setEditingProduct({
                               ...editingProduct,
                               image: url,
                               images: [url, ...(editingProduct.images || [])],
                             });
-                            showToast('Image uploaded!');
+                            showToast('Photo uploaded successfully!');
                           }
                         }
                       }}
                     />
                   </label>
                 </div>
+
+                {/* Live Image Preview */}
+                <div className={styles.imagePreviewSection}>
+                  {editingProduct.image || editingProduct.images?.[0] ? (
+                    <img
+                      src={formatMediaUrl(editingProduct.images?.[0] || editingProduct.image)}
+                      alt="Preview"
+                      className={styles.imagePreviewThumb}
+                    />
+                  ) : (
+                    <div className={styles.imagePreviewPlaceholder}>
+                      <ImageIcon size={24} />
+                    </div>
+                  )}
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    <b>Image Preview:</b>{' '}
+                    {editingProduct.image || editingProduct.images?.[0]
+                      ? 'Live preview active. Ensure the component is clearly visible.'
+                      : 'No image attached. Upload or paste a URL above.'}
+                  </div>
+                </div>
               </div>
 
               {/* Upload PDF */}
-              <div className={styles.formGroup}>
-                <label>PDF Datasheet / Manual URL / Upload</label>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
+                <label>PDF Datasheet / Lab Guide URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProduct.pdf || ''}
-                    placeholder="docs/kits/guide.pdf"
+                    placeholder="docs/datasheets/manual.pdf or /uploads/..."
                     onChange={(e) => setEditingProduct({ ...editingProduct, pdf: e.target.value })}
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
-                      cursor: 'pointer',
+                      cursor: uploadingPdf ? 'not-allowed' : 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <Upload size={14} /> Upload PDF
+                    {uploadingPdf ? (
+                      <Loader2 size={14} className={styles.spin} />
+                    ) : (
+                      <Upload size={14} />
+                    )}
+                    {uploadingPdf ? 'Uploading...' : 'Upload PDF'}
                     <input
                       type="file"
                       accept="application/pdf"
+                      disabled={uploadingPdf}
                       style={{ display: 'none' }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          setUploadingPdf(true);
                           const url = await handleFileUpload(file);
+                          setUploadingPdf(false);
                           if (url) {
                             setEditingProduct({ ...editingProduct, pdf: url });
-                            showToast('PDF uploaded!');
+                            showToast('PDF Datasheet uploaded successfully!');
                           }
                         }
                       }}
                     />
                   </label>
+
+                  {editingProduct.pdf && (
+                    <a
+                      href={formatMediaUrl(editingProduct.pdf)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="secondary"
+                      style={{
+                        fontSize: '12px',
+                        padding: '8px 12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <ExternalLink size={13} /> Test PDF
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -1398,20 +1778,43 @@ export default function AdminPage() {
                 className={styles.fullCol}
                 style={{
                   display: 'flex',
-                  gap: '10px',
+                  gap: '12px',
                   justifyContent: 'flex-end',
                   marginTop: '16px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid #f1f5f9',
                 }}
               >
                 <button
                   type="button"
                   className="secondary"
                   onClick={() => setEditingProduct(null)}
+                  disabled={isSaving}
+                  style={{ borderRadius: '10px', padding: '10px 18px' }}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="primary">
-                  Save Changes
+                <button
+                  type="submit"
+                  className="primary"
+                  disabled={isSaving}
+                  style={{
+                    borderRadius: '10px',
+                    padding: '10px 22px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={16} className={styles.spin} /> Saving to Cloud...
+                    </>
+                  ) : (
+                    <>
+                      <Check size={16} /> Save Changes
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -1421,27 +1824,26 @@ export default function AdminPage() {
 
       {/* PRACTICAL EDIT MODAL */}
       {editingPractical && (
-        <div className="modal-backdrop" onClick={() => setEditingPractical(null)}>
-          <div
-            className="modal"
-            style={{ maxWidth: '640px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Edit Practical Experiment</h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                savePractical(editingPractical);
-                setEditingPractical(null);
-                showToast(`Saved ${editingPractical.title} to MongoDB!`);
-              }}
-              className={styles.formGrid}
-            >
+        <div className={styles.adminModalBackdrop} onClick={() => setEditingPractical(null)}>
+          <div className={styles.adminModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.adminModalHead}>
+              <h3>Edit Practical Lab Experiment</h3>
+              <button
+                type="button"
+                className={styles.adminModalClose}
+                onClick={() => setEditingPractical(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSavePractical} className={styles.formGrid}>
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Experiment Title</label>
+                <label>Experiment Title *</label>
                 <input
                   type="text"
                   value={editingPractical.title}
+                  placeholder="e.g. Ultrasonic Sonar Distance Measurement"
                   onChange={(e) =>
                     setEditingPractical({ ...editingPractical, title: e.target.value })
                   }
@@ -1476,7 +1878,7 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Linked Product/Board</label>
+                <label>Linked Microcontroller / Hardware Board</label>
                 <select
                   value={editingPractical.product}
                   onChange={(e) =>
@@ -1492,10 +1894,11 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Experiment Goal / Objective</label>
+                <label>Experiment Goal / Objective *</label>
                 <textarea
                   rows={2}
                   value={editingPractical.goal}
+                  placeholder="Describe the primary learning objective and circuit telemetry result..."
                   onChange={(e) =>
                     setEditingPractical({ ...editingPractical, goal: e.target.value })
                   }
@@ -1504,7 +1907,7 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Step-by-step Procedures (separate with semicolon ;)</label>
+                <label>Step-by-step Procedures (separate items with semicolon ; or newlines) *</label>
                 <textarea
                   rows={4}
                   value={
@@ -1512,10 +1915,11 @@ export default function AdminPage() {
                       ? editingPractical.steps.join('; ')
                       : editingPractical.steps
                   }
+                  placeholder="Connect VCC to 5V; Connect GND to Ground; Wire TRIG to D9 and ECHO to D10; Upload sonar sketch"
                   onChange={(e) =>
                     setEditingPractical({
                       ...editingPractical,
-                      steps: e.target.value.split(';').map((s) => s.trim()),
+                      steps: e.target.value.split(/[;\n]/).map((s) => s.trim()).filter(Boolean),
                     })
                   }
                   required
@@ -1544,6 +1948,7 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '4px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -1562,7 +1967,7 @@ export default function AdminPage() {
                               ...editingPractical,
                               images: [url, ...(editingPractical.images || [])],
                             });
-                            showToast('Lab image uploaded!');
+                            showToast('Lab photo uploaded!');
                           }
                         }
                       }}
@@ -1588,6 +1993,7 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '4px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -1616,9 +2022,11 @@ export default function AdminPage() {
                 className={styles.fullCol}
                 style={{
                   display: 'flex',
-                  gap: '10px',
+                  gap: '12px',
                   justifyContent: 'flex-end',
                   marginTop: '16px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid #f1f5f9',
                 }}
               >
                 <button
@@ -1628,8 +2036,8 @@ export default function AdminPage() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="primary">
-                  Save Experiment
+                <button type="submit" className="primary" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Experiment'}
                 </button>
               </div>
             </form>
@@ -1639,34 +2047,33 @@ export default function AdminPage() {
 
       {/* PROJECT EDIT MODAL */}
       {editingProject && (
-        <div className="modal-backdrop" onClick={() => setEditingProject(null)}>
-          <div
-            className="modal"
-            style={{ maxWidth: '640px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Edit Robotics & IoT Project</h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                saveProject(editingProject);
-                setEditingProject(null);
-                showToast(`Saved ${editingProject.title} to MongoDB!`);
-              }}
-              className={styles.formGrid}
-            >
+        <div className={styles.adminModalBackdrop} onClick={() => setEditingProject(null)}>
+          <div className={styles.adminModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.adminModalHead}>
+              <h3>Edit Robotics & IoT Blueprint</h3>
+              <button
+                type="button"
+                className={styles.adminModalClose}
+                onClick={() => setEditingProject(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProject} className={styles.formGrid}>
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Project Title</label>
+                <label>Project Title *</label>
                 <input
                   type="text"
                   value={editingProject.title}
+                  placeholder="e.g. Autonomous Obstacle Avoidance 4WD Rover"
                   onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
                   required
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Linked Board / Starter Kit</label>
+                <label>Linked Microcontroller Board</label>
                 <select
                   value={editingProject.product}
                   onChange={(e) =>
@@ -1682,21 +2089,22 @@ export default function AdminPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Hardware Kit Required</label>
+                <label>Hardware Bill of Materials (BOM) *</label>
                 <input
                   type="text"
                   value={editingProject.kit}
                   onChange={(e) => setEditingProject({ ...editingProject, kit: e.target.value })}
-                  placeholder="e.g. 4WD Chassis + Arduino UNO + Ultrasonic"
+                  placeholder="e.g. 4WD Chassis + Arduino UNO + L298N + HC-SR04"
                   required
                 />
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Summary / Abstract</label>
+                <label>Summary / Abstract *</label>
                 <textarea
                   rows={2}
                   value={editingProject.summary}
+                  placeholder="Overview of the autonomous robot behavior and navigation algorithm..."
                   onChange={(e) =>
                     setEditingProject({ ...editingProject, summary: e.target.value })
                   }
@@ -1705,25 +2113,25 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>What You Learn</label>
+                <label>What You Learn *</label>
                 <input
                   type="text"
                   value={editingProject.learn}
                   onChange={(e) => setEditingProject({ ...editingProject, learn: e.target.value })}
-                  placeholder="Sensors • Motor Control • Architecture"
+                  placeholder="Sensors • Motor PWM • Real-time Decision Tree Architecture"
                   required
                 />
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Upgrade Ideas</label>
+                <label>Upgrade & Extension Ideas</label>
                 <input
                   type="text"
                   value={editingProject.upgrade}
                   onChange={(e) =>
                     setEditingProject({ ...editingProject, upgrade: e.target.value })
                   }
-                  placeholder="Add Bluetooth override, OLED HUD, etc."
+                  placeholder="Add Bluetooth override, OLED HUD telemetry, etc."
                 />
               </div>
 
@@ -1749,6 +2157,7 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '4px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -1767,7 +2176,7 @@ export default function AdminPage() {
                               ...editingProject,
                               images: [url, ...(editingProject.images || [])],
                             });
-                            showToast('Project image uploaded!');
+                            showToast('Project photo uploaded!');
                           }
                         }
                       }}
@@ -1793,6 +2202,7 @@ export default function AdminPage() {
                       padding: '8px 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      gap: '4px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -1821,9 +2231,11 @@ export default function AdminPage() {
                 className={styles.fullCol}
                 style={{
                   display: 'flex',
-                  gap: '10px',
+                  gap: '12px',
                   justifyContent: 'flex-end',
                   marginTop: '16px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid #f1f5f9',
                 }}
               >
                 <button
@@ -1833,8 +2245,8 @@ export default function AdminPage() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="primary">
-                  Save Project
+                <button type="submit" className="primary" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Project'}
                 </button>
               </div>
             </form>
@@ -1844,24 +2256,22 @@ export default function AdminPage() {
 
       {/* QUOTE EDIT MODAL */}
       {editingQuote && (
-        <div className="modal-backdrop" onClick={() => setEditingQuote(null)}>
-          <div
-            className="modal"
-            style={{ maxWidth: '520px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Edit Quote</h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                saveQuote(editingQuote);
-                setEditingQuote(null);
-                showToast('Saved quote to MongoDB!');
-              }}
-              style={{ display: 'grid', gap: '14px' }}
-            >
+        <div className={styles.adminModalBackdrop} onClick={() => setEditingQuote(null)}>
+          <div className={styles.adminModal} style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.adminModalHead}>
+              <h3>Edit Quote</h3>
+              <button
+                type="button"
+                className={styles.adminModalClose}
+                onClick={() => setEditingQuote(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQuote} style={{ display: 'grid', gap: '14px' }}>
               <div className={styles.formGroup}>
-                <label>Quote Text</label>
+                <label>Quote Text *</label>
                 <textarea
                   rows={3}
                   value={editingQuote.text}
@@ -1871,7 +2281,7 @@ export default function AdminPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Author</label>
+                <label>Author / Speaker *</label>
                 <input
                   type="text"
                   value={editingQuote.author}
@@ -1886,13 +2296,15 @@ export default function AdminPage() {
                   gap: '10px',
                   justifyContent: 'flex-end',
                   marginTop: '10px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid #f1f5f9',
                 }}
               >
                 <button type="button" className="secondary" onClick={() => setEditingQuote(null)}>
                   Cancel
                 </button>
-                <button type="submit" className="primary">
-                  Save Quote
+                <button type="submit" className="primary" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Quote'}
                 </button>
               </div>
             </form>

@@ -83,7 +83,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       });
-      return res.ok;
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.data && Array.isArray(data.data.products)) {
+          setCatalog(data.data);
+        }
+        return true;
+      }
+      return false;
     } catch (err) {
       console.error('Error saving catalog:', err);
       return false;
@@ -91,18 +98,46 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const saveProduct = async (product: Product): Promise<boolean> => {
-    const existingIndex = catalog.products.findIndex((p) => p.id === product.id);
+    // Synchronize image and images array
+    const cleanImages =
+      Array.isArray(product.images) && product.images.length > 0
+        ? product.images.filter(Boolean)
+        : product.image
+        ? [product.image]
+        : [];
+    const cleanProduct: Product = {
+      ...product,
+      image: cleanImages[0] || product.image || '',
+      images: cleanImages.length > 0 ? cleanImages : (product.image ? [product.image] : []),
+      sku: product.sku || `CL-${product.id}`,
+    };
+
+    const existingIndex = catalog.products.findIndex((p) => p.id === cleanProduct.id);
     let updatedProducts = [...catalog.products];
     if (existingIndex >= 0) {
-      updatedProducts[existingIndex] = product;
+      updatedProducts[existingIndex] = cleanProduct;
     } else {
-      updatedProducts.push(product);
+      updatedProducts.push(cleanProduct);
     }
+
+    if (selectedProduct && selectedProduct.id === cleanProduct.id) {
+      setSelectedProduct(cleanProduct);
+    }
+    if (inquiryProduct && inquiryProduct.id === cleanProduct.id) {
+      setInquiryProduct(cleanProduct);
+    }
+
     return saveCatalog({ ...catalog, products: updatedProducts });
   };
 
   const deleteProduct = async (id: string): Promise<boolean> => {
     const updatedProducts = catalog.products.filter((p) => p.id !== id);
+    if (selectedProduct && selectedProduct.id === id) {
+      setSelectedProduct(null);
+    }
+    if (inquiryProduct && inquiryProduct.id === id) {
+      setInquiryProduct(null);
+    }
     return saveCatalog({ ...catalog, products: updatedProducts });
   };
 

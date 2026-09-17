@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { useData } from '@/context/DataContext';
-import { Clock, Award, CheckCircle2, FileText, ArrowUpRight, Terminal, Cpu } from 'lucide-react';
+import { formatMediaUrl, parseStringList } from '@/lib/utils';
+import { Clock, Award, FileText, ArrowUpRight, Terminal } from 'lucide-react';
 
 export default function PracticalSection() {
   const { catalog, setSelectedProduct } = useData();
@@ -36,23 +37,19 @@ export default function PracticalSection() {
       <div className="practical-grid">
         {catalog.practicals.map((prac) => {
           const linkedProduct = catalog.products.find((p) => p.id === prac.product);
-          const stepsArray = Array.isArray(prac.steps)
-            ? prac.steps
-            : typeof prac.steps === 'string'
-            ? prac.steps.split(';').map((s) => s.trim())
-            : [];
+          const stepsArray = parseStringList(prac.steps);
 
-          const img =
+          const imgUrl = formatMediaUrl(
             prac.images?.[0] ||
             linkedProduct?.images?.[0] ||
-            linkedProduct?.image ||
-            '/images/branding/creative-learning-logo.png';
+            linkedProduct?.image
+          );
 
           const levelStyle = getLevelColor(prac.level || 'Beginner');
 
           return (
             <article key={prac.key} className="practical-card">
-              <img src={img.startsWith('/') ? img : `/${img}`} alt={prac.title} loading="lazy" />
+              <img src={imgUrl} alt={prac.title} loading="lazy" />
               <div className="practical-body">
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                   <span
@@ -140,7 +137,7 @@ export default function PracticalSection() {
                     )}
                     {prac.pdf && (
                       <a
-                        href={prac.pdf.startsWith('/') ? prac.pdf : `/${prac.pdf}`}
+                        href={formatMediaUrl(prac.pdf)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="primary"
@@ -151,6 +148,7 @@ export default function PracticalSection() {
                           alignItems: 'center',
                           gap: '6px',
                           whiteSpace: 'nowrap',
+                          textDecoration: 'none',
                         }}
                       >
                         <FileText size={14} /> Lab Sheet

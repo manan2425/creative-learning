@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { useData } from '@/context/DataContext';
-import { Cpu, Lightbulb, Zap, FileText, ArrowUpRight, Rocket, Bot } from 'lucide-react';
+import { formatMediaUrl } from '@/lib/utils';
+import { Cpu, Lightbulb, Zap, FileText, ArrowUpRight, Rocket } from 'lucide-react';
 
 export default function ProjectsSection() {
   const { catalog, setSelectedProduct } = useData();
@@ -25,15 +26,15 @@ export default function ProjectsSection() {
       <div className="project-grid">
         {catalog.projects.map((proj) => {
           const linkedProduct = catalog.products.find((p) => p.id === proj.product);
-          const img =
+          const imgUrl = formatMediaUrl(
             proj.images?.[0] ||
             linkedProduct?.images?.[0] ||
-            linkedProduct?.image ||
-            '/images/branding/creative-learning-logo.png';
+            linkedProduct?.image
+          );
 
           return (
             <article key={proj.key} className="project-card">
-              <img src={img.startsWith('/') ? img : `/${img}`} alt={proj.title} loading="lazy" />
+              <img src={imgUrl} alt={proj.title} loading="lazy" />
               <div className="project-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span
@@ -136,7 +137,7 @@ export default function ProjectsSection() {
                   )}
                   {proj.pdf && (
                     <a
-                      href={proj.pdf.startsWith('/') ? proj.pdf : `/${proj.pdf}`}
+                      href={formatMediaUrl(proj.pdf)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="primary"
@@ -147,6 +148,7 @@ export default function ProjectsSection() {
                         alignItems: 'center',
                         gap: '6px',
                         whiteSpace: 'nowrap',
+                        textDecoration: 'none',
                       }}
                     >
                       <FileText size={14} /> Blueprint PDF

@@ -10,7 +10,11 @@ const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
 
 async function sync() {
   console.log('Connecting to MongoDB Atlas...');
-  const client = new MongoClient(uri);
+  const client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 8000,
+    connectTimeoutMS: 8000,
+    tls: true,
+  });
   await client.connect();
   const db = client.db('creative_learning');
   const collection = db.collection('catalog');

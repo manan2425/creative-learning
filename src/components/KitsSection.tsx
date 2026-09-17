@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { Box, FileText, ShoppingCart, Eye, Bot, Check, PackageCheck, Zap } from 'lucide-react';
+import { formatMediaUrl } from '@/lib/utils';
+import { FileText, ShoppingCart, Eye, Bot, Check, PackageCheck } from 'lucide-react';
 
 export default function KitsSection() {
   const { catalog, setSelectedProduct } = useData();
@@ -11,7 +12,10 @@ export default function KitsSection() {
   const [addedId, setAddedId] = useState<string | null>(null);
 
   const kits = catalog.products.filter(
-    (p) => p.category.toLowerCase().includes('kit') || p.id.toLowerCase().includes('kit')
+    (p) =>
+      p.category.toLowerCase().includes('kit') ||
+      p.id.toLowerCase().includes('kit') ||
+      p.category === 'Starter Kits'
   );
 
   const handleAdd = (kit: any) => {
@@ -37,13 +41,12 @@ export default function KitsSection() {
 
       <div className="practical-grid">
         {kits.map((kit) => {
-          const img =
-            kit.images?.[0] || kit.image || '/images/branding/creative-learning-logo.png';
+          const imgUrl = formatMediaUrl(kit.images?.[0] || kit.image);
           const isAdded = addedId === kit.id;
 
           return (
             <article key={kit.id} className="kit-card">
-              <img src={img.startsWith('/') ? img : `/${img}`} alt={kit.name} loading="lazy" />
+              <img src={imgUrl} alt={kit.name} loading="lazy" />
               <div className="kit-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span
@@ -60,7 +63,7 @@ export default function KitsSection() {
 
                   {kit.pdf && (
                     <a
-                      href={kit.pdf.startsWith('/') ? kit.pdf : `/${kit.pdf}`}
+                      href={formatMediaUrl(kit.pdf)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -75,6 +78,7 @@ export default function KitsSection() {
                         border: '1px solid var(--cyan-border)',
                         padding: '2px 8px',
                         borderRadius: '4px',
+                        textDecoration: 'none',
                       }}
                     >
                       <FileText size={11} /> LAB PDF

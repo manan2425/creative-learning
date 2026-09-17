@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { Product } from '@/types';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { FileText, ShoppingCart, Eye, Check, Cpu, Zap } from 'lucide-react';
+import { formatMediaUrl } from '@/lib/utils';
+import { FileText, ShoppingCart, Eye, Check, Cpu } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -15,8 +16,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
-  const mainImage =
-    product.images?.[0] || product.image || '/images/branding/creative-learning-logo.png';
+  const mainImage = formatMediaUrl(product.images?.[0] || product.image);
 
   const handleAdd = () => {
     addToCart(product);
@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     <article className="product-card">
       <div className="product-img">
         <img
-          src={mainImage.startsWith('/') ? mainImage : `/${mainImage}`}
+          src={mainImage}
           alt={product.name}
           loading="lazy"
         />

@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { X, FileText, ShoppingCart, MessageSquare, Check, Cpu, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { formatMediaUrl, parseStringList } from '@/lib/utils';
+import { X, FileText, ShoppingCart, MessageSquare, Check, Cpu } from 'lucide-react';
 
 export default function ProductModal() {
   const { selectedProduct, setSelectedProduct, setInquiryProduct } = useData();
@@ -13,22 +14,18 @@ export default function ProductModal() {
 
   if (!selectedProduct) return null;
 
-  const images =
+  const rawImages =
     selectedProduct.images && selectedProduct.images.length > 0
       ? selectedProduct.images
       : selectedProduct.image
       ? [selectedProduct.image]
       : ['/images/branding/creative-learning-logo.png'];
 
+  const images = rawImages.map(formatMediaUrl);
   const currentImage = images[activeImageIndex] || images[0];
 
-  const specsList = selectedProduct.specifications
-    ? selectedProduct.specifications.split(';').map((s) => s.trim()).filter(Boolean)
-    : [];
-
-  const appsList = selectedProduct.applications
-    ? selectedProduct.applications.split(';').map((s) => s.trim()).filter(Boolean)
-    : [];
+  const specsList = parseStringList(selectedProduct.specifications);
+  const appsList = parseStringList(selectedProduct.applications);
 
   const handleAddToCart = () => {
     addToCart(selectedProduct);
@@ -55,7 +52,7 @@ export default function ProductModal() {
           <div>
             <div className="product-gallery-main">
               <img
-                src={currentImage.startsWith('/') ? currentImage : `/${currentImage}`}
+                src={currentImage}
                 alt={selectedProduct.name}
               />
             </div>
@@ -70,7 +67,7 @@ export default function ProductModal() {
                     onClick={() => setActiveImageIndex(idx)}
                     aria-label={`View image ${idx + 1}`}
                   >
-                    <img src={img.startsWith('/') ? img : `/${img}`} alt="" />
+                    <img src={img} alt="" />
                   </button>
                 ))}
               </div>
@@ -79,11 +76,7 @@ export default function ProductModal() {
             {selectedProduct.pdf && (
               <div style={{ marginTop: '18px' }}>
                 <a
-                  href={
-                    selectedProduct.pdf.startsWith('/')
-                      ? selectedProduct.pdf
-                      : `/${selectedProduct.pdf}`
-                  }
+                  href={formatMediaUrl(selectedProduct.pdf)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="secondary"
@@ -98,6 +91,7 @@ export default function ProductModal() {
                     fontWeight: 700,
                     fontFamily: 'var(--font-heading)',
                     background: 'rgba(0, 240, 255, 0.1)',
+                    textDecoration: 'none',
                   }}
                 >
                   <FileText size={16} /> Technical Datasheet / Manual (PDF)
