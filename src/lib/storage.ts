@@ -68,15 +68,11 @@ export async function getCatalogDataAsync(): Promise<CatalogData> {
       // If database is brand new and empty, auto-seed with initial catalog data
       console.log('⚡ Initializing & seeding MongoDB Atlas with Creative Learning hardware catalog...');
       const fallback = getCatalogData();
-      await collection.updateOne(
-        { _id: 'main_catalog' as any },
-        { $set: { _id: 'main_catalog', data: fallback, updatedAt: new Date() } },
-        { upsert: true }
-      );
+      await saveCatalogDataAsync(fallback);
       return fallback;
     }
   } catch (err) {
-    console.error('MongoDB Atlas read failed, falling back to local storage:', err);
+    console.warn('MongoDB Atlas read fallback to local storage:', (err as any)?.message || err);
   }
 
   // Fallback to local storage
@@ -85,6 +81,7 @@ export async function getCatalogDataAsync(): Promise<CatalogData> {
 
 /**
  * Asynchronous Saver that saves directly to MongoDB Atlas online
+ * across multiple collections (catalog, products, practicals, projects, quotes, company)
  * and mirrors changes to local disk.
  */
 export async function saveCatalogDataAsync(data: CatalogData): Promise<boolean> {
@@ -93,17 +90,81 @@ export async function saveCatalogDataAsync(data: CatalogData): Promise<boolean> 
   try {
     const db = await getDb();
     if (db) {
-      const collection = db.collection('catalog');
-      await collection.updateOne(
+      // 1. Save main composite catalog document
+      const catalogCol = db.collection('catalog');
+      await catalogCol.updateOne(
         { _id: 'main_catalog' as any },
         { $set: { _id: 'main_catalog', data: data, updatedAt: new Date() } },
         { upsert: true }
       );
+
+      // 2. Sync individual products collection for easy MongoDB browsing/editing
+      if (Array.isArray(data.products) && data.products.length > 0) {
+        const prodCol = db.collection('products');
+        const bulkOps = data.products.map((prod) => ({
+          updateOne: {
+            filter: { id: prod.id },
+            update: { $set: { ...prod, updatedAt: new Date() } },
+            upsert: true,
+          },
+        }));
+        await prodCol.bulkWrite(bulkOps);
+      }
+
+      // 3. Sync individual practicals collection
+      if (Array.isArray(data.practicals) && data.practicals.length > 0) {
+        const pracCol = db.collection('practicals');
+        const bulkPrac = data.practicals.map((prac) => ({
+          updateOne: {
+            filter: { key: prac.key },
+            update: { $set: { ...prac, updatedAt: new Date() } },
+            upsert: true,
+          },
+        }));
+        await pracCol.bulkWrite(bulkPrac);
+      }
+
+      // 4. Sync individual projects collection
+      if (Array.isArray(data.projects) && data.projects.length > 0) {
+        const projCol = db.collection('projects');
+        const bulkProj = data.projects.map((proj) => ({
+          updateOne: {
+            filter: { key: proj.key },
+            update: { $set: { ...proj, updatedAt: new Date() } },
+            upsert: true,
+          },
+        }));
+        await projCol.bulkWrite(bulkProj);
+      }
+
+      // 5. Sync quotes collection
+      if (Array.isArray(data.quotes) && data.quotes.length > 0) {
+        const quotesCol = db.collection('quotes');
+        const bulkQuotes = data.quotes.map((q) => ({
+          updateOne: {
+            filter: { id: q.id },
+            update: { $set: { ...q, isHero: q.id === data.heroQuoteId, updatedAt: new Date() } },
+            upsert: true,
+          },
+        }));
+        await quotesCol.bulkWrite(bulkQuotes);
+      }
+
+      // 6. Sync company settings collection
+      if (data.company) {
+        const companyCol = db.collection('company');
+        await companyCol.updateOne(
+          { _id: 'company_config' as any },
+          { $set: { _id: 'company_config', ...data.company, updatedAt: new Date() } },
+          { upsert: true }
+        );
+      }
+
       mongoSuccess = true;
-      console.log('✅ Catalog successfully saved to MongoDB Atlas online!');
+      console.log('✅ Catalog and all collections successfully updated in MongoDB Atlas online!');
     }
   } catch (err) {
-    console.error('MongoDB Atlas save failed:', err);
+    console.warn('MongoDB Atlas write fallback to local storage:', (err as any)?.message || err);
   }
 
   // Always keep local disk copy synced as well

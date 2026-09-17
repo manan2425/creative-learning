@@ -106,6 +106,29 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [dbStatus, setDbStatus] = useState<{
+    mongoConnected: boolean;
+    ipWhitelistRequired?: boolean;
+    mongoError?: string | null;
+    storageEngine?: string;
+  }>({ mongoConnected: false });
+  const [showDbModal, setShowDbModal] = useState(false);
+
+  const fetchDbStatus = async () => {
+    try {
+      const res = await fetch('/api/db-status');
+      if (res.ok) {
+        const data = await res.json();
+        setDbStatus(data);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchDbStatus();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (catalog?.company) {
@@ -547,9 +570,34 @@ export default function AdminPage() {
             <strong style={{ fontSize: '16px', letterSpacing: '0.05em' }}>
               CREATIVE LEARNING ADMIN
             </strong>
-            <div style={{ fontSize: '11px', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#00ff9d', display: 'inline-block' }}></span>
-              MongoDB Atlas Cloud Connected
+            <div
+              onClick={() => setShowDbModal(true)}
+              style={{
+                fontSize: '11px',
+                color: dbStatus.mongoConnected ? '#93c5fd' : '#fef08a',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                marginTop: '2px',
+              }}
+              title="Click to view Database Connectivity & Cloud Sync details"
+            >
+              <span
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: dbStatus.mongoConnected ? '#00ff9d' : '#facc15',
+                  display: 'inline-block',
+                }}
+              ></span>
+              {dbStatus.mongoConnected
+                ? 'MongoDB Atlas Online'
+                : 'Local Database Active (Cloud IP Pending)'}
+              <span style={{ textDecoration: 'underline', opacity: 0.8, fontSize: '10px' }}>
+                [DB Info]
+              </span>
             </div>
           </div>
         </div>
@@ -557,7 +605,10 @@ export default function AdminPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             type="button"
-            onClick={handleManualSync}
+            onClick={async () => {
+              await handleManualSync();
+              await fetchDbStatus();
+            }}
             disabled={isSyncing}
             style={{
               background: 'rgba(255,255,255,0.12)',
@@ -572,7 +623,7 @@ export default function AdminPage() {
               gap: '6px',
             }}
           >
-            <RefreshCw size={13} className={isSyncing ? styles.spin : ''} /> Sync Cloud
+            <RefreshCw size={13} className={isSyncing ? styles.spin : ''} /> Sync Database
           </button>
           <Link
             href="/"
@@ -2308,6 +2359,143 @@ export default function AdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* DATABASE DIAGNOSTICS & SETUP MODAL */}
+      {showDbModal && (
+        <div className={styles.adminModalBackdrop} onClick={() => setShowDbModal(false)}>
+          <div
+            className={styles.adminModal}
+            style={{ maxWidth: '620px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.adminModalHead}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Database size={20} color="#0872c9" />
+                <h3>Database Engine & Cloud Status</h3>
+              </div>
+              <button
+                type="button"
+                className={styles.adminModalClose}
+                onClick={() => setShowDbModal(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gap: '16px' }}>
+              <div
+                style={{
+                  padding: '16px',
+                  borderRadius: '12px',
+                  background: dbStatus.mongoConnected ? '#dcfce7' : '#fef9c3',
+                  border: `1px solid ${dbStatus.mongoConnected ? '#86efac' : '#fde047'}`,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}>
+                  <span
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      background: dbStatus.mongoConnected ? '#16a34a' : '#ca8a04',
+                    }}
+                  ></span>
+                  {dbStatus.mongoConnected
+                    ? 'MongoDB Atlas Cloud Connected & Synchronized'
+                    : 'Local Persistent Storage Engine Active (Cloud IP Whitelist Pending)'}
+                </div>
+                <p style={{ margin: '8px 0 0', fontSize: '12.5px', color: '#334155', lineHeight: '1.5' }}>
+                  {dbStatus.mongoConnected
+                    ? 'All product modifications, starter kits, practicals, blueprints, and quotes are being saved directly into your MongoDB Atlas cloud collections.'
+                    : 'Your catalog data is 100% saved and persisted locally in src/data/catalog.json. To enable live sync with MongoDB Atlas, ensure your current IP address is whitelisted in MongoDB Atlas Network Access.'}
+                </p>
+              </div>
+
+              {!dbStatus.mongoConnected && (
+                <div
+                  style={{
+                    background: '#f8fafc',
+                    padding: '16px',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <h4 style={{ margin: '0 0 8px', fontSize: '13px', color: '#0f172a' }}>
+                    ⚡ How to allow MongoDB Atlas connections:
+                  </h4>
+                  <ol style={{ margin: 0, paddingLeft: '18px', lineHeight: '1.6', color: '#475569' }}>
+                    <li>Log in to your <b>cloud.mongodb.com</b> dashboard.</li>
+                    <li>Go to <b>Security → Network Access</b> in the left sidebar.</li>
+                    <li>Click <b>Add IP Address</b> and choose <b>Allow Access from Anywhere</b> (<code>0.0.0.0/0</code>) or add your current IP.</li>
+                    <li>Click <b>Confirm</b> and wait 30 seconds for Atlas to update.</li>
+                  </ol>
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '10px',
+                  textAlign: 'center',
+                }}
+              >
+                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                    {catalog.products.length}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>Products & Kits</div>
+                </div>
+                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                    {catalog.practicals.length}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>Guided Labs</div>
+                </div>
+                <div style={{ padding: '12px', background: '#f1f5f9', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                    {catalog.projects.length}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>Blueprints</div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  justifyContent: 'flex-end',
+                  marginTop: '10px',
+                  paddingTop: '14px',
+                  borderTop: '1px solid #f1f5f9',
+                }}
+              >
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => setShowDbModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="primary"
+                  onClick={async () => {
+                    await handleManualSync();
+                    await fetchDbStatus();
+                  }}
+                  disabled={isSyncing}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <RefreshCw size={14} className={isSyncing ? styles.spin : ''} />
+                  Test & Sync Database
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
