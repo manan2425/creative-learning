@@ -209,11 +209,12 @@ export default function AdminPage() {
     }
   };
 
-  // File upload handler helper
+  // File upload handler helper with resilient fallback
   const handleFileUpload = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append('file', file);
+    // 1. Try server-side file upload
     try {
+      const formData = new FormData();
+      formData.append('file', file);
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -222,10 +223,29 @@ export default function AdminPage() {
       if (res.ok && data.url) {
         return data.url;
       }
+      if (data.error) {
+        console.warn('Server upload notice, falling back to base64 Data URL:', data.error);
+      }
     } catch (err) {
-      console.error('File upload failed:', err);
+      console.warn('Network upload request failed, falling back to FileReader:', err);
     }
-    return null;
+
+    // 2. Resilient Fallback: Read file as Data URL (Base64) so uploads never fail
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          resolve(null);
+        }
+      };
+      reader.onerror = () => {
+        showToast('Failed to read selected file');
+        resolve(null);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleManualSync = async () => {
@@ -1924,6 +1944,9 @@ export default function AdminPage() {
                       accept="image/*"
                       disabled={uploadingImage}
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -1934,7 +1957,7 @@ export default function AdminPage() {
                             setEditingProduct({
                               ...editingProduct,
                               image: url,
-                              images: [url, ...(editingProduct.images || [])],
+                              images: [url, ...(editingProduct.images || []).filter((u) => u !== url)],
                             });
                             showToast('Photo uploaded successfully!');
                           }
@@ -2001,6 +2024,9 @@ export default function AdminPage() {
                       accept="application/pdf"
                       disabled={uploadingPdf}
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -2191,38 +2217,42 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Lab Image URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingPractical.images?.[0] || ''}
-                    placeholder="images/components/p04-1.jpg"
+                    placeholder="images/components/p04-1.jpg or /uploads/..."
                     onChange={(e) =>
                       setEditingPractical({
                         ...editingPractical,
-                        images: [e.target.value],
+                        images: e.target.value ? [e.target.value] : [],
                       })
                     }
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
                       cursor: 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <Upload size={14} /> Upload
+                    <Upload size={14} /> Upload Photo
                     <input
                       type="file"
                       accept="image/*"
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -2230,7 +2260,7 @@ export default function AdminPage() {
                           if (url) {
                             setEditingPractical({
                               ...editingPractical,
-                              images: [url, ...(editingPractical.images || [])],
+                              images: [url, ...(editingPractical.images || []).filter((u) => u !== url)],
                             });
                             showToast('Lab photo uploaded!');
                           }
@@ -2239,26 +2269,48 @@ export default function AdminPage() {
                     />
                   </label>
                 </div>
+
+                {/* Practical Image Preview */}
+                <div className={styles.imagePreviewSection} style={{ marginTop: '10px' }}>
+                  {editingPractical.images?.[0] ? (
+                    <img
+                      src={formatMediaUrl(editingPractical.images[0])}
+                      alt="Practical Preview"
+                      className={styles.imagePreviewThumb}
+                    />
+                  ) : (
+                    <div className={styles.imagePreviewPlaceholder}>
+                      <ImageIcon size={24} />
+                    </div>
+                  )}
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    <b>Lab Photo Preview:</b>{' '}
+                    {editingPractical.images?.[0]
+                      ? 'Live preview active.'
+                      : 'No lab image attached. Upload or paste a URL above.'}
+                  </div>
+                </div>
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Lab Sheet PDF URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingPractical.pdf || ''}
-                    placeholder="docs/practicals/lab.pdf"
+                    placeholder="docs/practicals/lab.pdf or /uploads/..."
                     onChange={(e) => setEditingPractical({ ...editingPractical, pdf: e.target.value })}
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
                       cursor: 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -2268,6 +2320,9 @@ export default function AdminPage() {
                       type="file"
                       accept="application/pdf"
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -2400,38 +2455,42 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Project Blueprint Image URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProject.images?.[0] || ''}
-                    placeholder="images/components/p21-kit.jpg"
+                    placeholder="images/components/p21-kit.jpg or /uploads/..."
                     onChange={(e) =>
                       setEditingProject({
                         ...editingProject,
-                        images: [e.target.value],
+                        images: e.target.value ? [e.target.value] : [],
                       })
                     }
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
                       cursor: 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <Upload size={14} /> Upload
+                    <Upload size={14} /> Upload Blueprint Photo
                     <input
                       type="file"
                       accept="image/*"
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -2439,7 +2498,7 @@ export default function AdminPage() {
                           if (url) {
                             setEditingProject({
                               ...editingProject,
-                              images: [url, ...(editingProject.images || [])],
+                              images: [url, ...(editingProject.images || []).filter((u) => u !== url)],
                             });
                             showToast('Project photo uploaded!');
                           }
@@ -2448,26 +2507,48 @@ export default function AdminPage() {
                     />
                   </label>
                 </div>
+
+                {/* Project Image Preview */}
+                <div className={styles.imagePreviewSection} style={{ marginTop: '10px' }}>
+                  {editingProject.images?.[0] ? (
+                    <img
+                      src={formatMediaUrl(editingProject.images[0])}
+                      alt="Project Preview"
+                      className={styles.imagePreviewThumb}
+                    />
+                  ) : (
+                    <div className={styles.imagePreviewPlaceholder}>
+                      <ImageIcon size={24} />
+                    </div>
+                  )}
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    <b>Blueprint Preview:</b>{' '}
+                    {editingProject.images?.[0]
+                      ? 'Live preview active.'
+                      : 'No project image attached. Upload or paste a URL above.'}
+                  </div>
+                </div>
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.fullCol}`}>
                 <label>Blueprint PDF URL / Upload</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={editingProject.pdf || ''}
-                    placeholder="docs/projects/blueprint.pdf"
+                    placeholder="docs/projects/blueprint.pdf or /uploads/..."
                     onChange={(e) => setEditingProject({ ...editingProject, pdf: e.target.value })}
+                    style={{ flex: 1 }}
                   />
                   <label
                     className="secondary"
                     style={{
                       cursor: 'pointer',
                       fontSize: '12px',
-                      padding: '8px 12px',
+                      padding: '8px 14px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: '6px',
                       borderRadius: '8px',
                       whiteSpace: 'nowrap',
                     }}
@@ -2477,6 +2558,9 @@ export default function AdminPage() {
                       type="file"
                       accept="application/pdf"
                       style={{ display: 'none' }}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).value = '';
+                      }}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
