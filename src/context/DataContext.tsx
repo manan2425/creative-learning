@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { CatalogData, Product, PracticalActivity, Project, Quote, CompanyConfig } from '@/types';
 import fallbackCatalog from '@/data/initialCatalog.json';
 
@@ -31,6 +31,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | null>(null);
 
+const SYNC_CHANNEL = 'creative_learning_live_catalog_sync';
+
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [catalog, setCatalog] = useState<CatalogData>(fallbackCatalog as CatalogData);
   const [loading, setLoading] = useState(true);
@@ -38,10 +40,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
+  const broadcastRef = useRef<BroadcastChannel | null>(null);
 
   const fetchFreshCatalog = async () => {
     try {
-      const res = await fetch('/api/catalog', { cache: 'no-store' });
+      const res = await fetch('/api/catalog?t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data && Array.isArray(data.products)) {
@@ -55,23 +58,72 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Fetch catalog on mount and listen to window focus / visibility events
+  const broadcastUpdate = () => {
+    try {
+      if (broadcastRef.current) {
+        broadcastRef.current.postMessage({ type: 'CATALOG_UPDATED', timestamp: Date.now() });
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cl_catalog_sync_timestamp', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('cl:catalog-updated'));
+      }
+    } catch (err) {
+      console.warn('Broadcast notice error:', err);
+    }
+  };
+
+  // Real-time listener: BroadcastChannel, storage events, window focus, and background polling
   useEffect(() => {
     fetchFreshCatalog();
 
+    // 1. BroadcastChannel for instant cross-tab sync
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const bc = new BroadcastChannel(SYNC_CHANNEL);
+      broadcastRef.current = bc;
+      bc.onmessage = (event) => {
+        if (event.data?.type === 'CATALOG_UPDATED') {
+          fetchFreshCatalog();
+        }
+      };
+    }
+
+    // 2. Storage event listener (for browsers/tabs without active BroadcastChannel)
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'cl_catalog_sync_timestamp') {
+        fetchFreshCatalog();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // 3. Focus & Visibility Change: Auto-refresh when user opens or returns to the storefront
     const handleFocus = () => {
       fetchFreshCatalog();
     };
-
     window.addEventListener('focus', handleFocus);
-    window.addEventListener('visibilitychange', () => {
+
+    const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         fetchFreshCatalog();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 4. Background real-time polling (every 6 seconds while page is visible)
+    // Ensures cross-device edits (e.g. admin on mobile -> user on desktop) sync seamlessly
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchFreshCatalog();
+      }
+    }, 6000);
 
     return () => {
+      if (broadcastRef.current) {
+        broadcastRef.current.close();
+      }
+      window.removeEventListener('storage', handleStorage);
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(interval);
     };
   }, []);
 
@@ -88,6 +140,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         if (data && data.data && Array.isArray(data.data.products)) {
           setCatalog(data.data);
         }
+        // Broadcast to all open tabs and devices
+        broadcastUpdate();
         return true;
       }
       return false;
