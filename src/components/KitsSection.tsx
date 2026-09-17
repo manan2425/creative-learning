@@ -103,18 +103,16 @@ export default function KitsSection() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                    margin: '12px 0 18px',
-                    paddingTop: '12px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    marginTop: 'auto',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #f1f5f9',
                   }}
                 >
                   <span className="price">{kit.price || 'Contact for price'}</span>
                   <span
                     style={{
                       fontSize: '11px',
-                      color: '#00ff9d',
+                      color: '#059669',
                       fontWeight: 700,
                       fontFamily: 'var(--font-primary)',
                       display: 'flex',

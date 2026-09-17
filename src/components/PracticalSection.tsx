@@ -130,7 +130,7 @@ export default function PracticalSection() {
                       gap: '10px',
                       marginTop: '18px',
                       paddingTop: '16px',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderTop: '1px solid #f1f5f9',
                     }}
                   >
                     {linkedProduct && (

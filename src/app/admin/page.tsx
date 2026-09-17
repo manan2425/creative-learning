@@ -24,6 +24,8 @@ import {
   AlertCircle,
   ExternalLink,
   ArrowLeft,
+  ArrowRight,
+  Star,
   Inbox,
   RefreshCw,
   RotateCcw,
@@ -108,6 +110,8 @@ export default function AdminPage() {
   const [isResetting, setIsResetting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingImagesCount, setUploadingImagesCount] = useState(0);
+  const [newProductImageUrl, setNewProductImageUrl] = useState('');
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [dbStatus, setDbStatus] = useState<{
     mongoConnected: boolean;
@@ -1913,90 +1917,282 @@ export default function AdminPage() {
                 />
               </div>
 
-              {/* Upload Image with Live Preview */}
+              {/* Multi-Image Gallery Manager */}
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Product Image URL / Upload</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input
-                    type="text"
-                    value={editingProduct.images?.[0] || editingProduct.image || ''}
-                    placeholder="images/components/p02-1.jpg or https://... or /uploads/..."
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setEditingProduct({
-                        ...editingProduct,
-                        image: val,
-                        images: val ? [val] : [],
-                      });
-                    }}
-                    style={{ flex: 1 }}
-                  />
-                  <label
-                    className="secondary"
-                    style={{
-                      cursor: uploadingImage ? 'not-allowed' : 'pointer',
-                      fontSize: '12px',
-                      padding: '8px 14px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      borderRadius: '8px',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {uploadingImage ? (
-                      <Loader2 size={14} className={styles.spin} />
-                    ) : (
-                      <Upload size={14} />
-                    )}
-                    {uploadingImage ? 'Uploading...' : 'Upload Photo'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      disabled={uploadingImage}
-                      style={{ display: 'none' }}
-                      onClick={(e) => {
-                        (e.target as HTMLInputElement).value = '';
-                      }}
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setUploadingImage(true);
-                          const url = await handleFileUpload(file);
-                          setUploadingImage(false);
-                          if (url) {
-                            setEditingProduct({
-                              ...editingProduct,
-                              image: url,
-                              images: [url, ...(editingProduct.images || []).filter((u) => u !== url)],
-                            });
-                            showToast('Photo uploaded successfully!');
-                          }
-                        }
-                      }}
-                    />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ margin: 0 }}>
+                    Product Images & Gallery ({((Array.isArray(editingProduct.images) && editingProduct.images.length > 0 ? editingProduct.images : (editingProduct.image ? [editingProduct.image] : []))).length} photos)
                   </label>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>
+                    First photo is used as Primary Cover. All photos appear in Specs gallery.
+                  </span>
                 </div>
 
-                {/* Live Image Preview */}
-                <div className={styles.imagePreviewSection}>
-                  {editingProduct.image || editingProduct.images?.[0] ? (
-                    <img
-                      src={formatMediaUrl(editingProduct.images?.[0] || editingProduct.image)}
-                      alt="Preview"
-                      className={styles.imagePreviewThumb}
-                    />
-                  ) : (
-                    <div className={styles.imagePreviewPlaceholder}>
-                      <ImageIcon size={24} />
+                <div className={styles.galleryManager}>
+                  {/* Top Upload & URL Actions */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px', flex: 1, minWidth: '260px' }}>
+                      <input
+                        type="text"
+                        value={newProductImageUrl}
+                        placeholder="Paste online or local image URL (e.g. images/components/p01-2.jpg)..."
+                        onChange={(e) => setNewProductImageUrl(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (newProductImageUrl.trim()) {
+                              const existing = Array.isArray(editingProduct.images) && editingProduct.images.length > 0
+                                ? editingProduct.images
+                                : editingProduct.image
+                                ? [editingProduct.image]
+                                : [];
+                              const updated = [...existing, newProductImageUrl.trim()];
+                              setEditingProduct({
+                                ...editingProduct,
+                                image: updated[0] || '',
+                                images: updated,
+                              });
+                              setNewProductImageUrl('');
+                              showToast('Image URL added to product gallery!');
+                            }
+                          }
+                        }}
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => {
+                          if (newProductImageUrl.trim()) {
+                            const existing = Array.isArray(editingProduct.images) && editingProduct.images.length > 0
+                              ? editingProduct.images
+                              : editingProduct.image
+                              ? [editingProduct.image]
+                              : [];
+                            const updated = [...existing, newProductImageUrl.trim()];
+                            setEditingProduct({
+                              ...editingProduct,
+                              image: updated[0] || '',
+                              images: updated,
+                            });
+                            setNewProductImageUrl('');
+                            showToast('Image URL added to product gallery!');
+                          }
+                        }}
+                        disabled={!newProductImageUrl.trim()}
+                        style={{
+                          fontSize: '12px',
+                          padding: '8px 14px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          borderRadius: '8px',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <Plus size={14} /> Add URL
+                      </button>
                     </div>
-                  )}
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>
-                    <b>Image Preview:</b>{' '}
-                    {editingProduct.image || editingProduct.images?.[0]
-                      ? 'Live preview active. Ensure the component is clearly visible.'
-                      : 'No image attached. Upload or paste a URL above.'}
+
+                    <label
+                      className="primary"
+                      style={{
+                        cursor: uploadingImage ? 'not-allowed' : 'pointer',
+                        fontSize: '12px',
+                        padding: '8px 16px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        borderRadius: '8px',
+                        whiteSpace: 'nowrap',
+                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {uploadingImage ? (
+                        <Loader2 size={15} className={styles.spin} />
+                      ) : (
+                        <Upload size={15} />
+                      )}
+                      {uploadingImage
+                        ? `Uploading ${uploadingImagesCount > 0 ? uploadingImagesCount + ' ' : ''}Photo(s)...`
+                        : '+ Upload Multiple Photos'}
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        disabled={uploadingImage}
+                        style={{ display: 'none' }}
+                        onClick={(e) => {
+                          (e.target as HTMLInputElement).value = '';
+                        }}
+                        onChange={async (e) => {
+                          const fileList = e.target.files;
+                          if (!fileList || fileList.length === 0) return;
+                          const files = Array.from(fileList);
+                          setUploadingImagesCount(files.length);
+                          setUploadingImage(true);
+                          try {
+                            const uploadPromises = files.map((f) => handleFileUpload(f));
+                            const results = await Promise.all(uploadPromises);
+                            const validUrls = results.filter((url): url is string => Boolean(url));
+                            if (validUrls.length > 0) {
+                              const existing = Array.isArray(editingProduct.images) && editingProduct.images.length > 0
+                                ? editingProduct.images.filter(Boolean)
+                                : editingProduct.image
+                                ? [editingProduct.image]
+                                : [];
+                              const updated = [...existing, ...validUrls.filter((u) => !existing.includes(u))];
+                              setEditingProduct({
+                                ...editingProduct,
+                                image: updated[0] || '',
+                                images: updated,
+                              });
+                              showToast(`Successfully added ${validUrls.length} photo(s) to product!`);
+                            }
+                          } finally {
+                            setUploadingImage(false);
+                            setUploadingImagesCount(0);
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
+
+                  {/* Multi-Image Gallery Grid */}
+                  {(() => {
+                    const currentImgs = Array.isArray(editingProduct.images) && editingProduct.images.length > 0
+                      ? editingProduct.images.filter(Boolean)
+                      : editingProduct.image
+                      ? [editingProduct.image]
+                      : [];
+
+                    if (currentImgs.length === 0) {
+                      return (
+                        <div className={styles.galleryEmpty}>
+                          <ImageIcon size={32} style={{ color: '#cbd5e1' }} />
+                          <div>No images attached yet. Select multiple photos from your device or paste an image URL above.</div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className={styles.galleryGrid}>
+                        {currentImgs.map((imgUrl, idx) => {
+                          const isCover = idx === 0;
+                          return (
+                            <div
+                              key={`${imgUrl}-${idx}`}
+                              className={`${styles.galleryCard} ${isCover ? styles.galleryCardCover : ''}`}
+                            >
+                              {isCover ? (
+                                <span className={styles.galleryBadge}>
+                                  <Star size={10} fill="#ffffff" /> COVER
+                                </span>
+                              ) : (
+                                <span className={styles.galleryOrderBadge}>
+                                  #{idx + 1}
+                                </span>
+                              )}
+
+                              <img
+                                src={formatMediaUrl(imgUrl)}
+                                alt={`Product view ${idx + 1}`}
+                                className={styles.galleryCardThumb}
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/images/branding/creative-learning-logo.png';
+                                }}
+                              />
+
+                              <div className={styles.galleryActions}>
+                                {!isCover && (
+                                  <button
+                                    type="button"
+                                    className={styles.galleryActionBtn}
+                                    title="Set as Primary Cover Image"
+                                    onClick={() => {
+                                      const updated = [...currentImgs];
+                                      const [item] = updated.splice(idx, 1);
+                                      updated.unshift(item);
+                                      setEditingProduct({
+                                        ...editingProduct,
+                                        image: updated[0] || '',
+                                        images: updated,
+                                      });
+                                      showToast('Set as primary cover image.');
+                                    }}
+                                  >
+                                    <Star size={12} />
+                                  </button>
+                                )}
+
+                                {idx > 0 && (
+                                  <button
+                                    type="button"
+                                    className={styles.galleryActionBtn}
+                                    title="Move Left"
+                                    onClick={() => {
+                                      const updated = [...currentImgs];
+                                      const temp = updated[idx];
+                                      updated[idx] = updated[idx - 1];
+                                      updated[idx - 1] = temp;
+                                      setEditingProduct({
+                                        ...editingProduct,
+                                        image: updated[0] || '',
+                                        images: updated,
+                                      });
+                                    }}
+                                  >
+                                    <ArrowLeft size={12} />
+                                  </button>
+                                )}
+
+                                {idx < currentImgs.length - 1 && (
+                                  <button
+                                    type="button"
+                                    className={styles.galleryActionBtn}
+                                    title="Move Right"
+                                    onClick={() => {
+                                      const updated = [...currentImgs];
+                                      const temp = updated[idx];
+                                      updated[idx] = updated[idx + 1];
+                                      updated[idx + 1] = temp;
+                                      setEditingProduct({
+                                        ...editingProduct,
+                                        image: updated[0] || '',
+                                        images: updated,
+                                      });
+                                    }}
+                                  >
+                                    <ArrowRight size={12} />
+                                  </button>
+                                )}
+
+                                <button
+                                  type="button"
+                                  className={`${styles.galleryActionBtn} ${styles.galleryActionBtnDanger}`}
+                                  title="Delete photo from product"
+                                  onClick={() => {
+                                    const updated = currentImgs.filter((_, i) => i !== idx);
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      image: updated[0] || '',
+                                      images: updated,
+                                    });
+                                    showToast('Photo removed from gallery.');
+                                  }}
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 

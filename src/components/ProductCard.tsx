@@ -73,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span
             style={{
               fontSize: '11px',
-              color: '#00ff9d',
+              color: '#059669',
               fontWeight: 700,
               fontFamily: 'var(--font-primary)',
               display: 'inline-flex',

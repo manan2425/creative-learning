@@ -130,7 +130,7 @@ export default function ProjectsSection() {
                     gap: '10px',
                     marginTop: 'auto',
                     paddingTop: '16px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderTop: '1px solid #f1f5f9',
                   }}
                 >
                   {linkedProduct && (
