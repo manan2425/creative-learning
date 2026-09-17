@@ -61,7 +61,7 @@ export default function RoboticsBackground() {
     // Setup Robotics Circuit Nodes
     const particleCount = Math.min(Math.floor((width * height) / 16000), 55);
     const particles: Particle[] = [];
-    const colors = ['#00f0ff', '#00d2ff', '#ff7b00', '#00ff9d', '#38bdf8'];
+    const colors = ['#0284c7', '#0ea5e9', '#f97316', '#10b981', '#6366f1'];
 
     for (let i = 0; i < particleCount; i++) {
       const isHub = i % 8 === 0;
@@ -103,7 +103,7 @@ export default function RoboticsBackground() {
           toNode,
           progress: 0,
           speed: Math.random() * 0.015 + 0.008,
-          color: Math.random() > 0.4 ? '#00f0ff' : '#ffaa00',
+          color: Math.random() > 0.4 ? '#0284c7' : '#f97316',
         });
       }
     };
@@ -140,7 +140,7 @@ export default function RoboticsBackground() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = p.isHub ? 12 : 6;
+        ctx.shadowBlur = p.isHub ? 10 : 4;
         ctx.shadowColor = p.color;
         ctx.fill();
         ctx.shadowBlur = 0;
@@ -149,7 +149,7 @@ export default function RoboticsBackground() {
         if (p.isHub) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius + 4, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
+          ctx.strokeStyle = 'rgba(2, 132, 199, 0.25)';
           ctx.lineWidth = 1;
           ctx.stroke();
         }
@@ -166,11 +166,11 @@ export default function RoboticsBackground() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxConnectDist) {
-            const alpha = (1 - dist / maxConnectDist) * 0.22;
+            const alpha = (1 - dist / maxConnectDist) * 0.18;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+            ctx.strokeStyle = `rgba(2, 132, 199, ${alpha})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
