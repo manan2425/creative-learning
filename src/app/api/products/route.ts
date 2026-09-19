@@ -24,7 +24,9 @@ export async function POST(request: Request) {
     }
 
     // 1. Save to MongoDB Products table
-    await ProductsTable.upsert(product);
+    if (!(await ProductsTable.upsert(product))) {
+      return NextResponse.json({ error: 'Database is unavailable' }, { status: 503 });
+    }
 
     // 2. Keep composite catalog and disk in sync
     const catalog = await getCatalogDataAsync();
@@ -52,7 +54,9 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Product id parameter is required' }, { status: 400 });
     }
 
-    await ProductsTable.delete(id);
+    if (!(await ProductsTable.delete(id))) {
+      return NextResponse.json({ error: 'Product was not deleted from the database' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const updatedProducts = catalog.products.filter((p) => p.id !== id);

@@ -23,7 +23,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Project title and key are required' }, { status: 400 });
     }
 
-    await ProjectsTable.upsert(item);
+    if (!(await ProjectsTable.upsert(item))) {
+      return NextResponse.json({ error: 'Database is unavailable' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const idx = catalog.projects.findIndex((p) => p.key === item.key);
@@ -50,7 +52,9 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Project key parameter is required' }, { status: 400 });
     }
 
-    await ProjectsTable.delete(key);
+    if (!(await ProjectsTable.delete(key))) {
+      return NextResponse.json({ error: 'Project was not deleted from the database' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const updated = catalog.projects.filter((p) => p.key !== key);

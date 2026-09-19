@@ -211,15 +211,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteProduct = async (id: string): Promise<boolean> => {
-    const updatedProducts = catalog.products.filter((p) => p.id !== id);
-    if (selectedProduct && selectedProduct.id === id) {
-      setSelectedProduct(null);
+    try {
+      const response = await fetch(`/api/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!response.ok) return false;
+      const updatedProducts = catalog.products.filter((p) => p.id !== id);
+      setCatalog({ ...catalog, products: updatedProducts });
+      if (selectedProduct && selectedProduct.id === id) setSelectedProduct(null);
+      if (inquiryProduct && inquiryProduct.id === id) setInquiryProduct(null);
+      broadcastUpdate();
+      return true;
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      return false;
     }
-    if (inquiryProduct && inquiryProduct.id === id) {
-      setInquiryProduct(null);
-    }
-    fetch(`/api/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
-    return saveCatalog({ ...catalog, products: updatedProducts });
   };
 
   const savePractical = async (item: PracticalActivity): Promise<boolean> => {
@@ -234,9 +238,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deletePractical = async (key: string): Promise<boolean> => {
-    const updated = catalog.practicals.filter((p) => p.key !== key);
-    fetch(`/api/practicals?key=${encodeURIComponent(key)}`, { method: 'DELETE' }).catch(() => {});
-    return saveCatalog({ ...catalog, practicals: updated });
+    try {
+      const response = await fetch(`/api/practicals?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
+      if (!response.ok) return false;
+      setCatalog({ ...catalog, practicals: catalog.practicals.filter((p) => p.key !== key) });
+      broadcastUpdate();
+      return true;
+    } catch (err) {
+      console.error('Error deleting practical:', err);
+      return false;
+    }
   };
 
   const saveProject = async (item: Project): Promise<boolean> => {
@@ -251,9 +262,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteProject = async (key: string): Promise<boolean> => {
-    const updated = catalog.projects.filter((p) => p.key !== key);
-    fetch(`/api/projects?key=${encodeURIComponent(key)}`, { method: 'DELETE' }).catch(() => {});
-    return saveCatalog({ ...catalog, projects: updated });
+    try {
+      const response = await fetch(`/api/projects?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
+      if (!response.ok) return false;
+      setCatalog({ ...catalog, projects: catalog.projects.filter((p) => p.key !== key) });
+      broadcastUpdate();
+      return true;
+    } catch (err) {
+      console.error('Error deleting project:', err);
+      return false;
+    }
   };
 
   const saveQuote = async (quote: Quote): Promise<boolean> => {
@@ -268,10 +286,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteQuote = async (id: string): Promise<boolean> => {
-    const updated = catalog.quotes.filter((q) => q.id !== id);
-    const newHero = catalog.heroQuoteId === id ? (updated[0]?.id || '') : catalog.heroQuoteId;
-    fetch(`/api/quotes?id=${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
-    return saveCatalog({ ...catalog, quotes: updated, heroQuoteId: newHero });
+    try {
+      const response = await fetch(`/api/quotes?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!response.ok) return false;
+      const updated = catalog.quotes.filter((q) => q.id !== id);
+      const newHero = catalog.heroQuoteId === id ? (updated[0]?.id || '') : catalog.heroQuoteId;
+      setCatalog({ ...catalog, quotes: updated, heroQuoteId: newHero });
+      broadcastUpdate();
+      return true;
+    } catch (err) {
+      console.error('Error deleting quote:', err);
+      return false;
+    }
   };
 
   const setHeroQuote = async (id: string): Promise<boolean> => {

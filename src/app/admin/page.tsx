@@ -1048,10 +1048,10 @@ export default function AdminPage() {
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionDelete}`}
-                              onClick={() => {
+                              onClick={async () => {
                                 if (confirm(`Are you sure you want to delete "${p.name}"?`)) {
-                                  deleteProduct(p.id);
-                                  showToast(`Deleted ${p.name}`);
+                                  const success = await deleteProduct(p.id);
+                                  showToast(success ? `Deleted ${p.name}` : `Could not delete ${p.name}`);
                                 }
                               }}
                             >
@@ -1187,10 +1187,10 @@ export default function AdminPage() {
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionDelete}`}
-                              onClick={() => {
+                              onClick={async () => {
                                 if (confirm(`Delete starter kit "${kit.name}"?`)) {
-                                  deleteProduct(kit.id);
-                                  showToast(`Deleted ${kit.name}`);
+                                  const success = await deleteProduct(kit.id);
+                                  showToast(success ? `Deleted ${kit.name}` : `Could not delete ${kit.name}`);
                                 }
                               }}
                             >
@@ -1284,10 +1284,10 @@ export default function AdminPage() {
                           <button
                             type="button"
                             className={`${styles.actionBtn} ${styles.actionDelete}`}
-                            onClick={() => {
+                            onClick={async () => {
                               if (confirm(`Delete practical "${prac.title}"?`)) {
-                                deletePractical(prac.key);
-                                showToast(`Deleted ${prac.title}`);
+                                const success = await deletePractical(prac.key);
+                                showToast(success ? `Deleted ${prac.title}` : `Could not delete ${prac.title}`);
                               }
                             }}
                           >
@@ -1383,10 +1383,10 @@ export default function AdminPage() {
                           <button
                             type="button"
                             className={`${styles.actionBtn} ${styles.actionDelete}`}
-                            onClick={() => {
+                            onClick={async () => {
                               if (confirm(`Delete project "${proj.title}"?`)) {
-                                deleteProject(proj.key);
-                                showToast(`Deleted ${proj.title}`);
+                                const success = await deleteProject(proj.key);
+                                showToast(success ? `Deleted ${proj.title}` : `Could not delete ${proj.title}`);
                               }
                             }}
                           >
@@ -1484,10 +1484,10 @@ export default function AdminPage() {
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionDelete}`}
-                              onClick={() => {
+                              onClick={async () => {
                                 if (confirm(`Delete quote?`)) {
-                                  deleteQuote(q.id);
-                                  showToast('Quote deleted');
+                                  const success = await deleteQuote(q.id);
+                                  showToast(success ? 'Quote deleted' : 'Could not delete quote');
                                 }
                               }}
                             >

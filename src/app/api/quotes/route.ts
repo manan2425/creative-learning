@@ -25,7 +25,9 @@ export async function POST(request: Request) {
 
     const catalog = await getCatalogDataAsync();
     const isHero = quote.id === catalog.heroQuoteId;
-    await QuotesTable.upsert(quote, isHero);
+    if (!(await QuotesTable.upsert(quote, isHero))) {
+      return NextResponse.json({ error: 'Database is unavailable' }, { status: 503 });
+    }
 
     const idx = catalog.quotes.findIndex((q) => q.id === quote.id);
     const updated = [...catalog.quotes];
@@ -51,7 +53,9 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Quote id parameter is required' }, { status: 400 });
     }
 
-    await QuotesTable.delete(id);
+    if (!(await QuotesTable.delete(id))) {
+      return NextResponse.json({ error: 'Quote was not deleted from the database' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const updated = catalog.quotes.filter((q) => q.id !== id);

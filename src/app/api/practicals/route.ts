@@ -23,7 +23,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Practical title and key are required' }, { status: 400 });
     }
 
-    await PracticalsTable.upsert(item);
+    if (!(await PracticalsTable.upsert(item))) {
+      return NextResponse.json({ error: 'Database is unavailable' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const idx = catalog.practicals.findIndex((p) => p.key === item.key);
@@ -50,7 +52,9 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Practical key parameter is required' }, { status: 400 });
     }
 
-    await PracticalsTable.delete(key);
+    if (!(await PracticalsTable.delete(key))) {
+      return NextResponse.json({ error: 'Practical was not deleted from the database' }, { status: 503 });
+    }
 
     const catalog = await getCatalogDataAsync();
     const updated = catalog.practicals.filter((p) => p.key !== key);
