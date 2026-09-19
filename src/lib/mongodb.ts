@@ -5,6 +5,12 @@ const options = {
   serverSelectionTimeoutMS: 1000,
   connectTimeoutMS: 1000,
   socketTimeoutMS: 3000,
+  maxPoolSize: 10,
+  minPoolSize: 0,
+  maxIdleTimeMS: 30000,
+  waitQueueTimeoutMS: 2000,
+  retryReads: true,
+  retryWrites: true,
 };
 
 let client: MongoClient;
@@ -22,13 +28,19 @@ export function getClientPromise(): Promise<MongoClient> | null {
   if (process.env.NODE_ENV === 'development') {
     if (!global._mongoClientPromise) {
       client = new MongoClient(uri, options);
-      global._mongoClientPromise = client.connect();
+      global._mongoClientPromise = client.connect().catch((error) => {
+        global._mongoClientPromise = undefined;
+        throw error;
+      });
     }
     return global._mongoClientPromise;
   } else {
     if (!clientPromise) {
       client = new MongoClient(uri, options);
-      clientPromise = client.connect();
+      clientPromise = client.connect().catch((error) => {
+        clientPromise = null;
+        throw error;
+      });
     }
     return clientPromise;
   }
@@ -47,4 +59,3 @@ export async function getDb(): Promise<Db | null> {
   }
 }
 
-export default getClientPromise();

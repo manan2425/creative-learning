@@ -6,15 +6,23 @@ export const dynamic = 'force-dynamic';
 
 const DEFAULT_PASS_HASH = crypto.createHash('sha256').update('admin123').digest('hex');
 const DEFAULT_RECOVERY_HASH = crypto.createHash('sha256').update('CREATIVE-LEARNING-RESET').digest('hex');
+let cachedAuthConfig: { passHash: string; recoveryHash: string } | null = null;
+let cachedAuthAt = 0;
+const AUTH_CACHE_TTL = 60_000;
 
 async function getAuthConfig() {
+  if (cachedAuthConfig && Date.now() - cachedAuthAt < AUTH_CACHE_TTL) {
+    return cachedAuthConfig;
+  }
+
+  let config: { passHash: string; recoveryHash: string } | null = null;
   try {
     const db = await getDb();
     if (db) {
       const authCol = db.collection('auth');
       const doc = await authCol.findOne({ _id: 'admin_credentials' as any });
       if (doc && doc.passHash) {
-        return {
+        config = {
           passHash: doc.passHash,
           recoveryHash: doc.recoveryHash || DEFAULT_RECOVERY_HASH,
         };
@@ -36,10 +44,12 @@ async function getAuthConfig() {
   } catch (err) {
     console.error('Error reading auth from MongoDB, using fallback:', err);
   }
-  return {
+  cachedAuthConfig = config || {
     passHash: DEFAULT_PASS_HASH,
     recoveryHash: DEFAULT_RECOVERY_HASH,
   };
+  cachedAuthAt = Date.now();
+  return cachedAuthConfig;
 }
 
 async function saveAuthPassword(newPasswordHash: string) {
@@ -57,6 +67,8 @@ async function saveAuthPassword(newPasswordHash: string) {
         },
         { upsert: true }
       );
+      cachedAuthConfig = null;
+      cachedAuthAt = 0;
       return true;
     }
   } catch (err) {

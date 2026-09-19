@@ -30,8 +30,8 @@ export function isImageFile(file: File | null | undefined): boolean {
  */
 export async function compressImageForMobile(
   file: File,
-  maxDimension = 1200,
-  quality = 0.78
+  maxDimension = 1000,
+  quality = 0.72
 ): Promise<File> {
   // If not an image (e.g. PDF datasheet) or already an SVG / very small (< 40KB), return as is
   if (!isImageFile(file) || file.type === 'image/svg+xml' || (file.size < 200 * 1024 && !file.name.toLowerCase().endsWith('.png'))) {
@@ -50,7 +50,7 @@ export async function compressImageForMobile(
     // Safety timeout: Never hang upload under any circumstance
     const timer = setTimeout(() => {
       safeResolve(file);
-    }, 4000);
+    }, 1500);
 
     try {
       const url = URL.createObjectURL(file);
