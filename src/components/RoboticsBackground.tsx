@@ -27,10 +27,12 @@ export default function RoboticsBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationFrameId: number;
+    let animationRunning = true;
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
@@ -211,15 +213,25 @@ export default function RoboticsBackground() {
         ctx.shadowBlur = 0;
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (animationRunning) {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      animationRunning = document.visibilityState === 'visible';
+      if (animationRunning) render();
+      else cancelAnimationFrame(animationFrameId);
     };
 
     render();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

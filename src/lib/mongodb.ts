@@ -1,9 +1,10 @@
 import { MongoClient, Db } from 'mongodb';
 
 const options = {
-  serverSelectionTimeoutMS: 3000,
-  connectTimeoutMS: 3000,
-  socketTimeoutMS: 10000,
+  // Do not block the storefront for several seconds when Atlas is asleep or unreachable.
+  serverSelectionTimeoutMS: 1000,
+  connectTimeoutMS: 1000,
+  socketTimeoutMS: 3000,
 };
 
 let client: MongoClient;
