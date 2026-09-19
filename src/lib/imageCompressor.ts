@@ -15,7 +15,7 @@ export interface CompressionResult {
 /**
  * Checks whether a given file is an image by MIME type or file extension.
  */
-export function isImageFile(file: File): boolean {
+export function isImageFile(file: File | null | undefined): boolean {
   if (!file) return false;
   if (file.type && file.type.toLowerCase().startsWith('image/')) {
     return true;
@@ -33,17 +33,31 @@ export async function compressImageForMobile(
   maxDimension = 1400,
   quality = 0.85
 ): Promise<File> {
-  // If not an image (e.g. PDF datasheet) or already an SVG / very small (< 50KB), return as is
-  if (!isImageFile(file) || file.type === 'image/svg+xml' || (file.size < 50 * 1024 && !file.name.toLowerCase().endsWith('.png'))) {
+  // If not an image (e.g. PDF datasheet) or already an SVG / very small (< 40KB), return as is
+  if (!isImageFile(file) || file.type === 'image/svg+xml' || (file.size < 40 * 1024 && !file.name.toLowerCase().endsWith('.png'))) {
     return file;
   }
 
   return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = (f: File) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(f);
+      }
+    };
+
+    // Safety timeout: Never hang upload under any circumstance
+    const timer = setTimeout(() => {
+      safeResolve(file);
+    }, 4000);
+
     try {
       const url = URL.createObjectURL(file);
       const img = new Image();
 
       const cleanup = () => {
+        clearTimeout(timer);
         try {
           URL.revokeObjectURL(url);
         } catch (_) {}
@@ -56,7 +70,7 @@ export async function compressImageForMobile(
 
           if (!width || !height) {
             cleanup();
-            resolve(file);
+            safeResolve(file);
             return;
           }
 
@@ -78,7 +92,7 @@ export async function compressImageForMobile(
           const ctx = canvas.getContext('2d');
           if (!ctx) {
             cleanup();
-            resolve(file);
+            safeResolve(file);
             return;
           }
 
@@ -92,7 +106,7 @@ export async function compressImageForMobile(
           ctx.drawImage(img, 0, 0, width, height);
 
           const outputMime = 'image/jpeg';
-          const cleanBaseName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+          const cleanBaseName = file.name ? file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') : 'photo';
           const newName = `${cleanBaseName || 'photo'}.jpg`;
 
           if (typeof canvas.toBlob === 'function') {
@@ -100,13 +114,19 @@ export async function compressImageForMobile(
               (blob) => {
                 cleanup();
                 if (blob) {
-                  const optimizedFile = new File([blob], newName, {
-                    type: outputMime,
-                    lastModified: Date.now(),
-                  });
-                  resolve(optimizedFile);
+                  try {
+                    const optimizedFile = new File([blob], newName, {
+                      type: outputMime,
+                      lastModified: Date.now(),
+                    });
+                    safeResolve(optimizedFile);
+                  } catch (fileErr) {
+                    // In environments where new File() is restricted, wrap blob
+                    (blob as any).name = newName;
+                    safeResolve(blob as unknown as File);
+                  }
                 } else {
-                  resolve(file);
+                  safeResolve(file);
                 }
               },
               outputMime,
@@ -125,16 +145,21 @@ export async function compressImageForMobile(
               u8arr[n] = bstr.charCodeAt(n);
             }
             const fallbackBlob = new Blob([u8arr], { type: mime });
-            const optimizedFile = new File([fallbackBlob], newName, {
-              type: outputMime,
-              lastModified: Date.now(),
-            });
-            resolve(optimizedFile);
+            try {
+              const optimizedFile = new File([fallbackBlob], newName, {
+                type: outputMime,
+                lastModified: Date.now(),
+              });
+              safeResolve(optimizedFile);
+            } catch (_) {
+              (fallbackBlob as any).name = newName;
+              safeResolve(fallbackBlob as unknown as File);
+            }
           }
         } catch (procErr) {
           console.warn('Canvas image compression exception, using original file:', procErr);
           cleanup();
-          resolve(file);
+          safeResolve(file);
         }
       };
 
@@ -167,27 +192,32 @@ export async function compressImageForMobile(
                 ctx.drawImage(fallbackImg, 0, 0, w, h);
                 canvas.toBlob((blob) => {
                   if (blob) {
-                    resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+                    try {
+                      safeResolve(new File([blob], (file.name ? file.name.replace(/\.[^/.]+$/, '') : 'photo') + '.jpg', { type: 'image/jpeg' }));
+                    } catch (_) {
+                      safeResolve(file);
+                    }
                   } else {
-                    resolve(file);
+                    safeResolve(file);
                   }
                 }, 'image/jpeg', quality);
                 return;
               }
             } catch (_) {}
-            resolve(file);
+            safeResolve(file);
           };
-          fallbackImg.onerror = () => resolve(file);
+          fallbackImg.onerror = () => safeResolve(file);
           fallbackImg.src = e.target?.result as string;
         };
-        reader.onerror = () => resolve(file);
+        reader.onerror = () => safeResolve(file);
         reader.readAsDataURL(file);
       };
 
       img.src = url;
     } catch (err) {
+      clearTimeout(timer);
       console.warn('Compression exception, using original file:', err);
-      resolve(file);
+      safeResolve(file);
     }
   });
 }
@@ -210,11 +240,27 @@ export async function compressImageToDataUrl(
       return;
     }
 
+    let resolved = false;
+    const safeResolve = (s: string) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(s);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      const reader = new FileReader();
+      reader.onload = () => safeResolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.onerror = () => safeResolve('');
+      reader.readAsDataURL(file);
+    }, 4000);
+
     try {
       const url = URL.createObjectURL(file);
       const img = new Image();
 
       const cleanup = () => {
+        clearTimeout(timer);
         try {
           URL.revokeObjectURL(url);
         } catch (_) {}
@@ -242,7 +288,7 @@ export async function compressImageToDataUrl(
           if (!ctx) {
             cleanup();
             const reader = new FileReader();
-            reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+            reader.onload = () => safeResolve(typeof reader.result === 'string' ? reader.result : '');
             reader.readAsDataURL(file);
             return;
           }
@@ -255,11 +301,11 @@ export async function compressImageToDataUrl(
 
           const dataUrl = canvas.toDataURL('image/jpeg', quality);
           cleanup();
-          resolve(dataUrl);
+          safeResolve(dataUrl);
         } catch (_) {
           cleanup();
           const reader = new FileReader();
-          reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+          reader.onload = () => safeResolve(typeof reader.result === 'string' ? reader.result : '');
           reader.readAsDataURL(file);
         }
       };
@@ -267,14 +313,15 @@ export async function compressImageToDataUrl(
       img.onerror = () => {
         cleanup();
         const reader = new FileReader();
-        reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+        reader.onload = () => safeResolve(typeof reader.result === 'string' ? reader.result : '');
         reader.readAsDataURL(file);
       };
 
       img.src = url;
     } catch (_) {
+      clearTimeout(timer);
       const reader = new FileReader();
-      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.onload = () => safeResolve(typeof reader.result === 'string' ? reader.result : '');
       reader.readAsDataURL(file);
     }
   });

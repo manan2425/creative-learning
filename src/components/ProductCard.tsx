@@ -18,14 +18,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const mainImage = formatMediaUrl(product.images?.[0] || product.image);
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
     addToCart(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
 
   return (
-    <article className="product-card">
+    <article
+      className="product-card"
+      onClick={() => setSelectedProduct(product)}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="product-img">
         <img
           src={mainImage}
@@ -44,7 +49,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Cpu size={10} /> {product.category}
           </span>
           {product.pdf && (
-            <span
+            <a
+              href={formatMediaUrl(product.pdf)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               style={{
                 fontSize: '10.5px',
                 color: 'var(--cyan)',
@@ -57,14 +66,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                 border: '1px solid var(--cyan-border)',
                 padding: '2px 8px',
                 borderRadius: '4px',
+                textDecoration: 'none',
               }}
             >
               <FileText size={11} /> DATASHEET
-            </span>
+            </a>
           )}
         </div>
 
-        <h3>{product.name}</h3>
+        <h3 style={{ cursor: 'pointer' }}>{product.name}</h3>
         <p>{product.description}</p>
         <div className="sku-line">SKU: {product.sku || `CL-${product.id}`}</div>
 
@@ -86,7 +96,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         <div className="card-actions">
-          <button type="button" onClick={() => setSelectedProduct(product)} aria-label="View technical specs">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedProduct(product);
+            }}
+            aria-label="View technical specs"
+          >
             <Eye size={14} /> Specs
           </button>
           <button

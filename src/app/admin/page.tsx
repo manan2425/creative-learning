@@ -7,6 +7,7 @@ import { Product, PracticalActivity, Project, Quote, CompanyConfig } from '@/typ
 import { formatMediaUrl, parseStringList, parseSpecKeyValue } from '@/lib/utils';
 import { compressImageForMobile, compressImageToDataUrl, isImageFile } from '@/lib/imageCompressor';
 import styles from './admin.module.css';
+import ProductModal from '@/components/ProductModal';
 import {
   Package,
   Layers,
@@ -77,6 +78,7 @@ export default function AdminPage() {
     deleteQuote,
     setHeroQuote,
     saveCompany,
+    setSelectedProduct,
   } = useData();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -238,8 +240,9 @@ export default function AdminPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.url) {
-          return data.url;
+        const url = data?.url || (Array.isArray(data?.urls) && data.urls[0]);
+        if (url) {
+          return url;
         }
       }
     } catch (err) {
@@ -266,7 +269,6 @@ export default function AdminPage() {
         }
       };
       reader.onerror = () => {
-        showToast('⚠️ Failed to process selected file');
         resolve(null);
       };
       reader.readAsDataURL(uploadFile);
@@ -1026,6 +1028,15 @@ export default function AdminPage() {
                           <div style={{ display: 'flex', gap: '6px' }}>
                             <button
                               type="button"
+                              className={styles.actionBtn}
+                              style={{ background: 'rgba(2, 132, 199, 0.08)', color: '#0284c7', borderColor: '#bae6fd' }}
+                              onClick={() => setSelectedProduct(p)}
+                              title="Preview hardware specs modal"
+                            >
+                              <Eye size={13} /> Specs
+                            </button>
+                            <button
+                              type="button"
                               className={`${styles.actionBtn} ${styles.actionEdit}`}
                               onClick={() => {
                                 setEditingProduct({ ...p });
@@ -1154,6 +1165,15 @@ export default function AdminPage() {
                         </td>
                         <td>
                           <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className={styles.actionBtn}
+                              style={{ background: 'rgba(2, 132, 199, 0.08)', color: '#0284c7', borderColor: '#bae6fd' }}
+                              onClick={() => setSelectedProduct(kit)}
+                              title="Preview starter kit specs modal"
+                            >
+                              <Eye size={13} /> Specs
+                            </button>
                             <button
                               type="button"
                               className={`${styles.actionBtn} ${styles.actionEdit}`}
@@ -2380,6 +2400,14 @@ export default function AdminPage() {
                 <button
                   type="button"
                   className="secondary"
+                  onClick={() => setSelectedProduct(editingProduct)}
+                  style={{ borderRadius: '10px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Eye size={15} /> Preview Specs Modal
+                </button>
+                <button
+                  type="button"
+                  className="secondary"
                   onClick={() => setEditingProduct(null)}
                   disabled={isSaving}
                   style={{ borderRadius: '10px', padding: '10px 18px' }}
@@ -3147,6 +3175,8 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      {/* Specs Preview Modal mounted globally for Admin */}
+      <ProductModal />
     </div>
   );
 }

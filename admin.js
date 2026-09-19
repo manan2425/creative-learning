@@ -119,16 +119,18 @@ function compressImageForAdmin(file, maxDimension = 1400, quality = 0.82) {
 
 async function uploadOrCompressImage(file) {
   if (!file) return '';
+  const compressed = await compressImageForAdmin(file);
   try {
     const formData = new FormData();
     formData.append('file', file);
     const res = await fetch('/api/upload', { method: 'POST', body: formData });
     if (res.ok) {
       const result = await res.json();
-      if (result && result.url) return result.url;
+      const url = result?.url || (Array.isArray(result?.urls) && result.urls[0]);
+      if (url) return url;
     }
   } catch (_) {}
-  return await compressImageForAdmin(file);
+  return compressed;
 }
 
 function loadData() {

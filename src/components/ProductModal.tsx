@@ -26,10 +26,23 @@ export default function ProductModal() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [added, setAdded] = useState(false);
 
-  // Reset active image index whenever a new product is selected
+  // Reset active image index and manage body scroll lock + Escape key
   useEffect(() => {
     setActiveImageIndex(0);
-  }, [selectedProduct?.id]);
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setSelectedProduct(null);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [selectedProduct?.id, setSelectedProduct]);
 
   if (!selectedProduct) return null;
 

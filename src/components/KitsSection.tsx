@@ -18,7 +18,8 @@ export default function KitsSection() {
       p.category === 'Starter Kits'
   );
 
-  const handleAdd = (kit: any) => {
+  const handleAdd = (kit: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     addToCart(kit);
     setAddedId(kit.id);
     setTimeout(() => setAddedId(null), 1500);
@@ -45,7 +46,12 @@ export default function KitsSection() {
           const isAdded = addedId === kit.id;
 
           return (
-            <article key={kit.id} className="kit-card">
+            <article
+              key={kit.id}
+              className="kit-card"
+              onClick={() => setSelectedProduct(kit)}
+              style={{ cursor: 'pointer' }}
+            >
               <img
                 src={imgUrl}
                 alt={kit.name}
@@ -74,6 +80,7 @@ export default function KitsSection() {
                       href={formatMediaUrl(kit.pdf)}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       style={{
                         color: 'var(--cyan)',
                         fontWeight: 700,
@@ -94,7 +101,7 @@ export default function KitsSection() {
                   )}
                 </div>
 
-                <h3>{kit.name}</h3>
+                <h3 style={{ cursor: 'pointer' }}>{kit.name}</h3>
                 <p>{kit.description}</p>
                 <div className="sku-line">SKU: {kit.sku || `CL-${kit.id}`}</div>
 
@@ -125,13 +132,19 @@ export default function KitsSection() {
                 </div>
 
                 <div className="card-actions">
-                  <button type="button" onClick={() => setSelectedProduct(kit)}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedProduct(kit);
+                    }}
+                  >
                     <Eye size={14} /> Kit Specs
                   </button>
                   <button
                     type="button"
                     className="add"
-                    onClick={() => handleAdd(kit)}
+                    onClick={(e) => handleAdd(kit, e)}
                     style={{
                       background: isAdded ? '#00ff9d' : undefined,
                       color: isAdded ? '#030712' : undefined,
