@@ -349,8 +349,7 @@
       "image": "images/components/p20-kit.jpg",
       "images": ["images/components/p20-kit.jpg", "images/source-pages/page-20.jpg"],
       "price": "Contact for price",
-      "sku": "CL-P20-IOTKIT",
-      "pdf": "docs/kits/p20-kit.pdf"
+      "sku": "CL-P20-IOTKIT"
     },
     {
       "id": "p21-kit",
@@ -363,8 +362,7 @@
       "image": "images/components/p21-kit.jpg",
       "images": ["images/components/p21-kit.jpg", "images/source-pages/page-21.jpg"],
       "price": "Contact for price",
-      "sku": "CL-P21-AUTOROBOT",
-      "pdf": "docs/kits/p21-kit.pdf"
+      "sku": "CL-P21-AUTOROBOT"
     },
     {
       "id": "p22-kit",
@@ -377,8 +375,7 @@
       "image": "images/components/p22-kit.jpg",
       "images": ["images/components/p22-kit.jpg", "images/source-pages/page-22.jpg"],
       "price": "Contact for price",
-      "sku": "CL-P22-ARMKIT",
-      "pdf": "docs/kits/p22-kit.pdf"
+      "sku": "CL-P22-ARMKIT"
     },
     {
       "id": "p23-kit",
@@ -391,8 +388,7 @@
       "image": "images/components/p23-kit.jpg",
       "images": ["images/components/p23-kit.jpg", "images/source-pages/page-23.jpg"],
       "price": "Contact for price",
-      "sku": "CL-P23-AIOTKIT",
-      "pdf": "docs/kits/p23-kit.pdf"
+      "sku": "CL-P23-AIOTKIT"
     }
   ],
   "practicals": [
@@ -410,7 +406,7 @@
         "Establish near/far proximity rules to trigger a safety alert LED and buzzer alert"
       ],
       "images": ["images/components/p04-1.jpg", "images/source-pages/page-04.jpg"],
-      "pdf": "docs/practicals/ultrasonic-lab.pdf"
+      "pdf": "docs/practical/ultrasonic-distance-lab.pdf"
     },
     {
       "key": "soil-moisture-test",
@@ -426,7 +422,7 @@
         "Trigger a 5V relay module to automatically actuate a micro water pump when dry"
       ],
       "images": ["images/components/p04-3.jpg", "images/source-pages/page-04.jpg"],
-      "pdf": "docs/practicals/soil-moisture-lab.pdf"
+      "pdf": "docs/practical/soil-moisture-test.pdf"
     },
     {
       "key": "temperature-monitoring",
@@ -442,7 +438,7 @@
         "Display real-time environmental metrics on a 16x2 I2C Character LCD module"
       ],
       "images": ["images/components/p05-1.jpg", "images/source-pages/page-05.jpg"],
-      "pdf": "docs/practicals/climate-lab.pdf"
+      "pdf": "docs/practical/temperature-monitoring.pdf"
     },
     {
       "key": "l298n-motor-steering",
@@ -457,8 +453,7 @@
         "Set logic HIGH/LOW combinations across IN pins to control Forward, Reverse, and Pivot turns",
         "Adjust analogWrite() PWM values (0 to 255) to modulate smooth deceleration and acceleration curves"
       ],
-      "images": ["images/components/p06-1.jpg", "images/source-pages/page-06.jpg"],
-      "pdf": "docs/practicals/motor-control-lab.pdf"
+      "images": ["images/components/p06-1.jpg", "images/source-pages/page-06.jpg"]
     },
     {
       "key": "mpu6050-gyro-stabilizer",
@@ -473,8 +468,7 @@
         "Read 6-axis raw registers and apply complementary filter: Angle = 0.98 * (Angle + Gyro*dt) + 0.02 * Accel",
         "Output live orientation angles to 0.96 inch OLED HUD display for stabilizing servo balance"
       ],
-      "images": ["images/components/p09-1.jpg", "images/source-pages/page-09.jpg"],
-      "pdf": "docs/practicals/gyro-lab.pdf"
+      "images": ["images/components/p09-1.jpg", "images/source-pages/page-09.jpg"]
     },
     {
       "key": "bluetooth-telemetry-link",
@@ -489,8 +483,7 @@
         "Write serial event listener in firmware to process command packets ('F', 'B', 'L', 'R')",
         "Transmit real-time telemetry back to smartphone display terminal"
       ],
-      "images": ["images/components/p08-1.jpg", "images/source-pages/page-08.jpg"],
-      "pdf": "docs/practicals/bluetooth-lab.pdf"
+      "images": ["images/components/p08-1.jpg", "images/source-pages/page-08.jpg"]
     },
     {
       "key": "tm1637-timer-lab",
@@ -505,8 +498,7 @@
         "Construct millis() timer loop to increment minutes and seconds accurately",
         "Flash the central colon dot every 1000 milliseconds to simulate digital chronometer"
       ],
-      "images": ["images/components/p13-1.jpg", "images/source-pages/page-13.jpg"],
-      "pdf": "docs/practicals/timer-lab.pdf"
+      "images": ["images/components/p13-1.jpg", "images/source-pages/page-13.jpg"]
     },
     {
       "key": "pir-light-automation",
@@ -521,8 +513,7 @@
         "Implement non-blocking software timer to keep light active for 15 seconds after last motion",
         "Add LDR light sensor override so lighting only triggers during dark hours"
       ],
-      "images": ["images/components/p04-2.jpg", "images/source-pages/page-04.jpg"],
-      "pdf": "docs/practicals/pir-lighting.pdf"
+      "images": ["images/components/p04-2.jpg", "images/source-pages/page-04.jpg"]
     }
   ],
   "projects": [
@@ -546,7 +537,7 @@
       "learn": "Analog Sensor Calibration • Relay Optical Isolation • Power Management • Closed-Loop Feedback",
       "upgrade": "Add ESP8266 cloud telemetry, water tank ultrasonic level gauge, and automated SMS irrigation alerts.",
       "images": ["images/components/p04-3.jpg", "images/components/p05-1.jpg"],
-      "pdf": "docs/projects/smart-irrigation.pdf"
+      "pdf": "docs/projects/smart-plant-watering.pdf"
     },
     {
       "key": "wireless-appliance-controller",
@@ -557,7 +548,7 @@
       "learn": "Web Server Architecture • WebSocket Protocols • AC Power Safety • Optocoupler Isolation",
       "upgrade": "Integrate MQTT broker connection, voice assistant commands, and automatic overload circuit breaker.",
       "images": ["images/components/p03-2.jpg", "images/components/p07-2.jpg"],
-      "pdf": "docs/projects/smart-home-hub.pdf"
+      "pdf": "docs/projects/wireless-appliance-controller.pdf"
     },
     {
       "key": "self-balancing-robot",
@@ -567,8 +558,7 @@
       "summary": "A dynamically stabilized inverted pendulum robot that continuously measures its tilt angle at 200Hz and calculates precision PID motor counter-torque to maintain perfect vertical balance.",
       "learn": "PID Control Loop Tuning • Sensor Fusion & Complementary Filtering • High-Speed Interrupts • Inertial Dynamics",
       "upgrade": "Add Bluetooth directional steering commands and an OLED battery voltage monitor.",
-      "images": ["images/components/p09-1.jpg", "images/components/p06-1.jpg"],
-      "pdf": "docs/projects/self-balancing-robot.pdf"
+      "images": ["images/components/p09-1.jpg", "images/components/p06-1.jpg"]
     },
     {
       "key": "gesture-controlled-arm",
@@ -578,8 +568,7 @@
       "summary": "A wireless tele-operated robotic manipulator arm that mirrors human hand and wrist gestures in real time using inertial sensors and high-speed radio transceivers.",
       "learn": "Multi-Servo Kinematics • Wireless Packet Transmission • Angle Mapping • PWM Signal Synchronization",
       "upgrade": "Add mechanical gripper claw with pressure feedback sensor and preset trajectory recording.",
-      "images": ["images/components/p22-kit.jpg", "images/components/p06-2.jpg"],
-      "pdf": "docs/projects/gesture-robotic-arm.pdf"
+      "images": ["images/components/p22-kit.jpg", "images/components/p06-2.jpg"]
     },
     {
       "key": "iot-weather-station",
@@ -589,8 +578,7 @@
       "summary": "A solar-backed environmental monitoring station that collects temperature, humidity, and air pollution index metrics, displaying data locally on OLED and publishing live to cloud dashboard.",
       "learn": "IoT REST APIs • Environmental Sensing • Power Optimization • Cloud Visualization",
       "upgrade": "Add rain drop sensor, wind speed anemometer, and automatic extreme weather buzzer alarms.",
-      "images": ["images/components/p03-1.jpg", "images/components/p05-1.jpg"],
-      "pdf": "docs/projects/iot-weather-station.pdf"
+      "images": ["images/components/p03-1.jpg", "images/components/p05-1.jpg"]
     }
   ],
   "quotes": [
