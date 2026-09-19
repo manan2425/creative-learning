@@ -41,10 +41,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
   const broadcastRef = useRef<BroadcastChannel | null>(null);
+  const catalogRequestRef = useRef<Promise<void> | null>(null);
+  const lastCatalogFetchRef = useRef(0);
 
-  const fetchFreshCatalog = async () => {
+  const fetchFreshCatalog = async (force = false) => {
+    const now = Date.now();
+    if (!force && (catalogRequestRef.current || now - lastCatalogFetchRef.current < 15000)) {
+      return catalogRequestRef.current || Promise.resolve();
+    }
+
+    lastCatalogFetchRef.current = now;
+    const request = (async () => {
     try {
-      const res = await fetch('/api/catalog?t=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch('/api/catalog', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data && Array.isArray(data.products)) {
@@ -55,6 +64,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       console.error('Error fetching catalog data from MongoDB:', e);
     } finally {
       setLoading(false);
+    }
+    })();
+
+    catalogRequestRef.current = request;
+    try {
+      await request;
+    } finally {
+      catalogRequestRef.current = null;
     }
   };
 
@@ -82,7 +99,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       broadcastRef.current = bc;
       bc.onmessage = (event) => {
         if (event.data?.type === 'CATALOG_UPDATED') {
-          fetchFreshCatalog();
+          fetchFreshCatalog(true);
         }
       };
     }
@@ -90,7 +107,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     // 2. Storage event listener (for browsers/tabs without active BroadcastChannel)
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'cl_catalog_sync_timestamp') {
-        fetchFreshCatalog();
+        fetchFreshCatalog(true);
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -108,14 +125,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // 4. Background real-time polling (every 6 seconds while page is visible)
-    // Ensures cross-device edits (e.g. admin on mobile -> user on desktop) sync seamlessly
-    const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        fetchFreshCatalog();
-      }
-    }, 6000);
-
     return () => {
       if (broadcastRef.current) {
         broadcastRef.current.close();
@@ -123,7 +132,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibility);
-      clearInterval(interval);
     };
   }, []);
 
@@ -283,7 +291,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         setActiveCategory,
         searchQuery,
         setSearchQuery,
-        refreshCatalog: fetchFreshCatalog,
+        refreshCatalog: () => fetchFreshCatalog(true),
         saveCatalog,
         saveProduct,
         deleteProduct,
