@@ -166,22 +166,40 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       sku: product.sku || `CL-${product.id}`,
     };
 
-    const existingIndex = catalog.products.findIndex((p) => p.id === cleanProduct.id);
-    let updatedProducts = [...catalog.products];
-    if (existingIndex >= 0) {
-      updatedProducts[existingIndex] = cleanProduct;
-    } else {
-      updatedProducts.push(cleanProduct);
-    }
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanProduct),
+      });
 
-    if (selectedProduct && selectedProduct.id === cleanProduct.id) {
-      setSelectedProduct(cleanProduct);
-    }
-    if (inquiryProduct && inquiryProduct.id === cleanProduct.id) {
-      setInquiryProduct(cleanProduct);
-    }
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        console.error('Error saving product:', errorBody?.error || response.statusText);
+        return false;
+      }
 
-    return saveCatalog({ ...catalog, products: updatedProducts });
+      const existingIndex = catalog.products.findIndex((p) => p.id === cleanProduct.id);
+      const updatedProducts = [...catalog.products];
+      if (existingIndex >= 0) {
+        updatedProducts[existingIndex] = cleanProduct;
+      } else {
+        updatedProducts.push(cleanProduct);
+      }
+
+      setCatalog({ ...catalog, products: updatedProducts });
+      if (selectedProduct && selectedProduct.id === cleanProduct.id) {
+        setSelectedProduct(cleanProduct);
+      }
+      if (inquiryProduct && inquiryProduct.id === cleanProduct.id) {
+        setInquiryProduct(cleanProduct);
+      }
+      broadcastUpdate();
+      return true;
+    } catch (err) {
+      console.error('Error saving product:', err);
+      return false;
+    }
   };
 
   const deleteProduct = async (id: string): Promise<boolean> => {
