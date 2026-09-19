@@ -9,6 +9,8 @@ const CATALOG_FILE = path.join(DATA_DIR, 'catalog.json');
 
 // In-memory fallback if file system or mongo is unreachable
 let memoryCatalog: CatalogData = initialData as CatalogData;
+let catalogCacheTime = 0;
+const CATALOG_CACHE_TTL = 30_000;
 
 /**
  * Synchronous local file/memory getter (used as instantaneous local fallback)
@@ -20,6 +22,7 @@ export function getCatalogData(): CatalogData {
       const parsed = JSON.parse(content);
       if (parsed && Array.isArray(parsed.products)) {
         memoryCatalog = parsed;
+        catalogCacheTime = Date.now();
         return parsed;
       }
     }
@@ -52,6 +55,10 @@ export function saveCatalogData(data: CatalogData): boolean {
  * automatically migrating initial products on first load if the database is empty.
  */
 export async function getCatalogDataAsync(): Promise<CatalogData> {
+  if (catalogCacheTime && Date.now() - catalogCacheTime < CATALOG_CACHE_TTL) {
+    return memoryCatalog;
+  }
+
   try {
     const db = await getDb();
     if (db) {
@@ -60,8 +67,7 @@ export async function getCatalogDataAsync(): Promise<CatalogData> {
 
       if (record && record.data && Array.isArray(record.data.products)) {
         memoryCatalog = record.data as CatalogData;
-        // Also keep local disk copy in sync
-        saveCatalogData(memoryCatalog);
+        catalogCacheTime = Date.now();
         return memoryCatalog;
       }
 
@@ -76,7 +82,9 @@ export async function getCatalogDataAsync(): Promise<CatalogData> {
   }
 
   // Fallback to local storage
-  return getCatalogData();
+  const fallback = getCatalogData();
+  catalogCacheTime = Date.now();
+  return fallback;
 }
 
 /**
@@ -189,6 +197,8 @@ export async function saveCatalogDataAsync(data: CatalogData): Promise<boolean> 
 
   // Always keep local disk copy synced as well
   saveCatalogData(data);
+  memoryCatalog = data;
+  catalogCacheTime = Date.now();
 
   return mongoSuccess || true;
 }

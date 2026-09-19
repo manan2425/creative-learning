@@ -53,7 +53,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     lastCatalogFetchRef.current = now;
     const request = (async () => {
     try {
-      const res = await fetch('/api/catalog', { cache: 'no-store' });
+      const res = await fetch('/api/catalog', { cache: force ? 'no-store' : 'default' });
       if (res.ok) {
         const data = await res.json();
         if (data && Array.isArray(data.products)) {
