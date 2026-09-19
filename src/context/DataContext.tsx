@@ -112,6 +112,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     };
     window.addEventListener('storage', handleStorage);
 
+    // Refresh this tab too after a successful mutation from this provider.
+    const handleLocalCatalogUpdate = () => {
+      fetchFreshCatalog(true);
+    };
+    window.addEventListener('cl:catalog-updated', handleLocalCatalogUpdate);
+
     // 3. Focus & Visibility Change: Auto-refresh when user opens or returns to the storefront
     const handleFocus = () => {
       fetchFreshCatalog();
@@ -130,6 +136,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         broadcastRef.current.close();
       }
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('cl:catalog-updated', handleLocalCatalogUpdate);
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
