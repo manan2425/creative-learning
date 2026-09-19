@@ -25,13 +25,16 @@ export function formatMediaUrl(url?: string | null): string {
     return trimmed;
   }
 
-  // If it already starts with a slash
-  if (trimmed.startsWith('/')) {
-    return trimmed;
-  }
+  // Normalize paths copied from local files, admin inputs, and older records.
+  const normalized = trimmed.replace(/\\/g, '/').replace(/^\.\//, '');
+  const publicPath = normalized.replace(/^public\//, '');
+
+  if (publicPath.startsWith('/')) return publicPath;
+  if (publicPath.startsWith('uploads/')) return `/${publicPath}`;
+  if (publicPath.startsWith('images/') || publicPath.startsWith('docs/')) return `/${publicPath}`;
 
   // Prepend single leading slash
-  return `/${trimmed}`;
+  return `/${publicPath}`;
 }
 
 /**
