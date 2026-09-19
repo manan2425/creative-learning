@@ -8,10 +8,6 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const mongoItems = await QuotesTable.getAll();
-    if (mongoItems.length > 0) {
-      return NextResponse.json({ quotes: mongoItems });
-    }
     const catalog = await getCatalogDataAsync();
     return NextResponse.json({ quotes: catalog.quotes || [] });
   } catch (error) {

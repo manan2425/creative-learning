@@ -410,6 +410,7 @@ function removeProduct(id) {
   save();
   renderProducts();
   renderComponentList();
+  fetch('/api/products?id=' + encodeURIComponent(id), { method: 'DELETE' }).catch(() => {});
 }
 
 function resetNewProductForm() {

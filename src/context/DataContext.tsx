@@ -192,6 +192,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (inquiryProduct && inquiryProduct.id === id) {
       setInquiryProduct(null);
     }
+    fetch(`/api/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
     return saveCatalog({ ...catalog, products: updatedProducts });
   };
 
@@ -208,6 +209,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const deletePractical = async (key: string): Promise<boolean> => {
     const updated = catalog.practicals.filter((p) => p.key !== key);
+    fetch(`/api/practicals?key=${encodeURIComponent(key)}`, { method: 'DELETE' }).catch(() => {});
     return saveCatalog({ ...catalog, practicals: updated });
   };
 
@@ -224,6 +226,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProject = async (key: string): Promise<boolean> => {
     const updated = catalog.projects.filter((p) => p.key !== key);
+    fetch(`/api/projects?key=${encodeURIComponent(key)}`, { method: 'DELETE' }).catch(() => {});
     return saveCatalog({ ...catalog, projects: updated });
   };
 
@@ -241,6 +244,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const deleteQuote = async (id: string): Promise<boolean> => {
     const updated = catalog.quotes.filter((q) => q.id !== id);
     const newHero = catalog.heroQuoteId === id ? (updated[0]?.id || '') : catalog.heroQuoteId;
+    fetch(`/api/quotes?id=${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
     return saveCatalog({ ...catalog, quotes: updated, heroQuoteId: newHero });
   };
 

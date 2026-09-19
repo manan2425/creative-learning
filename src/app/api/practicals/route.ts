@@ -8,10 +8,6 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const mongoItems = await PracticalsTable.getAll();
-    if (mongoItems.length > 0) {
-      return NextResponse.json({ practicals: mongoItems });
-    }
     const catalog = await getCatalogDataAsync();
     return NextResponse.json({ practicals: catalog.practicals || [] });
   } catch (error) {

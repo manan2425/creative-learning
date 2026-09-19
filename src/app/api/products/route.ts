@@ -8,10 +8,6 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const mongoProducts = await ProductsTable.getAll();
-    if (mongoProducts.length > 0) {
-      return NextResponse.json({ products: mongoProducts });
-    }
     const catalog = await getCatalogDataAsync();
     return NextResponse.json({ products: catalog.products || [] });
   } catch (error) {

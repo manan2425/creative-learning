@@ -99,55 +99,75 @@ export async function saveCatalogDataAsync(data: CatalogData): Promise<boolean> 
       );
 
       // 2. Sync individual products collection for easy MongoDB browsing/editing
-      if (Array.isArray(data.products) && data.products.length > 0) {
+      if (Array.isArray(data.products)) {
         const prodCol = db.collection('products');
-        const bulkOps = data.products.map((prod) => ({
-          updateOne: {
-            filter: { id: prod.id },
-            update: { $set: { ...prod, updatedAt: new Date() } },
-            upsert: true,
-          },
-        }));
-        await prodCol.bulkWrite(bulkOps);
+        const currentProductIds = data.products.map((p) => p.id);
+        // Permanently delete any products from MongoDB that are no longer in data.products
+        await prodCol.deleteMany({ id: { $nin: currentProductIds } });
+        if (data.products.length > 0) {
+          const bulkOps = data.products.map((prod) => ({
+            updateOne: {
+              filter: { id: prod.id },
+              update: { $set: { ...prod, updatedAt: new Date() } },
+              upsert: true,
+            },
+          }));
+          await prodCol.bulkWrite(bulkOps);
+        }
       }
 
       // 3. Sync individual practicals collection
-      if (Array.isArray(data.practicals) && data.practicals.length > 0) {
+      if (Array.isArray(data.practicals)) {
         const pracCol = db.collection('practicals');
-        const bulkPrac = data.practicals.map((prac) => ({
-          updateOne: {
-            filter: { key: prac.key },
-            update: { $set: { ...prac, updatedAt: new Date() } },
-            upsert: true,
-          },
-        }));
-        await pracCol.bulkWrite(bulkPrac);
+        const currentPracKeys = data.practicals.map((prac) => prac.key);
+        // Permanently delete any practicals from MongoDB that are no longer in data.practicals
+        await pracCol.deleteMany({ key: { $nin: currentPracKeys } });
+        if (data.practicals.length > 0) {
+          const bulkPrac = data.practicals.map((prac) => ({
+            updateOne: {
+              filter: { key: prac.key },
+              update: { $set: { ...prac, updatedAt: new Date() } },
+              upsert: true,
+            },
+          }));
+          await pracCol.bulkWrite(bulkPrac);
+        }
       }
 
       // 4. Sync individual projects collection
-      if (Array.isArray(data.projects) && data.projects.length > 0) {
+      if (Array.isArray(data.projects)) {
         const projCol = db.collection('projects');
-        const bulkProj = data.projects.map((proj) => ({
-          updateOne: {
-            filter: { key: proj.key },
-            update: { $set: { ...proj, updatedAt: new Date() } },
-            upsert: true,
-          },
-        }));
-        await projCol.bulkWrite(bulkProj);
+        const currentProjKeys = data.projects.map((proj) => proj.key);
+        // Permanently delete any projects from MongoDB that are no longer in data.projects
+        await projCol.deleteMany({ key: { $nin: currentProjKeys } });
+        if (data.projects.length > 0) {
+          const bulkProj = data.projects.map((proj) => ({
+            updateOne: {
+              filter: { key: proj.key },
+              update: { $set: { ...proj, updatedAt: new Date() } },
+              upsert: true,
+            },
+          }));
+          await projCol.bulkWrite(bulkProj);
+        }
       }
 
       // 5. Sync quotes collection
-      if (Array.isArray(data.quotes) && data.quotes.length > 0) {
+      if (Array.isArray(data.quotes)) {
         const quotesCol = db.collection('quotes');
-        const bulkQuotes = data.quotes.map((q) => ({
-          updateOne: {
-            filter: { id: q.id },
-            update: { $set: { ...q, isHero: q.id === data.heroQuoteId, updatedAt: new Date() } },
-            upsert: true,
-          },
-        }));
-        await quotesCol.bulkWrite(bulkQuotes);
+        const currentQuoteIds = data.quotes.map((q) => q.id);
+        // Permanently delete any quotes from MongoDB that are no longer in data.quotes
+        await quotesCol.deleteMany({ id: { $nin: currentQuoteIds } });
+        if (data.quotes.length > 0) {
+          const bulkQuotes = data.quotes.map((q) => ({
+            updateOne: {
+              filter: { id: q.id },
+              update: { $set: { ...q, isHero: q.id === data.heroQuoteId, updatedAt: new Date() } },
+              upsert: true,
+            },
+          }));
+          await quotesCol.bulkWrite(bulkQuotes);
+        }
       }
 
       // 6. Sync company settings collection
