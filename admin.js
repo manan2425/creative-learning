@@ -50,7 +50,85 @@ function ensureLearningContent(){
 function save() {
   ensureQuotes();
   data.catalogVersion = CATALOG_VERSION;
-  localStorage.setItem(DATA_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(DATA_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn('LocalStorage save quota note:', err);
+  }
+}
+
+function compressImageForAdmin(file, maxDimension = 1400, quality = 0.82) {
+  return new Promise((resolve) => {
+    if (!file) return resolve('');
+    const isImg = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(file.name || '');
+    if (!isImg) {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    try {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      const cleanup = () => { try { URL.revokeObjectURL(url); } catch (_) {} };
+      img.onload = () => {
+        try {
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          if (!w || !h) { cleanup(); return resolve(''); }
+          if (w > maxDimension || h > maxDimension) {
+            if (w > h) { h = Math.round((h * maxDimension) / w); w = maxDimension; }
+            else { w = Math.round((w * maxDimension) / h); h = maxDimension; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { cleanup(); return resolve(''); }
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, w, h);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          cleanup();
+          resolve(dataUrl);
+        } catch (e) {
+          cleanup();
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+          reader.readAsDataURL(file);
+        }
+      };
+      img.onerror = () => {
+        cleanup();
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+        reader.readAsDataURL(file);
+      };
+      img.src = url;
+    } catch (_) {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+async function uploadOrCompressImage(file) {
+  if (!file) return '';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    if (res.ok) {
+      const result = await res.json();
+      if (result && result.url) return result.url;
+    }
+  } catch (_) {}
+  return await compressImageForAdmin(file);
 }
 
 function loadData() {
@@ -272,14 +350,8 @@ function saveProduct(id) {
   if (status) { status.textContent = 'Saved successfully ✓'; status.className = 'status success'; setTimeout(() => status.textContent = '', 1800); }
 }
 
-function readImageAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    if (!file || !file.type.startsWith('image/')) return reject(new Error('Please choose an image file.'));
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Could not read the image.'));
-    reader.readAsDataURL(file);
-  });
+async function readImageAsDataUrl(file) {
+  return await uploadOrCompressImage(file);
 }
 
 function productImages(p) {
@@ -289,21 +361,21 @@ function productImages(p) {
 }
 
 async function handleProductImages(id, files) {
-  if (!files.length) return;
+  if (!files || !files.length) return;
   try {
     const p = data.products.find((x) => x.id === id);
     if (!p) return;
     const images = productImages(p).slice();
-    if (images.length + files.length > 8) throw new Error('You can upload up to 8 product images per item.');
     for (const file of files) {
-      if (file.size > 4 * 1024 * 1024) throw new Error('Each image must be 4 MB or smaller.');
-      images.push(await readImageAsDataUrl(file));
+      const url = await uploadOrCompressImage(file);
+      if (url) images.push(url);
     }
     p.images = images;
     p.image = images[0] || '';
     save();
     renderProducts();
   } catch (e) {
+    console.error(e);
     alert(e.message || 'Unable to upload images.');
   }
 }
@@ -592,8 +664,18 @@ function removeLearningProject(key){
   delete data.learningContent.projects[key]; delete data.learningMedia.projects[key]; save(); renderLearningEditors();
 }
 
-async function handleEditorImages(kind,key,files){
-  try{const m=mediaBucket(kind,key); if(m.images.length+files.length>8)throw new Error('You can upload up to 8 images per item.'); for(const file of files){if(file.size>4*1024*1024)throw new Error('Each image must be 4 MB or smaller.');m.images.push(await readFileAsDataUrl(file,'image/'));} save(); renderLearningEditors();}catch(e){alert(e.message||'Unable to upload images.');}
+async function handleEditorImages(kind, key, files) {
+  try {
+    const m = mediaBucket(kind, key);
+    for (const file of files) {
+      const url = await uploadOrCompressImage(file);
+      if (url) m.images.push(url);
+    }
+    save();
+    renderLearningEditors();
+  } catch (e) {
+    alert(e.message || 'Unable to upload images.');
+  }
 }
 
 function mediaBucket(kind, key) {
@@ -670,14 +752,15 @@ function renderLearningMedia() {
 async function handleMediaImages(kind, key, files) {
   try {
     const m = mediaBucket(kind, key);
-    const remaining = Math.max(0, 8 - m.images.length);
-    if (files.length > remaining) throw new Error('You can attach up to 8 additional images per item.');
     for (const file of files) {
-      if (file.size > 4 * 1024 * 1024) throw new Error('Each image must be 4 MB or smaller.');
-      m.images.push(await readFileAsDataUrl(file, 'image/'));
+      const url = await uploadOrCompressImage(file);
+      if (url) m.images.push(url);
     }
-    save(); renderLearningMedia();
-  } catch (e) { alert(e.message || 'Unable to upload images.'); }
+    save();
+    renderLearningMedia();
+  } catch (e) {
+    alert(e.message || 'Unable to upload images.');
+  }
 }
 function openMediaDb(){
   return new Promise((resolve,reject)=>{

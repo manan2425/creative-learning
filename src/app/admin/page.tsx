@@ -4,8 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useData } from '@/context/DataContext';
 import { Product, PracticalActivity, Project, Quote, CompanyConfig } from '@/types';
-import { formatMediaUrl } from '@/lib/utils';
-import { compressImageForMobile } from '@/lib/imageCompressor';
+import { formatMediaUrl, parseStringList, parseSpecKeyValue } from '@/lib/utils';
+import { compressImageForMobile, compressImageToDataUrl, isImageFile } from '@/lib/imageCompressor';
 import styles from './admin.module.css';
 import {
   Package,
@@ -216,13 +216,15 @@ export default function AdminPage() {
 
   // File upload handler helper with instant mobile auto-compression & resilient fallback
   const handleFileUpload = async (file: File): Promise<string | null> => {
-    // 0. Auto-compress large mobile camera photos (15MB -> ~120KB) in <100ms
+    if (!file) return null;
+
+    // 0. Auto-compress large camera photos (15MB -> ~100KB) in <100ms
     let uploadFile = file;
-    if (file.type.startsWith('image/')) {
+    if (isImageFile(file)) {
       try {
         uploadFile = await compressImageForMobile(file);
       } catch (compErr) {
-        console.warn('Pre-upload compression skipped, proceeding with original:', compErr);
+        console.warn('Pre-upload compression note, proceeding with original:', compErr);
       }
     }
 
@@ -234,18 +236,26 @@ export default function AdminPage() {
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        return data.url;
-      }
-      if (data.error) {
-        console.warn('Server upload notice, falling back to base64 Data URL:', data.error);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.url) {
+          return data.url;
+        }
       }
     } catch (err) {
-      console.warn('Network upload request failed, falling back to FileReader:', err);
+      console.warn('Network upload request failed, falling back to local compressed data URL:', err);
     }
 
     // 2. Resilient Fallback: Read file as lightweight Data URL (Base64)
+    try {
+      const fallbackUrl = await compressImageToDataUrl(uploadFile);
+      if (fallbackUrl) {
+        return fallbackUrl;
+      }
+    } catch (dataErr) {
+      console.warn('Data URL generation failed:', dataErr);
+    }
+
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -256,7 +266,7 @@ export default function AdminPage() {
         }
       };
       reader.onerror = () => {
-        showToast('Failed to process selected file');
+        showToast('⚠️ Failed to process selected file');
         resolve(null);
       };
       reader.readAsDataURL(uploadFile);
@@ -1891,7 +1901,14 @@ export default function AdminPage() {
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Hardware Specifications (separate items with semicolon ; or newlines)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ margin: 0 }}>Hardware Specifications (separate items with semicolon ; or newlines)</label>
+                  {editingProduct.specifications && (
+                    <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: 700 }}>
+                      {parseStringList(editingProduct.specifications).length} items detected
+                    </span>
+                  )}
+                </div>
                 <textarea
                   rows={3}
                   value={editingProduct.specifications}
@@ -1901,12 +1918,62 @@ export default function AdminPage() {
                   }
                 />
                 <span className={styles.formHelper}>
-                  Example: <code>Operating Voltage: 5V; Current: 15mA; Range: 2cm - 400cm</code>
+                  Format: <code>Parameter: Value; Parameter 2: Value 2</code> or one per line.
                 </span>
+
+                {/* Live Specs Preview */}
+                {editingProduct.specifications && parseStringList(editingProduct.specifications).length > 0 && (
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      padding: '10px 14px',
+                      background: '#f8fafc',
+                      borderRadius: '10px',
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0369a1', marginBottom: '6px' }}>
+                      ⚡ Live Specs Preview:
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {parseStringList(editingProduct.specifications).map((spec, i) => {
+                        const parsed = parseSpecKeyValue(spec);
+                        return (
+                          <span
+                            key={i}
+                            style={{
+                              background: '#ffffff',
+                              border: '1px solid #cbd5e1',
+                              borderRadius: '6px',
+                              padding: '3px 8px',
+                              fontSize: '11.5px',
+                              color: '#1e293b',
+                            }}
+                          >
+                            {parsed.label ? (
+                              <>
+                                <b>{parsed.label}:</b> {parsed.value}
+                              </>
+                            ) : (
+                              parsed.value
+                            )}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                <label>Robotics & IoT Applications (separate items with semicolon ;)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ margin: 0 }}>Robotics & IoT Applications (separate items with semicolon ;)</label>
+                  {editingProduct.applications && (
+                    <span style={{ fontSize: '11px', color: '#ea580c', fontWeight: 700 }}>
+                      {parseStringList(editingProduct.applications).length} applications detected
+                    </span>
+                  )}
+                </div>
                 <textarea
                   rows={2}
                   value={editingProduct.applications}
@@ -1915,6 +1982,28 @@ export default function AdminPage() {
                     setEditingProduct({ ...editingProduct, applications: e.target.value })
                   }
                 />
+
+                {/* Live Apps Preview */}
+                {editingProduct.applications && parseStringList(editingProduct.applications).length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '6px' }}>
+                    {parseStringList(editingProduct.applications).map((app, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          background: '#fff7ed',
+                          border: '1px solid #fed7aa',
+                          color: '#c2410c',
+                          borderRadius: '6px',
+                          padding: '2px 8px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        ⚡ {app}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Multi-Image Gallery Manager */}
@@ -2049,8 +2138,13 @@ export default function AdminPage() {
                                 image: updated[0] || '',
                                 images: updated,
                               });
-                              showToast(`Successfully added ${validUrls.length} photo(s) to product!`);
+                              showToast(`✓ Added ${validUrls.length} photo(s)! Click "Save Product" below to save online.`);
+                            } else {
+                              showToast('⚠️ Could not process selected photo(s). Please choose a valid image file.');
                             }
+                          } catch (uploadErr) {
+                            console.error('Multi-photo upload error:', uploadErr);
+                            showToast('⚠️ Error processing photos. Please try again.');
                           } finally {
                             setUploadingImage(false);
                             setUploadingImagesCount(0);

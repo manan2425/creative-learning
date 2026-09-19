@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { formatMediaUrl, parseStringList } from '@/lib/utils';
+import { formatMediaUrl, parseStringList, parseSpecKeyValue } from '@/lib/utils';
 import {
   X,
   FileText,
@@ -16,6 +16,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Layers,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 
 export default function ProductModal() {
@@ -372,19 +374,26 @@ export default function ProductModal() {
             </div>
 
             {/* Hardware Specifications */}
-            {specsList.length > 0 && (
+            <div
+              style={{
+                margin: '8px 0 14px',
+                background: '#f8fafc',
+                padding: '16px 18px',
+                borderRadius: '16px',
+                border: '1px solid #e2e8f0',
+              }}
+            >
               <div
                 style={{
-                  margin: '8px 0 14px',
-                  background: '#f8fafc',
-                  padding: '16px 20px',
-                  borderRadius: '16px',
-                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '10px',
                 }}
               >
                 <h4
                   style={{
-                    margin: '0 0 10px',
+                    margin: 0,
                     fontSize: '12px',
                     color: '#0369a1',
                     fontFamily: 'var(--font-heading)',
@@ -397,24 +406,80 @@ export default function ProductModal() {
                 >
                   <Cpu size={14} /> HARDWARE SPECIFICATIONS:
                 </h4>
-                <ul
+                {specsList.length > 0 && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: '#0284c7',
+                      fontWeight: 700,
+                      background: '#e0f2fe',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontFamily: 'var(--font-mono)',
+                    }}
+                  >
+                    {specsList.length} Specs
+                  </span>
+                )}
+              </div>
+
+              {specsList.length > 0 ? (
+                <div
                   style={{
-                    paddingLeft: '20px',
-                    margin: 0,
-                    fontSize: '13px',
-                    color: '#1e293b',
-                    lineHeight: '1.7',
-                    fontFamily: 'var(--font-primary)',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gap: '8px',
                   }}
                 >
-                  {specsList.map((spec, i) => (
-                    <li key={i} style={{ marginBottom: '4px' }}>
-                      {spec}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                  {specsList.map((spec, i) => {
+                    const parsed = parseSpecKeyValue(spec);
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          padding: '7px 10px',
+                          fontSize: '12.5px',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '8px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '5px',
+                            height: '5px',
+                            borderRadius: '50%',
+                            background: '#0284c7',
+                            marginTop: '6px',
+                            flexShrink: 0,
+                          }}
+                        />
+                        <div style={{ flex: 1, lineHeight: '1.4' }}>
+                          {parsed.label ? (
+                            <>
+                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>
+                                {parsed.label}:
+                              </strong>{' '}
+                              <span style={{ color: '#334155' }}>{parsed.value}</span>
+                            </>
+                          ) : (
+                            <span style={{ color: '#1e293b', fontWeight: 600 }}>{parsed.value}</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', fontStyle: 'italic' }}>
+                  Standard laboratory pinout and operational specs apply. Refer to the technical datasheet above.
+                </p>
+              )}
+            </div>
 
             {/* Robotics & IoT Applications */}
             {appsList.length > 0 && (
@@ -422,7 +487,7 @@ export default function ProductModal() {
                 style={{
                   margin: '0 0 16px',
                   background: '#ffffff',
-                  padding: '14px 18px',
+                  padding: '14px 16px',
                   borderRadius: '14px',
                   border: '1px dashed #cbd5e1',
                 }}
@@ -440,21 +505,29 @@ export default function ProductModal() {
                     gap: '6px',
                   }}
                 >
-                  <Layers size={14} /> ROBOTICS & IOT USE CASES:
+                  <Layers size={14} /> ROBOTICS & IOT APPLICATIONS:
                 </h4>
-                <ul
-                  style={{
-                    paddingLeft: '20px',
-                    margin: 0,
-                    fontSize: '12.5px',
-                    color: '#475569',
-                    lineHeight: '1.65',
-                  }}
-                >
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {appsList.map((app, i) => (
-                    <li key={i}>{app}</li>
+                    <span
+                      key={i}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        background: '#fff7ed',
+                        color: '#c2410c',
+                        border: '1px solid #fed7aa',
+                        fontSize: '11.5px',
+                        fontWeight: 600,
+                        padding: '4px 9px',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      <Zap size={11} color="#ea580c" /> {app}
+                    </span>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 

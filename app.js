@@ -137,6 +137,19 @@ function renderLearning(){
   document.querySelectorAll("[data-product]").forEach(b=>b.addEventListener("click",()=>openProduct(b.dataset.product,b.dataset.mediaKind||"components",b.dataset.mediaKey||"")));
   refreshRevealTargets();
 }
+function parseSpecs(str){
+  if(!str) return [];
+  return String(str).split(/[;\n\r|]+/).map(s=>s.replace(/^[\s•*–—\-#\d\.\)]+/,'').trim()).filter(Boolean);
+}
+function formatSpecHtml(spec){
+  const clean=String(spec).replace(/^[\s•*–—\-#\d\.\)]+/,'').trim();
+  const c=clean.indexOf(':');
+  if(c>0 && c<clean.length-1){
+    const k=clean.substring(0,c).trim(), v=clean.substring(c+1).trim();
+    if(k.length<=35 && v.length>0) return `<li><b>${escapeHtml(k)}:</b> <span>${escapeHtml(v)}</span></li>`;
+  }
+  return `<li>${escapeHtml(clean)}</li>`;
+}
 function openProduct(id,mediaKind='components',mediaKey=''){
   const p=products.find(x=>x.id===id);if(!p)return;
   let media=componentMedia(p);
@@ -145,7 +158,9 @@ function openProduct(id,mediaKind='components',mediaKey=''){
   if(mediaKind==='projects') media=projectMedia(mediaKey||p.name);
   const imgs=Array.isArray(media.images)&&media.images.length?media.images:productImages(p);
   const fallback=imgs[0]||'';
-  $("#productModalContent").innerHTML=`<div class="product-detail"><div>${mediaGallery(media,fallback,p.name,false,false)}</div><div class="detail"><span class="tag">${escapeHtml(p.category)}</span><h2>${escapeHtml(p.name)}</h2><p class="sku-line">SKU: ${escapeHtml(productSku(p))}</p><p>${escapeHtml(p.description)}</p><h4>Specifications</h4><ul>${String(p.specifications||'').split(";").map(x=>`<li>${escapeHtml(x.trim())}</li>`).join("")}</ul><h4>Applications</h4><ul>${String(p.applications||'').split(";").map(x=>`<li>${escapeHtml(x.trim())}</li>`).join("")}</ul><p><b>${escapeHtml(p.price)}</b> • Contact for availability</p><button class="primary add add-animated" data-add="${p.id}">Add to cart</button></div></div>`;
+  const specs=parseSpecs(p.specifications);
+  const apps=parseSpecs(p.applications);
+  $("#productModalContent").innerHTML=`<div class="product-detail"><div>${mediaGallery(media,fallback,p.name,false,false)}</div><div class="detail"><span class="tag">${escapeHtml(p.category)}</span><h2>${escapeHtml(p.name)}</h2><p class="sku-line">SKU: ${escapeHtml(productSku(p))}</p><p>${escapeHtml(p.description)}</p><h4>Hardware Specifications</h4><ul>${specs.length?specs.map(formatSpecHtml).join(""):`<li>Standard engineering specs applicable.</li>`}</ul>${apps.length?`<h4>Applications & Use Cases</h4><ul>${apps.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>`:''} <p><b>${escapeHtml(p.price)}</b> • Contact for availability</p><button class="primary add add-animated" data-add="${p.id}">Add to cart</button></div></div>`;
   $("#productModal").classList.add("open");$("#productModalContent [data-add]").addEventListener("click",()=>{addToCart(id);$("#productModal").classList.remove("open")});
 }
 function addToCart(id){if(!id)return;cart[id]=(cart[id]||0)+1;saveCart();updateCart();openCart()}
