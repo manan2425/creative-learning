@@ -220,7 +220,7 @@ export default function AdminPage() {
   const handleFileUpload = async (file: File): Promise<string | null> => {
     if (!file) return null;
 
-    // 0. Auto-compress large camera photos (15MB -> ~100KB) in <100ms
+    // 0. Auto-compress large camera photos before sending them over the network.
     let uploadFile = file;
     if (isImageFile(file)) {
       try {
@@ -251,7 +251,7 @@ export default function AdminPage() {
 
     // 2. Resilient Fallback: Read file as lightweight Data URL (Base64)
     try {
-      const fallbackUrl = await compressImageToDataUrl(uploadFile);
+      const fallbackUrl = await compressImageToDataUrl(uploadFile, 1000, 0.75);
       if (fallbackUrl) {
         return fallbackUrl;
       }
@@ -2143,8 +2143,11 @@ export default function AdminPage() {
                           setUploadingImagesCount(files.length);
                           setUploadingImage(true);
                           try {
-                            const uploadPromises = files.map((f) => handleFileUpload(f));
-                            const results = await Promise.all(uploadPromises);
+                            const results: Array<string | null> = [];
+                            for (let index = 0; index < files.length; index += 2) {
+                              const batch = files.slice(index, index + 2);
+                              results.push(...(await Promise.all(batch.map((f) => handleFileUpload(f)))));
+                            }
                             const validUrls = results.filter((url): url is string => Boolean(url));
                             if (validUrls.length > 0) {
                               const existing = Array.isArray(editingProduct.images) && editingProduct.images.length > 0

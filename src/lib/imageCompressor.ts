@@ -30,11 +30,11 @@ export function isImageFile(file: File | null | undefined): boolean {
  */
 export async function compressImageForMobile(
   file: File,
-  maxDimension = 1400,
-  quality = 0.85
+  maxDimension = 1200,
+  quality = 0.78
 ): Promise<File> {
   // If not an image (e.g. PDF datasheet) or already an SVG / very small (< 40KB), return as is
-  if (!isImageFile(file) || file.type === 'image/svg+xml' || (file.size < 40 * 1024 && !file.name.toLowerCase().endsWith('.png'))) {
+  if (!isImageFile(file) || file.type === 'image/svg+xml' || (file.size < 200 * 1024 && !file.name.toLowerCase().endsWith('.png'))) {
     return file;
   }
 

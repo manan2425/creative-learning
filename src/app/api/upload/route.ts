@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
         const filePath = path.join(uploadDir, filename);
 
         try {
-          fs.writeFileSync(filePath, buffer);
+          await fsp.writeFile(filePath, buffer);
           return NextResponse.json({
             success: true,
             url: `/uploads/${filename}`,
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
             const filename = sanitizeFilename('photo.jpg', mimeType);
             const filePath = path.join(uploadDir, filename);
             try {
-              fs.writeFileSync(filePath, buffer);
+              await fsp.writeFile(filePath, buffer);
               results.push({ success: true, url: `/uploads/${filename}`, name: filename });
             } catch (_) {
               results.push({ success: true, url: item, name: filename });
@@ -134,7 +135,7 @@ export async function POST(request: Request) {
       const filePath = path.join(uploadDir, filename);
 
       try {
-        fs.writeFileSync(filePath, buffer);
+        await fsp.writeFile(filePath, buffer);
         results.push({
           success: true,
           url: `/uploads/${filename}`,
