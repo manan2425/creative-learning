@@ -85,20 +85,12 @@ export const HeroSection: React.FC = () => {
               </a>
 
               <a
-                href={hero.secondaryCtaLink || '#bot-builder'}
+                href="#kits"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white hover:bg-slate-50 text-navy rounded-xl font-bold font-heading text-sm border border-border shadow-2xs transition-all cursor-pointer"
               >
                 <Bot className="w-4 h-4 text-cyan" />
-                <span>{hero.secondaryCtaText || 'Launch Bot Builder'}</span>
+                <span>Explore Robotics Kits</span>
               </a>
-
-              <Link
-                href="/admin"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-navy text-white rounded-xl font-bold font-mono text-xs transition-all shadow-2xs cursor-pointer"
-              >
-                <Sliders className="w-3.5 h-3.5 text-cyan" />
-                <span>Admin Portal</span>
-              </Link>
             </div>
 
             {/* Live Metrics Grid */}

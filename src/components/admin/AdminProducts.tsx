@@ -16,7 +16,8 @@ import {
   Upload,
   FolderPlus,
   SlidersHorizontal,
-  Package
+  Package,
+  MessageCircle
 } from 'lucide-react';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 
@@ -33,6 +34,7 @@ export const AdminProducts: React.FC = () => {
     category: categories[1] || 'Microcontrollers',
     price: 199,
     originalPrice: 299,
+    hidePrice: false,
     stockQuantity: 100,
     inStock: true,
     sku: '',
@@ -62,8 +64,9 @@ export const AdminProducts: React.FC = () => {
       id: 'prod-' + Date.now(),
       name: '',
       category: categories.find(c => c !== 'All') || 'Microcontrollers',
-      price: 199,
-      originalPrice: 299,
+      price: 0,
+      originalPrice: 0,
+      hidePrice: false,
       stockQuantity: 100,
       inStock: true,
       sku: 'MCU-' + Math.floor(1000 + Math.random() * 9000),
@@ -81,7 +84,10 @@ export const AdminProducts: React.FC = () => {
 
   const handleOpenEdit = (p: Product) => {
     setEditingProduct(p);
-    setFormData({ ...p });
+    setFormData({ 
+      ...p,
+      hidePrice: Boolean(p.hidePrice)
+    });
     
     // Parse specs to lines
     if (p.specs) {
@@ -103,8 +109,13 @@ export const AdminProducts: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.price) {
-      showToast('Validation Error', 'Product Name and Price are required.', 'warning');
+    if (!formData.name) {
+      showToast('Validation Error', 'Product Name is required.', 'warning');
+      return;
+    }
+
+    if (!formData.hidePrice && (!formData.price || formData.price <= 0)) {
+      showToast('Validation Error', 'Please enter a valid price or toggle "Hide Price on Storefront".', 'warning');
       return;
     }
 
@@ -127,6 +138,8 @@ export const AdminProducts: React.FC = () => {
       ...(formData as Product),
       id: editingProduct ? editingProduct.id : (formData.id || 'prod-' + Date.now()),
       category: formData.category || 'Microcontrollers',
+      price: formData.hidePrice ? 0 : Number(formData.price || 0),
+      hidePrice: Boolean(formData.hidePrice),
       image: formData.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
       specs: parsedSpecs,
       pinout: parsedPinout,
@@ -254,11 +267,19 @@ export const AdminProducts: React.FC = () => {
                     </td>
 
                     <td className="p-4 font-mono font-bold text-navy">
-                      ₹{prod.price}
-                      {prod.originalPrice && (
-                        <span className="text-[10px] text-slate-400 line-through ml-1 font-normal">
-                          ₹{prod.originalPrice}
+                      {prod.hidePrice || !prod.price ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
+                          <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp for Price
                         </span>
+                      ) : (
+                        <>
+                          ₹{prod.price}
+                          {prod.originalPrice ? (
+                            <span className="text-[10px] text-slate-400 line-through ml-1 font-normal">
+                              ₹{prod.originalPrice}
+                            </span>
+                          ) : null}
+                        </>
                       )}
                     </td>
 
@@ -368,26 +389,57 @@ export const AdminProducts: React.FC = () => {
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-navy">Selling Price (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.price || 0}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy focus:outline-hidden focus:border-primary"
-                  />
+                {/* Hide Price / WhatsApp for Price Toggle Card */}
+                <div className="sm:col-span-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                      <MessageCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Hide Price &amp; Show &quot;Contact on WhatsApp for Price&quot;</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Enable this for custom quotation items. Customers will see a direct WhatsApp inquiry button instead of the price.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.hidePrice)}
+                      onChange={(e) => setFormData({ ...formData, hidePrice: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-navy">Original MRP Price (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.originalPrice || 0}
-                    onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary"
-                  />
-                </div>
+                {!formData.hidePrice ? (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Selling Price (₹) *</label>
+                      <input
+                        type="number"
+                        required={!formData.hidePrice}
+                        value={formData.price || 0}
+                        onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                        className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy focus:outline-hidden focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Original MRP Price (₹)</label>
+                      <input
+                        type="number"
+                        value={formData.originalPrice || 0}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
+                        className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="sm:col-span-2 p-3 bg-slate-50 border border-dashed border-emerald-300 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Price will be hidden. Customers will click <strong>&quot;Contact on WhatsApp for Price&quot;</strong> to get a quote.</span>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-navy">Stock Quantity Available</label>

@@ -127,19 +127,28 @@ export const ProductQuickViewModal: React.FC = () => {
               </div>
 
               {/* Price */}
-              <div className="flex items-baseline gap-3 pt-1">
-                <span className="text-2xl font-extrabold text-navy font-mono">
-                  ₹{product.price}
-                </span>
-                {product.originalPrice && (
-                  <span className="text-sm text-slate-400 line-through font-mono">
-                    ₹{product.originalPrice}
-                  </span>
-                )}
-                {product.originalPrice && (
-                  <span className="text-xs font-bold text-success bg-emerald-50 px-2 py-0.5 rounded">
-                    Save {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                  </span>
+              <div className="flex items-center gap-3 pt-1">
+                {product.hidePrice || !product.price ? (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    <MessageCircle className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-extrabold font-heading">Price on Request (Contact on WhatsApp)</span>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-2xl font-extrabold text-navy font-mono">
+                      ₹{product.price}
+                    </span>
+                    {product.originalPrice && (
+                      <span className="text-sm text-slate-400 line-through font-mono">
+                        ₹{product.originalPrice}
+                      </span>
+                    )}
+                    {product.originalPrice && (
+                      <span className="text-xs font-bold text-success bg-emerald-50 px-2 py-0.5 rounded">
+                        Save {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -169,49 +178,67 @@ export const ProductQuickViewModal: React.FC = () => {
             {/* Actions */}
             <div className="space-y-3 pt-4 border-t border-border">
               
-              {/* Quantity Selector */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-navy">Quantity:</span>
-                <div className="flex items-center border border-border bg-slate-50 rounded-lg">
+              {product.hidePrice || !product.price ? (
+                <div className="space-y-3">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>This component is available on custom order/quote. Contact us on WhatsApp for live pricing and bulk discounts.</span>
+                  </div>
                   <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                    onClick={handleWhatsAppInquiry}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
                   >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="px-3 text-xs font-bold font-mono text-navy min-w-[32px] text-center">
-                    {qty}
-                  </span>
-                  <button
-                    onClick={() => setQty(qty + 1)}
-                    className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    <span>Contact on WhatsApp for Price Quote</span>
                   </button>
                 </div>
-                <span className="text-xs text-secondary">
-                  Subtotal: <strong className="font-mono text-navy">₹{product.price * qty}</strong>
-                </span>
-              </div>
+              ) : (
+                <>
+                  {/* Quantity Selector */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-navy">Quantity:</span>
+                    <div className="flex items-center border border-border bg-slate-50 rounded-lg">
+                      <button
+                        onClick={() => setQty(Math.max(1, qty - 1))}
+                        className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="px-3 text-xs font-bold font-mono text-navy min-w-[32px] text-center">
+                        {qty}
+                      </span>
+                      <button
+                        onClick={() => setQty(qty + 1)}
+                        className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <span className="text-xs text-secondary">
+                      Subtotal: <strong className="font-mono text-navy">₹{product.price * qty}</strong>
+                    </span>
+                  </div>
 
-              {/* Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <button
-                  onClick={handleAddToCart}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-xs shadow-md shadow-primary/20 transition-all cursor-pointer"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  <span>Add to Cart</span>
-                </button>
+                  {/* Buttons */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-xs shadow-md shadow-primary/20 transition-all cursor-pointer"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>Add to Cart</span>
+                    </button>
 
-                <button
-                  onClick={handleWhatsAppInquiry}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>WhatsApp Inquiry</span>
-                </button>
-              </div>
+                    <button
+                      onClick={handleWhatsAppInquiry}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white" />
+                      <span>WhatsApp Inquiry</span>
+                    </button>
+                  </div>
+                </>
+              )}
 
             </div>
 

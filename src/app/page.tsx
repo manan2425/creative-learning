@@ -8,7 +8,6 @@ import { ProductsSection } from '@/components/home/ProductsSection';
 import { KitsSection } from '@/components/home/KitsSection';
 import { PracticalSection } from '@/components/home/PracticalSection';
 import { ProjectsSection } from '@/components/home/ProjectsSection';
-import { BotBuilderSection } from '@/components/home/BotBuilderSection';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { WhyUsSection } from '@/components/home/WhyUsSection';
 import { Footer } from '@/components/layout/Footer';
@@ -37,17 +36,15 @@ export default function Home() {
       {/* 7. Engineering Blueprints & DIY Projects (#projects) */}
       <ProjectsSection />
 
-      {/* 8. Interactive RoboBuilder AI Lab (#bot-builder) */}
-      <BotBuilderSection />
-
-      {/* 9. Inspiration & Pioneer Quotes (#inspiration) */}
+      {/* 8. Inspiration & Pioneer Quotes (#inspiration) */}
       <InspirationSection />
 
-      {/* 10. Diagnostics & Why Us (#why-us) */}
+      {/* 9. Diagnostics & Why Us (#why-us) */}
       <WhyUsSection />
 
-      {/* 11. Footer */}
+      {/* 10. Footer */}
       <Footer />
     </main>
   );
 }
+

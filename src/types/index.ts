@@ -5,6 +5,7 @@ export interface Product {
   category: string;
   price: number;
   originalPrice?: number;
+  hidePrice?: boolean;
   rating: number;
   reviewsCount: number;
   inStock: boolean;
@@ -30,6 +31,7 @@ export interface RoboticsKit {
   ageRange: string;
   price: number;
   originalPrice: number;
+  hidePrice?: boolean;
   rating: number;
   reviewsCount: number;
   image: string;
@@ -83,6 +85,7 @@ export interface EngineeringProject {
   category: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   estimatedCost: number;
+  hidePrice?: boolean;
   image: string;
   description: string;
   highlights: string[];

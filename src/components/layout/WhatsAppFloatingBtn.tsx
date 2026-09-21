@@ -5,9 +5,22 @@ import { useStore } from '@/context/StoreContext';
 import { MessageCircle, X, Sparkles, Send, ShieldCheck } from 'lucide-react';
 
 export const WhatsAppFloatingBtn: React.FC = () => {
-  const { openWhatsAppInquiry, settings } = useStore();
+  const { 
+    openWhatsAppInquiry, 
+    settings, 
+    isCartOpen, 
+    isCheckoutOpen, 
+    isSearchOpen,
+    activePracticalModal,
+    activeQuickViewProduct 
+  } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
+
+  // Automatically hide floating button if cart, checkout, search, or details modal is open
+  if (isCartOpen || isCheckoutOpen || isSearchOpen || activePracticalModal || activeQuickViewProduct) {
+    return null;
+  }
 
   const quickTopics = [
     '📦 Check component stock & price list',
@@ -25,7 +38,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
   };
 
   return (
-    <aside aria-label="WhatsApp Support" className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <aside aria-label="WhatsApp Support" className="fixed bottom-6 right-6 z-30 flex flex-col items-end">
       {/* Popover Assistant */}
       {isOpen && (
         <div className="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-border overflow-hidden animate-fade-in">

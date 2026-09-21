@@ -107,7 +107,14 @@ export const ProjectsSection: React.FC = () => {
                     </div>
 
                     <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold font-mono text-navy border border-border shadow-md">
-                      Est. BOM Cost: <span className="text-primary font-extrabold">₹{project.estimatedCost}</span>
+                      {project.hidePrice || !project.estimatedCost ? (
+                        <span className="text-emerald-800 font-extrabold flex items-center gap-1.5 font-heading">
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          Custom Quotation
+                        </span>
+                      ) : (
+                        <>Est. BOM Cost: <span className="text-primary font-extrabold">₹{project.estimatedCost}</span></>
+                      )}
                     </div>
                   </div>
 
@@ -158,7 +165,7 @@ export const ProjectsSection: React.FC = () => {
                           {project.bom.slice(0, 3).map((item, idx) => (
                             <div key={idx} className="flex justify-between px-3 py-1.5 bg-white">
                               <span className="text-secondary truncate max-w-[180px]">{item.name}</span>
-                              <span className="font-bold text-navy font-mono">x{item.qty} (₹{item.unitPrice})</span>
+                              <span className="font-bold text-navy font-mono">x{item.qty} {item.unitPrice ? `(₹${item.unitPrice})` : ''}</span>
                             </div>
                           ))}
                         </div>
@@ -170,25 +177,41 @@ export const ProjectsSection: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="p-6 pt-0 space-y-2">
-                  <button
-                    onClick={() => handleAddProjectBOMToCart(project)}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>Add All BOM Parts to Cart (₹{project.estimatedCost})</span>
-                  </button>
+                  {project.hidePrice || !project.estimatedCost ? (
+                    <button
+                      onClick={() => openWhatsAppInquiry(
+                        `Capstone Blueprint Price Inquiry: ${project.title}`,
+                        `Please provide a quotation and component BOM details for ${project.title}.`,
+                        project.id
+                      )}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white" />
+                      <span>Contact on WhatsApp for Price</span>
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleAddProjectBOMToCart(project)}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>Add All BOM Parts to Cart (₹{project.estimatedCost})</span>
+                      </button>
 
-                  <button
-                    onClick={() => openWhatsAppInquiry(
-                      `Blueprint & BOM Inquiry: ${project.title}`,
-                      `Estimated BOM: ₹${project.estimatedCost}`,
-                      project.id
-                    )}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Enquire Project on WhatsApp</span>
-                  </button>
+                      <button
+                        onClick={() => openWhatsAppInquiry(
+                          `Blueprint & BOM Inquiry: ${project.title}`,
+                          `Estimated BOM: ₹${project.estimatedCost}`,
+                          project.id
+                        )}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Enquire Project on WhatsApp</span>
+                      </button>
+                    </>
+                  )}
                 </div>
 
               </div>

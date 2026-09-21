@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { RoboticsKit } from '@/types';
-import { Plus, Trash2, Edit3, Bot, X, Star, Clock, Layers } from 'lucide-react';
+import { Plus, Trash2, Edit3, Bot, X, Star, Clock, Layers, MessageCircle, Check } from 'lucide-react';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 
 export const AdminKits: React.FC = () => {
@@ -19,6 +19,7 @@ export const AdminKits: React.FC = () => {
     ageRange: 'Age 10+ / Engineering Students',
     price: 1499,
     originalPrice: 2199,
+    hidePrice: false,
     rating: 4.9,
     reviewsCount: 30,
     buildTimeHours: 2.5,
@@ -38,8 +39,9 @@ export const AdminKits: React.FC = () => {
       subtitle: '',
       difficulty: 'Beginner',
       ageRange: 'Age 10+ / Engineering Students',
-      price: 1499,
-      originalPrice: 2199,
+      price: 0,
+      originalPrice: 0,
+      hidePrice: false,
       rating: 4.9,
       reviewsCount: 20,
       buildTimeHours: 2.5,
@@ -54,7 +56,10 @@ export const AdminKits: React.FC = () => {
 
   const handleOpenEdit = (kit: RoboticsKit) => {
     setEditingKit(kit);
-    setFormData({ ...kit });
+    setFormData({ 
+      ...kit,
+      hidePrice: Boolean(kit.hidePrice)
+    });
     setFeaturesInput(kit.features ? kit.features.join('\n') : '');
     setBomInput(kit.bomList ? kit.bomList.map((b) => `${b.item}: ${b.qty}`).join('\n') : '');
     setOutcomesInput(kit.learningOutcomes ? kit.learningOutcomes.join('\n') : '');
@@ -63,8 +68,13 @@ export const AdminKits: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.price) {
-      showToast('Validation Error', 'Kit Title and Price are required.', 'warning');
+    if (!formData.title) {
+      showToast('Validation Error', 'Kit Title is required.', 'warning');
+      return;
+    }
+
+    if (!formData.hidePrice && (!formData.price || formData.price <= 0)) {
+      showToast('Validation Error', 'Please enter a valid price or toggle "Hide Price on Storefront".', 'warning');
       return;
     }
 
@@ -85,6 +95,8 @@ export const AdminKits: React.FC = () => {
     const kitPayload: RoboticsKit = {
       ...(formData as RoboticsKit),
       id: editingKit ? editingKit.id : (formData.id || 'kit-' + Date.now()),
+      price: formData.hidePrice ? 0 : Number(formData.price || 0),
+      hidePrice: Boolean(formData.hidePrice),
       image: formData.image || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80',
       features: parsedFeatures,
       learningOutcomes: parsedOutcomes,
@@ -167,7 +179,13 @@ export const AdminKits: React.FC = () => {
 
                   <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="font-bold text-navy">₹{kit.price}</span>
+                      {kit.hidePrice || !kit.price ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
+                          <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp for Price
+                        </span>
+                      ) : (
+                        <span className="font-bold text-navy">₹{kit.price}</span>
+                      )}
                       <span className="text-slate-500">{kit.buildTimeHours || 2}h Build</span>
                     </div>
 
@@ -274,26 +292,57 @@ export const AdminKits: React.FC = () => {
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-navy">Selling Price (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.price || 0}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
-                  />
+                {/* Hide Price / WhatsApp for Price Toggle Card */}
+                <div className="sm:col-span-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                      <MessageCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Hide Price &amp; Show &quot;Contact on WhatsApp for Price&quot;</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Enable this to provide custom or institutional quotes. Customers will see a direct WhatsApp inquiry button.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.hidePrice)}
+                      onChange={(e) => setFormData({ ...formData, hidePrice: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-navy">Original MRP Price (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.originalPrice || 0}
-                    onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy"
-                  />
-                </div>
+                {!formData.hidePrice ? (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Selling Price (₹) *</label>
+                      <input
+                        type="number"
+                        required={!formData.hidePrice}
+                        value={formData.price || 0}
+                        onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                        className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Original MRP Price (₹)</label>
+                      <input
+                        type="number"
+                        value={formData.originalPrice || 0}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
+                        className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="sm:col-span-2 p-3 bg-slate-50 border border-dashed border-emerald-300 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Price will be hidden. Customers will click <strong>&quot;Contact on WhatsApp for Price&quot;</strong> to get a quote.</span>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-navy">Build Time (Hours)</label>

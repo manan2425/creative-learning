@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { EngineeringProject } from '@/types';
-import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2 } from 'lucide-react';
+import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2, MessageCircle, Check } from 'lucide-react';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 
 export const AdminProjects: React.FC = () => {
@@ -17,6 +17,7 @@ export const AdminProjects: React.FC = () => {
     category: 'Robotics & Automation',
     difficulty: 'Intermediate',
     estimatedCost: 1950,
+    hidePrice: false,
     image: '',
     description: '',
     cadModelAvailable: true,
@@ -34,7 +35,8 @@ export const AdminProjects: React.FC = () => {
       title: '',
       category: 'Robotics & Automation',
       difficulty: 'Intermediate',
-      estimatedCost: 1500,
+      estimatedCost: 0,
+      hidePrice: false,
       image: '',
       description: '',
       cadModelAvailable: true,
@@ -48,7 +50,10 @@ export const AdminProjects: React.FC = () => {
 
   const handleOpenEdit = (proj: EngineeringProject) => {
     setEditingProject(proj);
-    setFormData({ ...proj });
+    setFormData({ 
+      ...proj,
+      hidePrice: Boolean(proj.hidePrice)
+    });
     setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}: ${b.unitPrice}`).join('\n') : '');
     setHighlightsInput(proj.highlights ? proj.highlights.join('\n') : '');
     setIsModalOpen(true);
@@ -79,6 +84,8 @@ export const AdminProjects: React.FC = () => {
     const projectPayload: EngineeringProject = {
       ...(formData as EngineeringProject),
       id: editingProject ? editingProject.id : (formData.id || 'proj-' + Date.now()),
+      estimatedCost: formData.hidePrice ? 0 : Number(formData.estimatedCost || 0),
+      hidePrice: Boolean(formData.hidePrice),
       image: formData.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80',
       bom: parsedBom,
       highlights: parsedHighlights,
@@ -154,7 +161,13 @@ export const AdminProjects: React.FC = () => {
 
                   <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="font-bold text-navy">Est. ₹{proj.estimatedCost}</span>
+                      {proj.hidePrice || !proj.estimatedCost ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
+                          <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp for Quote
+                        </span>
+                      ) : (
+                        <span className="font-bold text-navy">Est. ₹{proj.estimatedCost}</span>
+                      )}
                       <span className="text-primary font-semibold">{proj.category}</span>
                     </div>
 
@@ -250,15 +263,44 @@ export const AdminProjects: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-navy">Estimated Total BOM Cost (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.estimatedCost || 1500}
-                    onChange={(e) => setFormData({ ...formData, estimatedCost: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
-                  />
+                {/* Hide Price / WhatsApp for Price Toggle Card */}
+                <div className="sm:col-span-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                      <MessageCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Hide BOM Cost &amp; Show &quot;Contact on WhatsApp for Price&quot;</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Enable this to provide custom capstone project quotations.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.hidePrice)}
+                      onChange={(e) => setFormData({ ...formData, hidePrice: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
                 </div>
+
+                {!formData.hidePrice ? (
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-navy">Estimated Total BOM Cost (₹)</label>
+                    <input
+                      type="number"
+                      value={formData.estimatedCost || 1500}
+                      onChange={(e) => setFormData({ ...formData, estimatedCost: Number(e.target.value) })}
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
+                    />
+                  </div>
+                ) : (
+                  <div className="sm:col-span-2 p-3 bg-slate-50 border border-dashed border-emerald-300 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Cost will be hidden. Customers will click <strong>&quot;Contact on WhatsApp for Price&quot;</strong> to get a quote.</span>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-navy">Circuit Topology Summary</label>

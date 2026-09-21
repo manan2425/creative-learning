@@ -81,22 +81,14 @@ export const Footer: React.FC = () => {
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm font-sans">
               {bio}
             </p>
-            <div className="pt-2 flex flex-col sm:flex-row gap-2">
+            <div className="pt-2">
               <button
                 onClick={() => openWhatsAppInquiry('Direct Inquiry via Footer')}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold font-heading shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold font-heading shadow-md transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
                 <span>WhatsApp: {settings.whatsappNumber || '+91 9714045096'}</span>
               </button>
-
-              <Link
-                href="/admin"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-mono font-bold transition-all border border-slate-700"
-              >
-                <Sliders className="w-3.5 h-3.5 text-cyan" />
-                <span>Admin Dashboard</span>
-              </Link>
             </div>
           </div>
 
@@ -124,7 +116,6 @@ export const Footer: React.FC = () => {
               <li><a href="#practical" className="hover:text-cyan transition-colors">Guided STEM Practicals</a></li>
               <li><a href="#practical" className="hover:text-cyan transition-colors">Wiring Schematics &amp; Pinouts</a></li>
               <li><a href="#projects" className="hover:text-cyan transition-colors">Engineering Blueprints</a></li>
-              <li><a href="#bot-builder" className="hover:text-cyan transition-colors">Interactive RoboBuilder</a></li>
               <li><a href="#inspiration" className="hover:text-cyan transition-colors">Pioneer Quotes</a></li>
               <li><a href="#why-us" className="hover:text-cyan transition-colors">Hardware Diagnostics</a></li>
             </ul>
