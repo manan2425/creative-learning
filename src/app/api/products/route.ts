@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -21,7 +24,14 @@ export async function GET(request: Request) {
     }
 
     const products = await db.collection('products').find(query).toArray();
-    return NextResponse.json({ success: true, data: products });
+    return NextResponse.json(
+      { success: true, data: products },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Products GET error:', error);
     return NextResponse.json({ success: true, data: [], fallback: true });

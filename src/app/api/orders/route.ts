@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,11 +13,25 @@ export async function GET(request: Request) {
     
     if (type === 'inquiries') {
       const inquiries = await db.collection('inquiries').find({}).sort({ timestamp: -1 }).limit(100).toArray();
-      return NextResponse.json({ success: true, data: inquiries });
+      return NextResponse.json(
+        { success: true, data: inquiries },
+        {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+        }
+      );
     }
 
     const orders = await db.collection('orders').find({}).sort({ createdAt: -1 }).limit(100).toArray();
-    return NextResponse.json({ success: true, data: orders });
+    return NextResponse.json(
+      { success: true, data: orders },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Orders GET error:', error);
     return NextResponse.json({ success: true, data: [], fallback: true });

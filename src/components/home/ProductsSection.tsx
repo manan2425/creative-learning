@@ -165,14 +165,15 @@ export const ProductsSection: React.FC = () => {
                   id: product.id,
                   type: 'product',
                   name: product.name,
-                  price: product.price,
+                  price: product.hidePrice ? 0 : product.price,
+                  hidePrice: Boolean(product.hidePrice || !product.price),
                   image: product.image,
                   sku: product.sku,
                 })}
                 onQuickView={() => setActiveQuickViewProduct(product)}
                 onWhatsApp={() => openWhatsAppInquiry(
                   `Product Inquiry: ${product.name}`,
-                  `Price: ₹${product.price}, SKU: ${product.sku}`,
+                  `Price: ${product.hidePrice ? 'Price on Request' : `₹${product.price}`}, SKU: ${product.sku}`,
                   product.id
                 )}
               />
@@ -198,6 +199,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onQuickView,
   onWhatsApp
 }) => {
+  const isQuoteItem = product.hidePrice || !product.price;
+
   return (
     <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group">
       
@@ -260,7 +263,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Bottom Price & Action Buttons */}
       <div className="p-4 pt-0 space-y-3">
         <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-          {product.hidePrice || !product.price ? (
+          {isQuoteItem ? (
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
               <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
               <span className="text-xs font-extrabold font-heading">Price on Request</span>
@@ -284,34 +287,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Buttons Grid */}
-        {product.hidePrice || !product.price ? (
+        <div className="grid grid-cols-2 gap-2">
           <button
-            onClick={() => onWhatsApp()}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+            onClick={onAddToCart}
+            className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-2xs transition-colors cursor-pointer"
           >
-            <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Contact on WhatsApp for Price</span>
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span>Add to Cart</span>
           </button>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={onAddToCart}
-              className="flex items-center justify-center gap-1.5 py-2 px-3 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-2xs transition-colors cursor-pointer"
-            >
-              <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Add to Cart</span>
-            </button>
 
-            <button
-              onClick={onWhatsApp}
-              className="flex items-center justify-center gap-1.5 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer"
-              title="Enquire on WhatsApp"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600/20" />
-              <span>WhatsApp</span>
-            </button>
-          </div>
-        )}
+          <button
+            onClick={onWhatsApp}
+            className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer"
+            title="Ask on WhatsApp"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600/20" />
+            <span>WhatsApp</span>
+          </button>
+        </div>
       </div>
 
     </div>

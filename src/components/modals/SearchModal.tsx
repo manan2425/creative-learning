@@ -142,33 +142,32 @@ export const SearchModal: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2.5 shrink-0">
                       {prod.hidePrice || !prod.price ? (
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
-                          <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp for Price
+                          <MessageCircle className="w-3 h-3 text-emerald-600" /> Price on Request
                         </span>
                       ) : (
-                        <>
-                          <span className="text-xs font-bold font-mono text-navy">₹{prod.price}</span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart({
-                                id: prod.id,
-                                type: 'product',
-                                name: prod.name,
-                                price: prod.price,
-                                image: prod.image,
-                                sku: prod.sku,
-                              });
-                            }}
-                            className="p-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-lg transition-colors cursor-pointer"
-                            title="Add to cart"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5" />
-                          </button>
-                        </>
+                        <span className="text-xs font-bold font-mono text-navy">₹{prod.price}</span>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: prod.id,
+                            type: 'product',
+                            name: prod.name,
+                            price: prod.hidePrice ? 0 : prod.price,
+                            hidePrice: Boolean(prod.hidePrice || !prod.price),
+                            image: prod.image,
+                            sku: prod.sku,
+                          });
+                        }}
+                        className="p-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-lg transition-colors cursor-pointer"
+                        title="Add to cart"
+                      >
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}

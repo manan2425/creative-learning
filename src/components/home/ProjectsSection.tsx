@@ -20,20 +20,36 @@ export const ProjectsSection: React.FC = () => {
 
   const handleAddProjectBOMToCart = (project: any) => {
     let totalAdded = 0;
-    project.bom?.forEach((item: any, idx: number) => {
+    const isQuoteProject = Boolean(project.hidePrice || !project.estimatedCost);
+
+    if (project.bom && project.bom.length > 0) {
+      project.bom.forEach((item: any, idx: number) => {
+        addToCart({
+          id: `bom-${project.id}-${idx}`,
+          type: 'bom_bundle',
+          name: `${item.name} (${project.title})`,
+          price: isQuoteProject ? 0 : (item.unitPrice || 0),
+          hidePrice: isQuoteProject || !item.unitPrice,
+          image: project.image,
+          sku: `BOM-${project.id.toUpperCase()}-${idx}`,
+        }, item.qty || 1);
+        totalAdded += (item.qty || 1);
+      });
+    } else {
       addToCart({
-        id: `bom-${project.id}-${idx}`,
-        type: 'bom_bundle',
-        name: `${item.name} (${project.title})`,
-        price: item.unitPrice || 100,
+        id: `project-${project.id}`,
+        type: 'project',
+        name: `Blueprint: ${project.title}`,
+        price: isQuoteProject ? 0 : (project.estimatedCost || 0),
+        hidePrice: isQuoteProject,
         image: project.image,
-        sku: `BOM-${project.id.toUpperCase()}-${idx}`,
-      }, item.qty || 1);
-      totalAdded += (item.qty || 1);
-    });
+        sku: `PRJ-${project.id.toUpperCase()}`,
+      }, 1);
+      totalAdded = 1;
+    }
 
     if (totalAdded > 0) {
-      showToast('BOM Added to Cart 📦', `Added ${totalAdded} components for ${project.title} to your cart.`, 'success');
+      showToast('BOM Added to Cart 📦', `Added ${totalAdded} item(s) for ${project.title} to your cart.`, 'success');
     }
   };
 
@@ -177,41 +193,29 @@ export const ProjectsSection: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="p-6 pt-0 space-y-2">
-                  {project.hidePrice || !project.estimatedCost ? (
-                    <button
-                      onClick={() => openWhatsAppInquiry(
-                        `Capstone Blueprint Price Inquiry: ${project.title}`,
-                        `Please provide a quotation and component BOM details for ${project.title}.`,
-                        project.id
-                      )}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                    >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>Contact on WhatsApp for Price</span>
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleAddProjectBOMToCart(project)}
-                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        <span>Add All BOM Parts to Cart (₹{project.estimatedCost})</span>
-                      </button>
+                  <button
+                    onClick={() => handleAddProjectBOMToCart(project)}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>
+                      {project.hidePrice || !project.estimatedCost
+                        ? 'Add All BOM Parts to Cart (Quote Request)'
+                        : `Add All BOM Parts to Cart (₹${project.estimatedCost})`}
+                    </span>
+                  </button>
 
-                      <button
-                        onClick={() => openWhatsAppInquiry(
-                          `Blueprint & BOM Inquiry: ${project.title}`,
-                          `Estimated BOM: ₹${project.estimatedCost}`,
-                          project.id
-                        )}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Enquire Project on WhatsApp</span>
-                      </button>
-                    </>
-                  )}
+                  <button
+                    onClick={() => openWhatsAppInquiry(
+                      `Blueprint & BOM Inquiry: ${project.title}`,
+                      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${project.estimatedCost}`}`,
+                      project.id
+                    )}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Enquire Project on WhatsApp</span>
+                  </button>
                 </div>
 
               </div>

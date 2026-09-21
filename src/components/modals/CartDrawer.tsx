@@ -178,14 +178,20 @@ export const CartDrawer: React.FC = () => {
 
                     {/* Price & Quantity Controls */}
                     <div className="flex items-center justify-between pt-2 mt-1 border-t border-slate-100">
-                      <div className="text-sm sm:text-base font-extrabold text-navy font-mono">
-                        ₹{item.price * item.quantity}
-                        {item.quantity > 1 && (
-                          <span className="text-[10px] text-slate-400 font-normal ml-1">
-                            (₹{item.price} ea)
-                          </span>
-                        )}
-                      </div>
+                      {item.hidePrice || !item.price || item.price === 0 ? (
+                        <div className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Price on Request
+                        </div>
+                      ) : (
+                        <div className="text-sm sm:text-base font-extrabold text-navy font-mono">
+                          ₹{item.price * item.quantity}
+                          {item.quantity > 1 && (
+                            <span className="text-[10px] text-slate-400 font-normal ml-1">
+                              (₹{item.price} ea)
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       <div className="flex items-center border border-border bg-slate-50 rounded-xl overflow-hidden shadow-2xs">
                         <button
@@ -254,7 +260,12 @@ export const CartDrawer: React.FC = () => {
               <div className="space-y-1.5 text-xs text-secondary bg-white p-3.5 rounded-2xl border border-border">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-mono font-bold text-navy">₹{subtotal}</span>
+                  <span className="font-mono font-bold text-navy">
+                    ₹{subtotal}
+                    {cart.some(i => i.hidePrice || !i.price || i.price === 0) && (
+                      <span className="text-[10px] text-emerald-700 ml-1 font-sans font-semibold">+ Quote</span>
+                    )}
+                  </span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-success font-medium">
@@ -270,8 +281,18 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-sm font-extrabold text-navy pt-2 border-t border-slate-100">
                   <span>Total Amount</span>
-                  <span className="text-base font-mono text-primary font-extrabold">₹{totalAmount}</span>
+                  <span className="text-base font-mono text-primary font-extrabold">
+                    ₹{totalAmount}
+                    {cart.some(i => i.hidePrice || !i.price || i.price === 0) && (
+                      <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Quote)</span>
+                    )}
+                  </span>
                 </div>
+                {cart.some(i => i.hidePrice || !i.price || i.price === 0) && (
+                  <div className="text-[11px] text-emerald-800 bg-emerald-50 p-2 rounded-lg border border-emerald-200 mt-2 font-medium leading-tight">
+                    📋 Includes Price-on-Request items. Final quotation will be verified directly in your WhatsApp checkout message.
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}

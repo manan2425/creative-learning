@@ -205,48 +205,35 @@ export const KitsSection: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="p-6 pt-0 space-y-2.5">
-                  {kit.hidePrice || !kit.price ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button
+                      onClick={() => addToCart({
+                        id: kit.id,
+                        type: 'kit',
+                        name: kit.title,
+                        price: kit.hidePrice ? 0 : kit.price,
+                        hidePrice: Boolean(kit.hidePrice || !kit.price),
+                        image: kit.image,
+                        sku: `KIT-${(kit.difficulty || 'DIY').toUpperCase()}`,
+                      })}
+                      className="flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>Add Kit to Cart</span>
+                    </button>
+
                     <button
                       onClick={() => openWhatsAppInquiry(
-                        `Starter Kit Price Inquiry: ${kit.title}`,
-                        `Please share the price quote and availability for ${kit.title}.`,
+                        `Starter Kit Inquiry: ${kit.title}`,
+                        `Price: ${kit.hidePrice ? 'Price on Request' : `₹${kit.price}`}, Level: ${kit.difficulty}`,
                         kit.id
                       )}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
                     >
                       <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>Contact on WhatsApp for Price</span>
+                      <span>Order via WhatsApp</span>
                     </button>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <button
-                        onClick={() => addToCart({
-                          id: kit.id,
-                          type: 'kit',
-                          name: kit.title,
-                          price: kit.price,
-                          image: kit.image,
-                          sku: `KIT-${(kit.difficulty || 'DIY').toUpperCase()}`,
-                        })}
-                        className="flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        <span>Add Kit to Cart</span>
-                      </button>
-
-                      <button
-                        onClick={() => openWhatsAppInquiry(
-                          `Starter Kit Inquiry: ${kit.title}`,
-                          `Price: ₹${kit.price}, Level: ${kit.difficulty}`,
-                          kit.id
-                        )}
-                        className="flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                      >
-                        <MessageCircle className="w-4 h-4 fill-white" />
-                        <span>Order via WhatsApp</span>
-                      </button>
-                    </div>
-                  )}
+                  </div>
                 </div>
 
               </div>

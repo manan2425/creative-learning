@@ -103,9 +103,10 @@ export interface EngineeringProject {
 
 export interface CartItem {
   id: string;
-  type: 'product' | 'kit' | 'custom_bot' | 'bom_bundle';
+  type: 'product' | 'kit' | 'custom_bot' | 'bom_bundle' | 'project';
   name: string;
   price: number;
+  hidePrice?: boolean;
   image: string;
   quantity: number;
   sku: string;

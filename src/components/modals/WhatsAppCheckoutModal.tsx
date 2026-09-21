@@ -185,6 +185,9 @@ export const WhatsAppCheckoutModal: React.FC = () => {
               </div>
               <div className="font-mono text-sm font-extrabold text-primary">
                 Total: ₹{totalAmount}
+                {cart.some(i => i.hidePrice || !i.price || i.price === 0) && (
+                  <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Custom Quote)</span>
+                )}
               </div>
             </div>
 

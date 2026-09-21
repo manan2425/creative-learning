@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { INITIAL_SETTINGS } from '@/data/initialData';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const { db } = await connectToDatabase();
@@ -20,7 +23,14 @@ export async function GET() {
         quotes: settings.quotes?.length ? settings.quotes : INITIAL_SETTINGS.quotes,
       };
     }
-    return NextResponse.json({ success: true, data: settings });
+    return NextResponse.json(
+      { success: true, data: settings },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Settings GET error:', error);
     return NextResponse.json({ success: true, data: INITIAL_SETTINGS, fallback: true });

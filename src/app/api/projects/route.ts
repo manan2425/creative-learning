@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const { db } = await connectToDatabase();
     const projects = await db.collection('projects').find({}).toArray();
-    return NextResponse.json({ success: true, data: projects });
+    return NextResponse.json(
+      { success: true, data: projects },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Projects GET error:', error);
     return NextResponse.json({ success: true, data: [], fallback: true });

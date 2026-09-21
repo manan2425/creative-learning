@@ -37,7 +37,8 @@ export const ProductQuickViewModal: React.FC = () => {
       id: product.id,
       type: 'product',
       name: product.name,
-      price: product.price,
+      price: product.hidePrice ? 0 : product.price,
+      hidePrice: Boolean(product.hidePrice || !product.price),
       image: product.image,
       sku: product.sku,
     }, qty);
@@ -47,7 +48,7 @@ export const ProductQuickViewModal: React.FC = () => {
   const handleWhatsAppInquiry = () => {
     openWhatsAppInquiry(
       `Product: ${product.name} (SKU: ${product.sku})`,
-      `Price: ₹${product.price}, Voltage: ${product.voltage}`,
+      `Price: ${product.hidePrice ? 'Price on Request' : `₹${product.price}`}, Voltage: ${product.voltage || 'N/A'}`,
       product.id
     );
   };
@@ -178,67 +179,53 @@ export const ProductQuickViewModal: React.FC = () => {
             {/* Actions */}
             <div className="space-y-3 pt-4 border-t border-border">
               
-              {product.hidePrice || !product.price ? (
-                <div className="space-y-3">
-                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>This component is available on custom order/quote. Contact us on WhatsApp for live pricing and bulk discounts.</span>
-                  </div>
+              {/* Quantity Selector */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-navy">Quantity:</span>
+                <div className="flex items-center border border-border bg-slate-50 rounded-lg">
                   <button
-                    onClick={handleWhatsAppInquiry}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
                   >
-                    <MessageCircle className="w-4 h-4 fill-white" />
-                    <span>Contact on WhatsApp for Price Quote</span>
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="px-3 text-xs font-bold font-mono text-navy min-w-[32px] text-center">
+                    {qty}
+                  </span>
+                  <button
+                    onClick={() => setQty(qty + 1)}
+                    className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              ) : (
-                <>
-                  {/* Quantity Selector */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-navy">Quantity:</span>
-                    <div className="flex items-center border border-border bg-slate-50 rounded-lg">
-                      <button
-                        onClick={() => setQty(Math.max(1, qty - 1))}
-                        className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="px-3 text-xs font-bold font-mono text-navy min-w-[32px] text-center">
-                        {qty}
-                      </span>
-                      <button
-                        onClick={() => setQty(qty + 1)}
-                        className="p-1.5 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <span className="text-xs text-secondary">
-                      Subtotal: <strong className="font-mono text-navy">₹{product.price * qty}</strong>
-                    </span>
-                  </div>
+                <span className="text-xs text-secondary">
+                  Subtotal: <strong className="font-mono text-navy">
+                    {product.hidePrice || !product.price ? 'Price on Request' : `₹${product.price * qty}`}
+                  </strong>
+                </span>
+              </div>
 
-                  {/* Buttons */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <button
-                      onClick={handleAddToCart}
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-xs shadow-md shadow-primary/20 transition-all cursor-pointer"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Add to Cart</span>
-                    </button>
+              {/* Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-xs shadow-md shadow-primary/20 transition-all cursor-pointer"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>
+                    {product.hidePrice || !product.price ? 'Add to Cart (Quote Request)' : 'Add to Cart'}
+                  </span>
+                </button>
 
-                    <button
-                      onClick={handleWhatsAppInquiry}
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                    >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>WhatsApp Inquiry</span>
-                    </button>
-                  </div>
-                </>
-              )}
+                <button
+                  onClick={handleWhatsAppInquiry}
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 fill-white" />
+                  <span>WhatsApp Inquiry</span>
+                </button>
+              </div>
 
             </div>
 

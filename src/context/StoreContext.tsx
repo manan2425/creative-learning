@@ -94,7 +94,7 @@ interface StoreContextType {
   updateSettings: (newSettings: Partial<StoreSettings>) => Promise<void>;
 
   // Database CRUD
-  refreshData: () => Promise<void>;
+  refreshData: (silent?: boolean) => Promise<void>;
   addProduct: (product: Product) => Promise<boolean>;
   updateProduct: (product: Product) => Promise<boolean>;
   deleteProduct: (id: string) => Promise<boolean>;
@@ -113,6 +113,8 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_CART_KEY = 'cl_robotics_cart_v1';
 const LOCAL_STORAGE_WISHLIST_KEY = 'cl_robotics_wishlist_v1';
+const SYNC_CHANNEL_NAME = 'creative_learning_realtime_sync';
+const LOCAL_STORAGE_SYNC_KEY = 'cl_sync_trigger';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -134,7 +136,75 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
-  // Load local storage on mount & fetch MongoDB
+  // Broadcast sync trigger to all other open tabs/windows
+  const broadcastSync = (entity: string) => {
+    if (typeof window !== 'undefined') {
+      try {
+        const payload = { entity, timestamp: Date.now() };
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel(SYNC_CHANNEL_NAME);
+          bc.postMessage(payload);
+          bc.close();
+        }
+        localStorage.setItem(LOCAL_STORAGE_SYNC_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('Sync broadcast warning:', e);
+      }
+    }
+  };
+
+  const refreshData = async (silent: boolean = false) => {
+    if (!silent) {
+      setIsLoading(true);
+    }
+    try {
+      const [resProd, resKits, resPrac, resProj, resSettings] = await Promise.all([
+        fetch('/api/products', { cache: 'no-store' }),
+        fetch('/api/kits', { cache: 'no-store' }),
+        fetch('/api/practicals', { cache: 'no-store' }),
+        fetch('/api/projects', { cache: 'no-store' }),
+        fetch('/api/settings', { cache: 'no-store' }),
+      ]);
+
+      if (resProd.ok) {
+        const d = await resProd.json();
+        if (Array.isArray(d.data)) setProducts(d.data);
+      }
+
+      if (resKits.ok) {
+        const d = await resKits.json();
+        if (Array.isArray(d.data)) setKits(d.data);
+      }
+
+      if (resPrac.ok) {
+        const d = await resPrac.json();
+        if (Array.isArray(d.data)) setPracticals(d.data);
+      }
+
+      if (resProj.ok) {
+        const d = await resProj.json();
+        if (Array.isArray(d.data)) setProjects(d.data);
+      }
+
+      if (resSettings.ok) {
+        const d = await resSettings.json();
+        if (d.data) {
+          setSettings(d.data);
+          if (Array.isArray(d.data.categories) && d.data.categories.length > 0) {
+            setCategories(d.data.categories);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Database fetch error:', error);
+    } finally {
+      if (!silent) {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  // Load local storage on mount & set up real-time auto-refresh listeners
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
@@ -146,7 +216,56 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('LocalStorage load error:', e);
     }
 
-    refreshData();
+    // Initial load
+    refreshData(false);
+
+    // 1. Multi-tab BroadcastChannel listener
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel(SYNC_CHANNEL_NAME);
+        bc.onmessage = (event) => {
+          if (event.data?.timestamp) {
+            refreshData(true); // Silent real-time update
+          }
+        };
+      } catch (e) {
+        console.warn('BroadcastChannel setup error:', e);
+      }
+    }
+
+    // 2. Cross-tab storage event listener fallback
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === LOCAL_STORAGE_SYNC_KEY) {
+        refreshData(true);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // 3. Auto-refresh when tab gains focus or returns to visibility
+    const handleFocus = () => refreshData(true);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshData(true);
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // 4. Background polling interval (every 6 seconds) for cross-device updates
+    const pollInterval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refreshData(true);
+      }
+    }, 6000);
+
+    return () => {
+      if (bc) bc.close();
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(pollInterval);
+    };
   }, []);
 
   // Save cart
@@ -173,55 +292,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const refreshData = async () => {
-    setIsLoading(true);
-    try {
-      // 1. Products
-      const resProd = await fetch('/api/products');
-      if (resProd.ok) {
-        const d = await resProd.json();
-        if (Array.isArray(d.data)) setProducts(d.data);
-      }
-
-      // 2. Kits
-      const resKits = await fetch('/api/kits');
-      if (resKits.ok) {
-        const d = await resKits.json();
-        if (Array.isArray(d.data)) setKits(d.data);
-      }
-
-      // 3. Practicals
-      const resPrac = await fetch('/api/practicals');
-      if (resPrac.ok) {
-        const d = await resPrac.json();
-        if (Array.isArray(d.data)) setPracticals(d.data);
-      }
-
-      // 4. Projects
-      const resProj = await fetch('/api/projects');
-      if (resProj.ok) {
-        const d = await resProj.json();
-        if (Array.isArray(d.data)) setProjects(d.data);
-      }
-
-      // 5. Settings & Categories
-      const resSettings = await fetch('/api/settings');
-      if (resSettings.ok) {
-        const d = await resSettings.json();
-        if (d.data) {
-          setSettings(d.data);
-          if (Array.isArray(d.data.categories) && d.data.categories.length > 0) {
-            setCategories(d.data.categories);
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Database fetch error:', error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // Upload image file from device (supports both file and compressed base64)
@@ -420,7 +490,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee);
 
-    let message = `⚡ *NEW ORDER - CREATIVE LEARNING STORE*\n`;
+    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+
+    let message = `⚡ *NEW ORDER / INQUIRY - CREATIVE LEARNING STORE*\n`;
     message += `===================================\n\n`;
     message += `👤 *CUSTOMER DETAILS*\n`;
     message += `• *Name:* ${customer.name}\n`;
@@ -431,8 +503,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     message += `\n📦 *ORDER ITEMS (${cart.length})*\n`;
 
     cart.forEach((item, idx) => {
+      const isQuoteItem = item.hidePrice || !item.price || item.price === 0;
       message += `${idx + 1}. *${item.name}*\n`;
-      message += `   Qty: ${item.quantity} × ₹${item.price} = ₹${item.price * item.quantity}\n`;
+      if (isQuoteItem) {
+        message += `   Qty: ${item.quantity} × [Price on Request / Quotation Needed]\n`;
+      } else {
+        message += `   Qty: ${item.quantity} × ₹${item.price} = ₹${item.price * item.quantity}\n`;
+      }
       if (item.sku) message += `   SKU: \`${item.sku}\`\n`;
       if (item.meta) {
         if (item.meta.chassis) message += `   Config: ${item.meta.chassis} + ${item.meta.brain}\n`;
@@ -441,12 +518,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     message += `\n-----------------------------------\n`;
     message += `💰 *FINANCIAL SUMMARY*\n`;
-    message += `• Items Subtotal: ₹${subtotal}\n`;
+    message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Price-on-Request Items)' : ''}\n`;
     if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
     message += `• Shipping / Delivery: ${shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}\n`;
-    message += `• *Grand Total Payable:* *₹${grandTotal}*\n`;
+    message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
+    if (hasQuoteItems) {
+      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+    }
     message += `===================================\n`;
-    message += `🚀 *Please confirm stock & dispatch timeline.*`;
+    message += `🚀 *Please confirm order dispatch & quotation.*`;
 
     return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
   };
@@ -519,6 +599,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       });
+      broadcastSync('settings');
       showToast('Settings Saved', 'Settings updated successfully in MongoDB.', 'success');
     } catch (e) {
       showToast('Error', 'Failed to save settings to server', 'error');
@@ -535,12 +616,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       const d = await res.json();
       if (d.success) {
-        setProducts((prev) => [d.data || product, ...prev]);
+        const item = d.data || product;
+        setProducts((prev) => [item, ...prev.filter(p => p.id !== item.id)]);
+        broadcastSync('products');
         showToast('Product Added', `${product.name} saved to MongoDB.`, 'success');
         return true;
       }
     } catch (e) {}
-    setProducts((prev) => [product, ...prev]);
+    setProducts((prev) => [product, ...prev.filter(p => p.id !== product.id)]);
+    broadcastSync('products');
     return true;
   };
 
@@ -553,6 +637,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     } catch (e) {}
     setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)));
+    broadcastSync('products');
     showToast('Product Updated', `${product.name} updated successfully.`, 'success');
     return true;
   };
@@ -562,6 +647,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
     } catch (e) {}
     setProducts((prev) => prev.filter((p) => p.id !== id));
+    broadcastSync('products');
     showToast('Product Deleted', 'Item removed from database.', 'info');
     return true;
   };
@@ -576,12 +662,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       const d = await res.json();
       if (d.success) {
-        setKits((prev) => [d.data || kit, ...prev]);
+        const item = d.data || kit;
+        setKits((prev) => [item, ...prev.filter(k => k.id !== item.id)]);
+        broadcastSync('kits');
         showToast('Robotics Kit Added', `${kit.title} created.`, 'success');
         return true;
       }
     } catch (e) {}
-    setKits((prev) => [kit, ...prev]);
+    setKits((prev) => [kit, ...prev.filter(k => k.id !== kit.id)]);
+    broadcastSync('kits');
     return true;
   };
 
@@ -594,6 +683,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     } catch (e) {}
     setKits((prev) => prev.map((k) => (k.id === kit.id ? kit : k)));
+    broadcastSync('kits');
     showToast('Kit Updated', `${kit.title} updated successfully.`, 'success');
     return true;
   };
@@ -603,6 +693,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await fetch(`/api/kits?id=${id}`, { method: 'DELETE' });
     } catch (e) {}
     setKits((prev) => prev.filter((k) => k.id !== id));
+    broadcastSync('kits');
     showToast('Kit Deleted', 'Robotics kit removed from database.', 'info');
     return true;
   };
@@ -617,12 +708,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       const d = await res.json();
       if (d.success) {
-        setPracticals((prev) => [d.data || practical, ...prev]);
+        const item = d.data || practical;
+        setPracticals((prev) => [item, ...prev.filter(p => p.id !== item.id)]);
+        broadcastSync('practicals');
         showToast('Practical Lab Added', `${practical.title} created.`, 'success');
         return true;
       }
     } catch (e) {}
-    setPracticals((prev) => [practical, ...prev]);
+    setPracticals((prev) => [practical, ...prev.filter(p => p.id !== practical.id)]);
+    broadcastSync('practicals');
     return true;
   };
 
@@ -635,6 +729,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     } catch (e) {}
     setPracticals((prev) => prev.map((p) => (p.id === practical.id ? practical : p)));
+    broadcastSync('practicals');
     showToast('Practical Updated', 'Lab experiment updated.', 'success');
     return true;
   };
@@ -644,6 +739,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await fetch(`/api/practicals?id=${id}`, { method: 'DELETE' });
     } catch (e) {}
     setPracticals((prev) => prev.filter((p) => p.id !== id));
+    broadcastSync('practicals');
     showToast('Practical Deleted', 'Lab removed from database.', 'info');
     return true;
   };
@@ -658,12 +754,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       const d = await res.json();
       if (d.success) {
-        setProjects((prev) => [d.data || project, ...prev]);
+        const item = d.data || project;
+        setProjects((prev) => [item, ...prev.filter(p => p.id !== item.id)]);
+        broadcastSync('projects');
         showToast('Blueprint Added', `${project.title} added.`, 'success');
         return true;
       }
     } catch (e) {}
-    setProjects((prev) => [project, ...prev]);
+    setProjects((prev) => [project, ...prev.filter(p => p.id !== project.id)]);
+    broadcastSync('projects');
     return true;
   };
 
@@ -676,6 +775,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     } catch (e) {}
     setProjects((prev) => prev.map((p) => (p.id === project.id ? project : p)));
+    broadcastSync('projects');
     showToast('Blueprint Updated', 'Project updated successfully.', 'success');
     return true;
   };
@@ -685,6 +785,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
     } catch (e) {}
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    broadcastSync('projects');
     showToast('Blueprint Deleted', 'Project removed from database.', 'info');
     return true;
   };
