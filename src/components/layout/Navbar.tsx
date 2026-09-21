@@ -12,20 +12,14 @@ import {
   ShoppingCart, 
   Search, 
   Menu, 
-  X, 
-  MessageCircle,
-  ChevronDown,
-  Sparkles,
-  ArrowRight,
-  Radio
+  X
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { cart, setIsCartOpen, setIsSearchOpen, openWhatsAppInquiry, settings, categories } = useStore();
+  const { cart, setIsCartOpen, setIsSearchOpen, categories } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('products');
-  const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
 
   const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartSubtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -138,13 +132,13 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Action Cluster: Search, WhatsApp, Cart */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {/* Right Action Cluster: Search, Cart */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
             {/* Desktop Search Trigger Pill */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
+              className="flex items-center gap-2 px-3.5 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
               title="Search components, kits, and codes (Ctrl+K)"
             >
               <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" />
@@ -154,28 +148,14 @@ export const Navbar: React.FC = () => {
               </kbd>
             </button>
 
-            {/* Direct WhatsApp Inquiry Button */}
-            <button
-              onClick={() => openWhatsAppInquiry('Hardware Catalog & Custom Order Assistance')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-300 rounded-xl transition-all cursor-pointer font-heading shadow-2xs group"
-              title="Chat directly on WhatsApp (+91 9714045096)"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600/20" />
-              <span>WhatsApp</span>
-            </button>
-
             {/* Cart Drawer Trigger Button */}
             <button
               id="cart-button"
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/20 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
+              className="relative flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/20 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span className="hidden sm:inline">Bag</span>
+              <span>Cart Bag</span>
               {cartTotalCount > 0 ? (
                 <span className="inline-flex items-center justify-center bg-cyan text-navy font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono shadow-2xs">
                   {cartTotalCount}
@@ -250,7 +230,7 @@ export const Navbar: React.FC = () => {
 
           {/* Popular Categories Shortcut List */}
           {categories && categories.length > 1 && (
-            <div className="py-3 space-y-2">
+            <div className="pt-3 space-y-2">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                 Quick Category Filters
               </span>
@@ -268,23 +248,6 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Mobile WhatsApp & Support CTA */}
-          <div className="pt-4 space-y-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                openWhatsAppInquiry('Customer WhatsApp Support');
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm transition-colors cursor-pointer font-heading"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Direct WhatsApp: {settings.whatsappNumber || '+91 9714045096'}</span>
-            </button>
-            <div className="text-center text-[11px] text-slate-400">
-              ⚡ Rapid dispatch • 100% Genuine Silicon ICs
-            </div>
-          </div>
 
         </div>
       )}
