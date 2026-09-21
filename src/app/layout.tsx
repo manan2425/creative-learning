@@ -1,0 +1,61 @@
+import type { Metadata } from "next";
+import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { StoreProvider } from "@/context/StoreContext";
+import { ToastContainer } from "@/components/common/ToastContainer";
+import { CartDrawer } from "@/components/modals/CartDrawer";
+import { WhatsAppCheckoutModal } from "@/components/modals/WhatsAppCheckoutModal";
+import { ProductQuickViewModal } from "@/components/modals/ProductQuickViewModal";
+import { PracticalDetailModal } from "@/components/modals/PracticalDetailModal";
+import { SearchModal } from "@/components/modals/SearchModal";
+import { WhatsAppFloatingBtn } from "@/components/layout/WhatsAppFloatingBtn";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "Creative Learning | Robotics Hardware, Starter Kits & STEM Labs",
+  description: "High-precision electronics components, DIY robotics kits, guided labs, and engineering blueprints with direct WhatsApp checkout (+91 9714045096).",
+  keywords: ["robotics kits", "electronics components", "ESP32", "Arduino Uno", "STEM practicals", "robotics starter kits", "science fair projects"],
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}>
+      <body className="min-h-screen bg-background font-sans text-navy antialiased selection:bg-cyan/20 selection:text-navy">
+        <StoreProvider>
+          {children}
+          <CartDrawer />
+          <WhatsAppCheckoutModal />
+          <ProductQuickViewModal />
+          <PracticalDetailModal />
+          <SearchModal />
+          <WhatsAppFloatingBtn />
+          <ToastContainer />
+        </StoreProvider>
+      </body>
+    </html>
+  );
+}

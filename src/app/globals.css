@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #F8FAFC;
+    --card-white: #FFFFFF;
+    --primary-blue: #2563EB;
+    --bright-cyan: #06B6D4;
+    --dark-navy: #0F172A;
+    --secondary-slate: #475569;
+    --light-blue-bg: #EFF6FF;
+    --border-color: #E2E8F0;
+    --success-green: #16A34A;
+    --warning-orange: #F59E0B;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--dark-navy);
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-outfit), sans-serif;
+    color: var(--dark-navy);
+  }
+
+  code, kbd, samp, pre {
+    font-family: var(--font-mono), monospace;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Professional Robotic PCB Circuit Background */
+.bg-robotic-circuit {
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(rgba(37, 99, 235, 0.08) 1.5px, transparent 1.5px),
+    linear-gradient(to right, rgba(226, 232, 240, 0.8) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.8) 1px, transparent 1px);
+  background-size: 28px 28px, 56px 56px, 56px 56px;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+/* Dark Robotics Matrix Background */
+.bg-dark-robotic {
+  background-color: #0F172A;
+  background-image: 
+    radial-gradient(rgba(6, 182, 212, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(37, 99, 235, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px, 32px 32px;
+}
+
+/* Cybernetic Glow Accents */
+.robotic-border {
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.robotic-border:hover {
+  border-color: #93C5FD;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(37, 99, 235, 0.04);
+}
+
+.cyber-badge {
+  position: relative;
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+  font-family: var(--font-mono), monospace;
+}
+
+.glow-cyan-card {
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+}
+
+.glass-robotic {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.btn-primary-glow {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+.btn-primary-glow:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+/* Code Highlighting Block */
+.code-block {
+  background: #0B1120;
+  color: #E2E8F0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  border-radius: 0.75rem;
+  border: 1px solid #1E293B;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
