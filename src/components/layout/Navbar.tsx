@@ -9,20 +9,16 @@ import {
   Layers, 
   Compass, 
   Wrench, 
-  ShoppingCart, 
   Search, 
   Menu, 
   X
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { cart, setIsCartOpen, setIsSearchOpen, categories } = useStore();
+  const { setIsSearchOpen, categories } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('products');
-
-  const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartSubtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   // Detect scroll state and active section
   useEffect(() => {
@@ -132,7 +128,7 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Action Cluster: Search, Cart */}
+          {/* Right Action Cluster: Search & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
             {/* Desktop Search Trigger Pill */}
@@ -146,21 +142,6 @@ export const Navbar: React.FC = () => {
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[9px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
                 ⌘K
               </kbd>
-            </button>
-
-            {/* Cart Drawer Trigger Button */}
-            <button
-              id="cart-button"
-              onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/20 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>Cart Bag</span>
-              {cartTotalCount > 0 ? (
-                <span className="inline-flex items-center justify-center bg-cyan text-navy font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono shadow-2xs">
-                  {cartTotalCount}
-                </span>
-              ) : null}
             </button>
 
             {/* Mobile Menu Toggle Button */}

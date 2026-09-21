@@ -70,14 +70,25 @@ export const Footer: React.FC = () => {
           
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shadow-md">
-                <Bot className="w-6 h-6" />
+            <Link href="/" className="flex items-center gap-3.5 group inline-flex">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary via-blue-600 to-cyan flex items-center justify-center text-white shadow-lg shadow-primary/30 group-hover:scale-105 transition-transform duration-300 border border-white/10">
+                <Bot className="w-7 h-7" />
               </div>
-              <span className="font-extrabold text-2xl text-white tracking-tight font-heading">
-                Creative<span className="text-cyan">Learning</span>
-              </span>
-            </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-2xl text-white tracking-tight font-heading">
+                    Creative<span className="text-cyan">Learning</span>
+                  </span>
+                  <span className="px-1.5 py-0.5 text-[9px] uppercase font-mono font-bold tracking-wider rounded-md bg-cyan/20 text-cyan border border-cyan/40">
+                    STEM • DIY
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 font-medium">
+                  Robotics Hardware &amp; Engineering Labs
+                </p>
+              </div>
+            </Link>
+            
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm font-sans">
               {bio}
             </p>
