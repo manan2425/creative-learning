@@ -82,7 +82,7 @@ interface StoreContextType {
   processWhatsAppCheckout: (orderData: Omit<WhatsAppOrder, 'orderId' | 'createdAt' | 'status'>) => Promise<string>;
 
   // File Upload Helper
-  uploadImage: (file: File) => Promise<{ success: boolean; url: string; base64?: string; error?: string }>;
+  uploadImage: (file: File, base64Preview?: string) => Promise<{ success: boolean; url: string; base64?: string; error?: string }>;
 
   // Dynamic Categories Management
   addCategory: (categoryName: string) => Promise<boolean>;
@@ -224,11 +224,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Upload image file from device
-  const uploadImage = async (file: File): Promise<{ success: boolean; url: string; base64?: string; error?: string }> => {
+  // Upload image file from device (supports both file and compressed base64)
+  const uploadImage = async (file: File, base64Preview?: string): Promise<{ success: boolean; url: string; base64?: string; error?: string }> => {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      if (base64Preview) {
+        formData.append('base64', base64Preview);
+      }
 
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -236,14 +239,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
 
       const data = await res.json();
-      if (data.success) {
-        showToast('Image Uploaded', `${file.name} uploaded successfully.`, 'success');
-        return { success: true, url: data.url, base64: data.base64 };
+      if (data.success && data.url) {
+        showToast('Image Attached', `${file.name} ready for saving.`, 'success');
+        return { success: true, url: data.url, base64: data.base64 || base64Preview };
       } else {
-        showToast('Upload Failed', data.error || 'Could not upload image', 'error');
+        if (base64Preview) {
+          showToast('Image Attached', `${file.name} processed successfully.`, 'success');
+          return { success: true, url: base64Preview, base64: base64Preview };
+        }
+        showToast('Upload Notice', data.error || 'Could not process image', 'warning');
         return { success: false, url: '', error: data.error };
       }
     } catch (err: any) {
+      if (base64Preview) {
+        showToast('Image Attached', `${file.name} processed directly.`, 'success');
+        return { success: true, url: base64Preview, base64: base64Preview };
+      }
       showToast('Upload Error', err.message || 'Network error during upload', 'error');
       return { success: false, url: '', error: err.message };
     }

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useStore } from '@/context/StoreContext';
+import { compressImage } from '@/lib/imageCompressor';
 import { 
   Upload, 
   Image as ImageIcon, 
@@ -10,7 +11,8 @@ import {
   Check, 
   Loader2,
   Camera,
-  Smartphone
+  Smartphone,
+  Trash2
 } from 'lucide-react';
 
 interface ImageUploadFieldProps {
@@ -24,9 +26,9 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
   value,
   onChange,
   label = 'Component / Product Image',
-  description = 'Upload from your device storage, take a photo from mobile, or paste an image URL.'
+  description = 'Upload from device storage, capture with mobile camera, or paste an image URL.'
 }) => {
-  const { uploadImage } = useStore();
+  const { uploadImage, showToast } = useStore();
   const [activeMode, setActiveMode] = useState<'upload' | 'url'>('upload');
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -41,10 +43,19 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
 
     setIsUploading(true);
     try {
-      const res = await uploadImage(file);
+      // 1. Client-side compress for fast mobile upload & serverless compatibility
+      const compressedDataUrl = await compressImage(file, 1000, 1000, 0.85);
+      
+      // Immediately set the compressed data URL so the user sees it instantly
+      onChange(compressedDataUrl);
+
+      // 2. Also send to API (passing both file and compressed base64)
+      const res = await uploadImage(file, compressedDataUrl);
       if (res.success && res.url) {
         onChange(res.url);
       }
+    } catch (err: any) {
+      console.warn('Upload fallback to compressed base64:', err);
     } finally {
       setIsUploading(false);
     }
@@ -65,6 +76,12 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     }
   };
 
+  const handleClearImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -75,21 +92,21 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
           <button
             type="button"
             onClick={() => setActiveMode('upload')}
-            className={`px-2 py-0.5 rounded-md transition-all flex items-center gap-1 cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer ${
               activeMode === 'upload'
-                ? 'bg-white text-primary shadow-2xs'
+                ? 'bg-white text-primary shadow-2xs font-extrabold'
                 : 'text-slate-500 hover:text-navy'
             }`}
           >
             <Smartphone className="w-3 h-3" />
-            <span>Upload Device</span>
+            <span>Upload from Device</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveMode('url')}
-            className={`px-2 py-0.5 rounded-md transition-all flex items-center gap-1 cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer ${
               activeMode === 'url'
-                ? 'bg-white text-primary shadow-2xs'
+                ? 'bg-white text-primary shadow-2xs font-extrabold'
                 : 'text-slate-500 hover:text-navy'
             }`}
           >
@@ -124,32 +141,45 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
             {isUploading ? (
               <div className="py-4 flex flex-col items-center gap-2">
                 <Loader2 className="w-6 h-6 text-primary animate-spin" />
-                <span className="text-xs font-bold text-navy">Uploading image...</span>
+                <span className="text-xs font-bold text-navy">Processing &amp; optimizing image...</span>
               </div>
             ) : value ? (
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center py-1">
-                <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 border border-border shrink-0 shadow-2xs">
-                  <img src={value} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-                <div className="text-left space-y-0.5 max-w-xs">
-                  <div className="text-xs font-bold text-success flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" /> Image Selected
+              <div className="flex items-center gap-4 justify-between py-1">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-200 border border-border shrink-0 shadow-2xs">
+                    <img src={value} alt="Preview" className="w-full h-full object-cover" />
                   </div>
-                  <p className="text-[10px] text-slate-500 truncate font-mono">{value}</p>
-                  <span className="text-[10px] text-primary font-bold inline-block hover:underline">
-                    Tap to change image
-                  </span>
+                  <div className="text-left space-y-0.5 min-w-0">
+                    <div className="text-xs font-bold text-success flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> Image Attached
+                    </div>
+                    <p className="text-[10px] text-slate-500 truncate font-mono max-w-[200px] sm:max-w-xs">
+                      {value.startsWith('data:') ? 'Optimized Device Photo' : value}
+                    </p>
+                    <span className="text-[10px] text-primary font-bold inline-block hover:underline">
+                      Tap to replace photo
+                    </span>
+                  </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleClearImage}
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer shrink-0"
+                  title="Remove image"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             ) : (
-              <div className="py-2 flex flex-col items-center gap-1.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center border border-blue-100">
+              <div className="py-3 flex flex-col items-center gap-1.5">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center border border-blue-100 shadow-2xs">
                   <Upload className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-navy">Click or tap to choose file</span>
+                  <span className="text-xs font-bold text-navy">Tap or Click to choose image</span>
                   <p className="text-[10px] text-slate-400">
-                    Supports JPG, PNG, WEBP from phone gallery, camera, or PC
+                    Works directly with mobile camera, photo gallery, or desktop files
                   </p>
                 </div>
               </div>
@@ -170,7 +200,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
           </div>
           {value && (
             <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-border">
-              <img src={value} alt="Preview" className="w-10 h-10 rounded-lg object-cover bg-slate-200" />
+              <img src={value} alt="Preview" className="w-10 h-10 rounded-lg object-cover bg-slate-200 shrink-0" />
               <span className="text-[11px] text-slate-600 truncate flex-1 font-mono">{value}</span>
             </div>
           )}
