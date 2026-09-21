@@ -151,16 +151,19 @@ export const Navbar: React.FC = () => {
             <button
               id="cart-button"
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/25 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
-              title="Open Cart Bag"
+              className="relative flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/25 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
+              title={`Open Cart Bag (${cartTotalCount} items)`}
+              aria-label={`Open Cart Bag with ${cartTotalCount} items`}
             >
-              <ShoppingCart className="w-4 h-4" />
-              <span className="hidden sm:inline">Cart Bag</span>
-              {cartTotalCount > 0 ? (
-                <span className="inline-flex items-center justify-center bg-cyan text-navy font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono shadow-2xs animate-bounce-subtle">
-                  {cartTotalCount}
-                </span>
-              ) : null}
+              <ShoppingCart className="w-4 h-4 text-white" />
+              <span className="hidden sm:inline">Cart</span>
+              <span className={`inline-flex items-center justify-center font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono min-w-[20px] transition-all ${
+                cartTotalCount > 0 
+                  ? 'bg-cyan text-navy shadow-xs animate-bounce-subtle' 
+                  : 'bg-white/25 text-white'
+              }`}>
+                {cartTotalCount}
+              </span>
             </button>
 
             {/* Mobile Menu Toggle Button */}

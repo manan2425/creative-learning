@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
-import { MessageCircle, X, Sparkles, Send, ShieldCheck, Bot } from 'lucide-react';
+import { MessageCircle, X, Sparkles, Send, ShieldCheck, Bot, ShoppingCart } from 'lucide-react';
 
 export const WhatsAppFloatingBtn: React.FC = () => {
   const { 
@@ -12,10 +12,14 @@ export const WhatsAppFloatingBtn: React.FC = () => {
     isCheckoutOpen, 
     isSearchOpen,
     activePracticalModal,
-    activeQuickViewProduct 
+    activeQuickViewProduct,
+    cart,
+    setIsCartOpen
   } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
+
+  const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   // Automatically hide floating button if cart, checkout, search, or details modal is open
   if (isCartOpen || isCheckoutOpen || isSearchOpen || activePracticalModal || activeQuickViewProduct) {
@@ -38,7 +42,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
   };
 
   return (
-    <aside aria-label="WhatsApp Support" className="fixed bottom-6 right-6 z-30 flex flex-col items-end">
+    <aside aria-label="WhatsApp Support and Quick Cart" className="fixed bottom-6 right-6 z-30 flex flex-col items-end">
       {/* Popover Assistant */}
       {isOpen && (
         <div className="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-border overflow-hidden animate-fade-in">
@@ -122,16 +126,41 @@ export const WhatsAppFloatingBtn: React.FC = () => {
         </div>
       )}
 
-      {/* Small Logo Badge Directly Above WhatsApp Button */}
+      {/* Floating Action Elements Above WhatsApp Button */}
       {!isOpen && (
-        <div className="mb-2 flex items-center gap-2 px-3 py-1.5 bg-navy/95 backdrop-blur-md text-white rounded-full shadow-lg border border-slate-700/80 animate-bounce-subtle pointer-events-none select-none">
-          <div className="w-5 h-5 rounded-lg bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shrink-0 shadow-xs">
-            <Bot className="w-3.5 h-3.5" />
+        <div className="mb-2.5 flex flex-col items-end gap-2">
+          {/* Small Brand Logo Badge */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-navy/95 backdrop-blur-md text-white rounded-full shadow-lg border border-slate-700/80 select-none">
+            <div className="w-5 h-5 rounded-lg bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shrink-0 shadow-xs">
+              <Bot className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[11px] font-extrabold font-heading tracking-tight">
+              Creative<span className="text-cyan">Learning</span>
+            </span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
           </div>
-          <span className="text-[11px] font-extrabold font-heading tracking-tight">
-            Creative<span className="text-cyan">Learning</span>
-          </span>
-          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+
+          {/* Floating Cart Button with Cart Logo and Number of Items Badge */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="group relative flex items-center gap-2.5 px-4 py-2.5 bg-gradient-to-r from-navy via-slate-900 to-navy hover:from-primary hover:to-primary-hover text-white rounded-full shadow-xl shadow-navy/30 hover:shadow-primary/40 border border-slate-700/80 hover:border-primary/50 transition-all duration-200 cursor-pointer active:scale-95"
+            aria-label={`Open Cart (${cartTotalCount} items)`}
+            title={`Open Cart (${cartTotalCount} items)`}
+          >
+            <div className="relative flex items-center justify-center">
+              <ShoppingCart className="w-4 h-4 text-cyan group-hover:text-white transition-colors" />
+            </div>
+            <span className="text-xs font-bold font-heading tracking-wide">
+              Cart
+            </span>
+            <span className={`inline-flex items-center justify-center font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono transition-all ${
+              cartTotalCount > 0
+                ? 'bg-cyan text-navy shadow-xs animate-pulse'
+                : 'bg-slate-700 text-slate-300'
+            }`}>
+              {cartTotalCount}
+            </span>
+          </button>
         </div>
       )}
 
