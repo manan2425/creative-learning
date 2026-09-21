@@ -14,80 +14,122 @@ import {
   Menu, 
   X, 
   MessageCircle,
-  Sparkles
+  ChevronDown,
+  Sparkles,
+  ArrowRight,
+  Radio
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { cart, setIsCartOpen, setIsSearchOpen, openWhatsAppInquiry, settings } = useStore();
+  const { cart, setIsCartOpen, setIsSearchOpen, openWhatsAppInquiry, settings, categories } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('products');
+  const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
 
   const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartSubtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  // Detect scroll state and active section
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      setIsScrolled(window.scrollY > 15);
+
+      const sections = ['products', 'kits', 'practical', 'projects', 'why-us'];
+      const scrollPosition = window.scrollY + 120;
+
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSection(section);
+            break;
+          }
+        }
       }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Keyboard shortcut listener for Search (Ctrl+K / Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setIsSearchOpen]);
+
   const navLinks = [
-    { name: 'Hardware Store', href: '#products', icon: Cpu, badge: 'Components' },
-    { name: 'Robotics Kits', href: '#kits', icon: Bot, badge: 'DIY' },
-    { name: 'Guided Labs', href: '#practical', icon: Layers, badge: 'Code' },
-    { name: 'Blueprints', href: '#projects', icon: Compass },
-    { name: 'Why Us', href: '#why-us', icon: Wrench },
+    { id: 'products', name: 'Hardware Store', href: '#products', icon: Cpu, badge: 'Components' },
+    { id: 'kits', name: 'Starter Kits', href: '#kits', icon: Bot, badge: 'DIY' },
+    { id: 'practical', name: 'Guided Labs', href: '#practical', icon: Layers, badge: 'Code' },
+    { id: 'projects', name: 'Blueprints', href: '#projects', icon: Compass, badge: 'BOM' },
+    { id: 'why-us', name: 'Diagnostics', href: '#why-us', icon: Wrench },
   ];
 
   return (
-    <header className={`sticky top-0 z-40 transition-all duration-200 ${
-      isScrolled 
-        ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-border' 
-        : 'bg-white border-b border-border'
-    }`}>
+    <header 
+      className={`sticky top-0 z-40 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-border/80 py-2.5' 
+          : 'bg-white border-b border-border py-3.5'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between gap-4">
           
-          {/* Brand Logo */}
+          {/* Brand Logo & Tagline */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200">
-              <Bot className="w-6 h-6 animate-pulse-slow" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-primary via-blue-600 to-cyan flex items-center justify-center text-white shadow-md shadow-primary/25 group-hover:scale-105 transition-transform duration-300">
+              <Bot className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:rotate-6" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-xl sm:text-2xl text-navy tracking-tight font-heading">
+                <span className="font-extrabold text-lg sm:text-xl text-navy tracking-tight font-heading">
                   Creative<span className="text-primary">Learning</span>
                 </span>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-cyan/15 text-cyan border border-cyan/30">
-                  STEM
+                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] uppercase font-mono font-bold tracking-wider rounded-md bg-cyan/15 text-navy border border-cyan/30">
+                  STEM • DIY
                 </span>
               </div>
-              <p className="text-[11px] text-secondary font-medium tracking-wide">
-                Hardware Components • Robotics Kits • Practicals
+              <p className="text-[10px] sm:text-[11px] text-secondary font-medium tracking-normal hidden xs:block">
+                Robotics Hardware &amp; Engineering Labs
               </p>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 mx-4">
+          {/* Desktop Navigation Links with Active State Indicator */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-50/80 p-1 rounded-2xl border border-border/60">
             {navLinks.map((link) => {
               const Icon = link.icon;
+              const isActive = activeSection === link.id;
+
               return (
                 <a
-                  key={link.name}
+                  key={link.id}
                   href={link.href}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-navy hover:text-primary hover:bg-slate-50 transition-all font-heading"
+                  className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs xl:text-sm font-bold transition-all font-heading ${
+                    isActive
+                      ? 'bg-white text-primary shadow-xs border border-border/80'
+                      : 'text-navy hover:text-primary hover:bg-white/60'
+                  }`}
                 >
-                  <Icon className="w-4 h-4 text-secondary" />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                   <span>{link.name}</span>
                   {link.badge && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-slate-100 text-slate-500 border border-slate-200 uppercase font-mono">
+                    <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded uppercase font-mono transition-colors ${
+                      isActive 
+                        ? 'bg-primary-light text-primary' 
+                        : 'bg-slate-200/70 text-slate-500'
+                    }`}>
                       {link.badge}
                     </span>
                   )}
@@ -96,53 +138,58 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Right Action Cluster: Search, WhatsApp, Cart */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             
-            {/* Search Trigger */}
+            {/* Desktop Search Trigger Pill */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 border border-border rounded-xl transition-colors cursor-pointer font-medium"
-              title="Search components, kits, and codes"
+              className="flex items-center gap-2 px-3 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
+              title="Search components, kits, and codes (Ctrl+K)"
             >
-              <Search className="w-4 h-4 text-slate-500" />
-              <span className="hidden sm:inline">Search</span>
-              <kbd className="hidden md:inline-block text-[10px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
+              <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" />
+              <span className="hidden md:inline text-slate-500">Search components...</span>
+              <kbd className="hidden md:inline-flex items-center gap-0.5 text-[9px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
                 ⌘K
               </kbd>
             </button>
 
-            {/* Quick WhatsApp Inquiry CTA */}
+            {/* Direct WhatsApp Inquiry Button */}
             <button
-              onClick={() => openWhatsAppInquiry('Hardware Catalog & Custom Kit Inquiries')}
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition-colors cursor-pointer font-heading shadow-2xs"
+              onClick={() => openWhatsAppInquiry('Hardware Catalog & Custom Order Assistance')}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-300 rounded-xl transition-all cursor-pointer font-heading shadow-2xs group"
+              title="Chat directly on WhatsApp (+91 9714045096)"
             >
-              <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600/20" />
-              <span>WhatsApp Us</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600/20" />
+              <span>WhatsApp</span>
             </button>
 
-            {/* Cart Drawer Trigger */}
+            {/* Cart Drawer Trigger Button */}
             <button
               id="cart-button"
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 px-3.5 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-sm shadow-primary/30 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer"
+              className="relative flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/20 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span className="hidden sm:inline">Cart</span>
+              <span className="hidden sm:inline">Bag</span>
               {cartTotalCount > 0 ? (
-                <span className="bg-cyan text-navy font-extrabold text-xs px-2 py-0.5 rounded-full font-mono shadow-xs">
+                <span className="inline-flex items-center justify-center bg-cyan text-navy font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono shadow-2xs">
                   {cartTotalCount}
                 </span>
               ) : null}
             </button>
 
-            {/* Mobile Hamburger Menu */}
+            {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-navy hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="lg:hidden p-2 text-navy hover:bg-slate-100 rounded-xl border border-border transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-primary" /> : <Menu className="w-5 h-5" />}
             </button>
 
           </div>
@@ -151,45 +198,96 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-border shadow-xl px-4 pt-3 pb-6 animate-fade-in">
-          <div className="grid grid-cols-1 gap-1.5">
+        <div className="lg:hidden bg-white border-b border-border shadow-xl px-4 pt-4 pb-6 animate-fade-in divide-y divide-border">
+          
+          {/* Mobile Search Button */}
+          <div className="pb-3">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsSearchOpen(true);
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-secondary font-medium"
+            >
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-slate-400" />
+                <span>Search microcontrollers, sensors, kits...</span>
+              </div>
+              <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-border">Find</span>
+            </button>
+          </div>
+
+          {/* Navigation Items */}
+          <div className="py-3 space-y-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
+              const isActive = activeSection === link.id;
+
               return (
                 <a
-                  key={link.name}
+                  key={link.id}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold text-navy hover:bg-slate-50 hover:text-primary transition-colors font-heading"
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-colors font-heading ${
+                    isActive
+                      ? 'bg-primary-light text-primary font-extrabold'
+                      : 'text-navy hover:bg-slate-50'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className="w-5 h-5 text-primary" />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                     <span>{link.name}</span>
                   </div>
                   {link.badge && (
-                    <span className="px-2 py-0.5 text-xs font-bold rounded bg-slate-100 text-secondary border border-border">
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-500 border border-border uppercase font-mono">
                       {link.badge}
                     </span>
                   )}
                 </a>
               );
             })}
-            <div className="pt-3 border-t border-border flex flex-col gap-2">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openWhatsAppInquiry('General WhatsApp Support');
-                }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-sm transition-colors cursor-pointer font-heading"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Chat on WhatsApp (+91 9714045096)</span>
-              </button>
+          </div>
+
+          {/* Popular Categories Shortcut List */}
+          {categories && categories.length > 1 && (
+            <div className="py-3 space-y-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Quick Category Filters
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {categories.slice(0, 6).map((cat) => (
+                  <a
+                    key={cat}
+                    href="#products"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[11px] font-medium bg-slate-50 hover:bg-primary-light hover:text-primary px-2.5 py-1 rounded-lg border border-border text-navy transition-colors"
+                  >
+                    {cat}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mobile WhatsApp & Support CTA */}
+          <div className="pt-4 space-y-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openWhatsAppInquiry('Customer WhatsApp Support');
+              }}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm transition-colors cursor-pointer font-heading"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Direct WhatsApp: {settings.whatsappNumber || '+91 9714045096'}</span>
+            </button>
+            <div className="text-center text-[11px] text-slate-400">
+              ⚡ Rapid dispatch • 100% Genuine Silicon ICs
             </div>
           </div>
+
         </div>
       )}
     </header>
   );
 };
-
