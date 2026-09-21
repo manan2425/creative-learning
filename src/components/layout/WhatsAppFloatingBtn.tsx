@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
-import { MessageCircle, X, Sparkles, Send, ShieldCheck } from 'lucide-react';
+import { MessageCircle, X, Sparkles, Send, ShieldCheck, Bot } from 'lucide-react';
 
 export const WhatsAppFloatingBtn: React.FC = () => {
   const { 
@@ -46,11 +46,11 @@ export const WhatsAppFloatingBtn: React.FC = () => {
           <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 fill-white text-emerald-600" />
+                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
+                  <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm leading-tight">Creative Learning WhatsApp</h4>
+                  <h4 className="font-bold text-sm leading-tight font-heading">Creative Learning WhatsApp</h4>
                   <p className="text-[11px] text-emerald-100 flex items-center gap-1 mt-0.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping inline-block" />
                     Live Hardware Engineer Online
@@ -59,7 +59,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10"
+                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -86,7 +86,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
                     openWhatsAppInquiry(topic);
                     setIsOpen(false);
                   }}
-                  className="w-full text-left text-xs bg-white hover:bg-emerald-50 text-navy hover:text-emerald-700 font-medium py-2 px-3 rounded-lg border border-border hover:border-emerald-300 transition-colors shadow-2xs flex items-center justify-between"
+                  className="w-full text-left text-xs bg-white hover:bg-emerald-50 text-navy hover:text-emerald-700 font-medium py-2 px-3 rounded-lg border border-border hover:border-emerald-300 transition-colors shadow-2xs flex items-center justify-between cursor-pointer"
                 >
                   <span className="truncate">{topic}</span>
                   <span className="text-[10px] text-emerald-600 font-bold shrink-0 ml-1">Send →</span>
@@ -122,6 +122,19 @@ export const WhatsAppFloatingBtn: React.FC = () => {
         </div>
       )}
 
+      {/* Small Logo Badge Directly Above WhatsApp Button */}
+      {!isOpen && (
+        <div className="mb-2 flex items-center gap-2 px-3 py-1.5 bg-navy/95 backdrop-blur-md text-white rounded-full shadow-lg border border-slate-700/80 animate-bounce-subtle pointer-events-none select-none">
+          <div className="w-5 h-5 rounded-lg bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shrink-0 shadow-xs">
+            <Bot className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-[11px] font-extrabold font-heading tracking-tight">
+            Creative<span className="text-cyan">Learning</span>
+          </span>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+        </div>
+      )}
+
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -132,7 +145,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
           <MessageCircle className="w-6 h-6 fill-white text-emerald-600" />
           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-300 rounded-full border-2 border-white" />
         </div>
-        <span className="font-bold text-sm hidden sm:inline">WhatsApp Order</span>
+        <span className="font-bold text-sm hidden sm:inline font-heading">WhatsApp Order</span>
         <span className="text-xs bg-emerald-700/80 px-2 py-0.5 rounded-full font-mono font-medium hidden md:inline">
           {settings.whatsappNumber || '+91 9714045096'}
         </span>
