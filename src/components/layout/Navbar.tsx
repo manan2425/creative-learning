@@ -9,19 +9,16 @@ import {
   Layers, 
   Compass, 
   Wrench, 
-  ShoppingCart,
   Search, 
   Menu, 
   X
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { cart, setIsCartOpen, setIsSearchOpen, categories } = useStore();
+  const { setIsSearchOpen, categories } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('products');
-
-  const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   // Detect scroll state and active section
   useEffect(() => {
@@ -131,7 +128,7 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Action Cluster: Search, Cart Bag, Mobile Toggle */}
+          {/* Right Action Cluster: Search & Mobile Menu Toggle */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
             {/* Desktop Search Trigger Pill */}
@@ -145,25 +142,6 @@ export const Navbar: React.FC = () => {
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[9px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
                 ⌘K
               </kbd>
-            </button>
-
-            {/* Cart Drawer Trigger Button */}
-            <button
-              id="cart-button"
-              onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-xs shadow-primary/25 transition-all font-bold text-xs sm:text-sm font-heading cursor-pointer active:scale-95"
-              title={`Open Cart Bag (${cartTotalCount} items)`}
-              aria-label={`Open Cart Bag with ${cartTotalCount} items`}
-            >
-              <ShoppingCart className="w-4 h-4 text-white" />
-              <span className="hidden sm:inline">Cart</span>
-              <span className={`inline-flex items-center justify-center font-extrabold text-[11px] px-2 py-0.5 rounded-full font-mono min-w-[20px] transition-all ${
-                cartTotalCount > 0 
-                  ? 'bg-cyan text-navy shadow-xs animate-bounce-subtle' 
-                  : 'bg-white/25 text-white'
-              }`}>
-                {cartTotalCount}
-              </span>
             </button>
 
             {/* Mobile Menu Toggle Button */}
@@ -183,31 +161,20 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-border shadow-xl px-4 pt-4 pb-6 animate-fade-in divide-y divide-border">
           
-          {/* Mobile Search & Cart Quick Bar */}
-          <div className="pb-3 flex items-center gap-2">
+          {/* Mobile Search Quick Bar */}
+          <div className="pb-3">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 setIsSearchOpen(true);
               }}
-              className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-secondary font-medium"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-secondary font-medium"
             >
               <div className="flex items-center gap-2">
                 <Search className="w-4 h-4 text-slate-400" />
-                <span>Search components...</span>
+                <span>Search components, kits, labs...</span>
               </div>
               <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-border">Find</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setIsCartOpen(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow-xs font-heading"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>Cart ({cartTotalCount})</span>
             </button>
           </div>
 
