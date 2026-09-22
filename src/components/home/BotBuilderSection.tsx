@@ -200,19 +200,19 @@ export const BotBuilderSection: React.FC = () => {
             </div>
             <div className="space-y-1">
               <h4 className="font-extrabold text-white text-lg font-heading">
-                RoboBuilder Ready for Inventory
+                Interactive Custom Bot Builder
               </h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Your database is currently clean. Once you add microcontrollers, sensors, and chassis from the Admin Dashboard, customers can interactively configure custom robots here.
+              <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+                Need a custom autonomous rover, obstacle avoidance bot, or IoT robotics configuration? Chat directly with our engineering team on WhatsApp.
               </p>
             </div>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors"
+            <button
+              onClick={() => openWhatsAppInquiry('Custom Robotics Kit & Bot Builder Inquiry')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>Add Hardware in Admin Panel</span>
-            </Link>
+              <MessageCircle className="w-4 h-4 fill-white" />
+              <span>Configure Custom Bot via WhatsApp</span>
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

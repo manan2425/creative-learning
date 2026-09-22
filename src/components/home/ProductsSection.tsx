@@ -142,18 +142,34 @@ export const ProductsSection: React.FC = () => {
               <Cpu className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h4 className="font-extrabold text-navy font-heading text-lg">No Components Listed Yet</h4>
+              <h4 className="font-extrabold text-navy font-heading text-lg">
+                {searchTerm || selectedCategory !== 'All' 
+                  ? 'No Components Match Your Filter' 
+                  : 'Hardware Catalog Arriving Soon'}
+              </h4>
               <p className="text-xs text-secondary max-w-md mx-auto leading-relaxed">
-                Your database is clean. You can add components, microcontrollers, and sensors directly from the Admin Dashboard.
+                {searchTerm || selectedCategory !== 'All' 
+                  ? 'Try clearing your search query or switching categories. Need a specific microcontroller or IC? Chat directly with our engineers.' 
+                  : 'Our high-precision robotics and microcontroller inventory is being updated. Inquire directly for immediate lab components and bulk availability.'}
               </p>
             </div>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Components in Admin Panel</span>
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {(searchTerm || selectedCategory !== 'All') && (
+                <button
+                  onClick={() => { setSelectedCategory('All'); setSearchTerm(''); }}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  Clear Filters
+                </button>
+              )}
+              <button
+                onClick={() => openWhatsAppInquiry(selectedCategory !== 'All' ? `Inquiry for ${selectedCategory} components` : 'General Hardware Inquiry')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <Zap className="w-4 h-4" />
+                <span>Inquire on WhatsApp Direct</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

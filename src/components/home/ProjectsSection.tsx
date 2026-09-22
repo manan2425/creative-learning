@@ -87,18 +87,25 @@ export const ProjectsSection: React.FC = () => {
 
         {/* Projects Grid */}
         {projects.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-border p-12 text-center space-y-3 shadow-2xs">
-            <Compass className="w-12 h-12 text-slate-300 mx-auto" />
-            <h4 className="font-bold text-navy text-base">No Engineering Blueprints Listed Yet</h4>
-            <p className="text-xs text-secondary max-w-sm mx-auto">
-              Engineering project blueprints and Bill of Materials can be added from the Admin Dashboard.
-            </p>
-            <a
-              href="/admin"
-              className="inline-block px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors"
-            >
-              Add Blueprint in Admin Panel →
-            </a>
+          <div className="bg-white rounded-3xl border border-border p-8 sm:p-12 text-center space-y-4 shadow-2xs">
+            <div className="w-16 h-16 rounded-2xl bg-cyan/10 border border-cyan/20 text-navy mx-auto flex items-center justify-center">
+              <Compass className="w-8 h-8 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-navy font-heading text-lg">Engineering Blueprints &amp; DIY Projects</h4>
+              <p className="text-xs text-secondary max-w-md mx-auto leading-relaxed">
+                Complete engineering project blueprints featuring Bill of Materials (BOM), schematics, and firmwares. Looking for a custom final year or capstone robotics project?
+              </p>
+            </div>
+            <div className="pt-2">
+              <button
+                onClick={() => openWhatsAppInquiry('Custom Capstone / Final Year Engineering Project Blueprint Consultation')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4 fill-white" />
+                <span>Consult on Custom Project with Engineers</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

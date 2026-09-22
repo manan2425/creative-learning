@@ -16,7 +16,8 @@ import {
   FileEdit, 
   X, 
   Menu, 
-  Sparkles 
+  Sparkles,
+  LogOut
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -25,6 +26,7 @@ interface AdminSidebarProps {
   orderCount: number;
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
+  onLogout?: () => void;
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ 
@@ -32,7 +34,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   setCurrentTab, 
   orderCount,
   isMobileOpen = false,
-  setIsMobileOpen
+  setIsMobileOpen,
+  onLogout
 }) => {
   const menuItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
@@ -115,8 +118,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </div>
       </div>
 
-      {/* Footer Return Links */}
-      <div className="p-4 border-t border-slate-800 space-y-2">
+      {/* Footer Return & Logout Links */}
+      <div className="p-4 border-t border-slate-800 space-y-1.5">
         <Link
           href="/"
           className="flex items-center gap-2 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800/60 transition-colors"
@@ -124,6 +127,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Storefront</span>
         </Link>
+
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-2 text-xs text-red-400 hover:text-red-300 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Lock &amp; Logout Admin</span>
+          </button>
+        )}
       </div>
     </div>
   );

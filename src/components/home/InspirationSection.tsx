@@ -5,11 +5,32 @@ import { useStore } from '@/context/StoreContext';
 import { Quote, Sparkles, ChevronLeft, ChevronRight, Award, Compass, Lightbulb, MessageCircle, Plus } from 'lucide-react';
 import Link from 'next/link';
 
+const DEFAULT_QUOTES = [
+  {
+    id: 'default-1',
+    text: "The present is theirs; the future, for which I really worked, is mine.",
+    author: "Nikola Tesla",
+    role: "Electrical Pioneer & Inventor"
+  },
+  {
+    id: 'default-2',
+    text: "Sometimes it is the people no one can imagine anything of who do the things that no one can imagine.",
+    author: "Alan Turing",
+    role: "Father of Modern Computer Science & AI"
+  },
+  {
+    id: 'default-3',
+    text: "Education can Transform a Nation when students are empowered to build, experiment, and innovate.",
+    author: "Creative Learning Mission",
+    role: "STEM Philosophy"
+  }
+];
+
 export const InspirationSection: React.FC = () => {
   const { settings, openWhatsAppInquiry } = useStore();
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  const quotesList = settings.quotes || [];
+  const quotesList = settings.quotes && settings.quotes.length > 0 ? settings.quotes : DEFAULT_QUOTES;
 
   useEffect(() => {
     if (quotesList.length <= 1) return;
@@ -49,77 +70,58 @@ export const InspirationSection: React.FC = () => {
               <Quote className="w-28 h-28 opacity-80" />
             </div>
 
-            {quotesList.length === 0 ? (
-              <div className="py-10 text-center space-y-3 relative z-10">
-                <Quote className="w-12 h-12 text-slate-300 mx-auto" />
-                <h4 className="font-bold text-navy text-base font-heading">No Quotes Added Yet</h4>
-                <p className="text-xs text-secondary max-w-sm mx-auto">
-                  You can add inspirational quotes by pioneers (Tesla, Turing, Lovelace) or custom motto from the Admin CMS.
-                </p>
-                <Link
-                  href="/admin"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-hover transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Quotes in Admin CMS</span>
-                </Link>
+            <div className="space-y-4 sm:space-y-6 relative z-10">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary">
+                <Quote className="w-5 h-5 sm:w-6 sm:h-6 fill-primary/20" />
               </div>
-            ) : (
-              <>
-                <div className="space-y-4 sm:space-y-6 relative z-10">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary">
-                    <Quote className="w-5 h-5 sm:w-6 sm:h-6 fill-primary/20" />
-                  </div>
 
-                  <blockquote className="text-base sm:text-2xl lg:text-3xl font-extrabold text-navy leading-snug tracking-tight font-heading break-words">
-                    &ldquo;{activeQuote?.text}&rdquo;
-                  </blockquote>
+              <blockquote className="text-base sm:text-2xl lg:text-3xl font-extrabold text-navy leading-snug tracking-tight font-heading break-words">
+                &ldquo;{activeQuote?.text}&rdquo;
+              </blockquote>
 
-                  <div>
-                    <div className="font-extrabold text-base text-primary font-heading">
-                      {activeQuote?.author}
-                    </div>
-                    <div className="text-xs text-secondary font-medium">
-                      {activeQuote?.role}
-                    </div>
-                  </div>
+              <div>
+                <div className="font-extrabold text-base text-primary font-heading">
+                  {activeQuote?.author}
+                </div>
+                <div className="text-xs text-secondary font-medium">
+                  {activeQuote?.role}
+                </div>
+              </div>
+            </div>
+
+            {/* Carousel Controls */}
+            {quotesList.length > 1 && (
+              <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-100 relative z-10">
+                <div className="flex items-center gap-2">
+                  {quotesList.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentIdx(i)}
+                      className={`h-2 rounded-full transition-all cursor-pointer ${
+                        currentIdx === i ? 'w-8 bg-primary' : 'w-2 bg-slate-200 hover:bg-slate-300'
+                      }`}
+                      aria-label={`Slide ${i + 1}`}
+                    />
+                  ))}
                 </div>
 
-                {/* Carousel Controls */}
-                {quotesList.length > 1 && (
-                  <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-100 relative z-10">
-                    <div className="flex items-center gap-2">
-                      {quotesList.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentIdx(i)}
-                          className={`h-2 rounded-full transition-all cursor-pointer ${
-                            currentIdx === i ? 'w-8 bg-primary' : 'w-2 bg-slate-200 hover:bg-slate-300'
-                          }`}
-                          aria-label={`Slide ${i + 1}`}
-                        />
-                      ))}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setCurrentIdx((prev) => (prev - 1 + quotesList.length) % quotesList.length)}
-                        className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
-                        aria-label="Previous quote"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setCurrentIdx((prev) => (prev + 1) % quotesList.length)}
-                        className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
-                        aria-label="Next quote"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentIdx((prev) => (prev - 1 + quotesList.length) % quotesList.length)}
+                    className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                    aria-label="Previous quote"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setCurrentIdx((prev) => (prev + 1) % quotesList.length)}
+                    className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy transition-colors cursor-pointer"
+                    aria-label="Next quote"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             )}
 
           </div>

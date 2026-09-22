@@ -68,18 +68,37 @@ export const KitsSection: React.FC = () => {
 
         {/* Kits Grid */}
         {filteredKits.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-border p-12 text-center space-y-3 shadow-2xs">
-            <Bot className="w-12 h-12 text-slate-300 mx-auto" />
-            <h4 className="font-bold text-navy text-base">No Robotics Kits Available Yet</h4>
-            <p className="text-xs text-secondary max-w-sm mx-auto">
-              Robotics starter kits can be added easily from the Admin Dashboard.
-            </p>
-            <a
-              href="/admin"
-              className="inline-block px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors"
-            >
-              Add Kit in Admin Panel →
-            </a>
+          <div className="bg-white rounded-3xl border border-border p-8 sm:p-12 text-center space-y-4 shadow-2xs">
+            <div className="w-16 h-16 rounded-2xl bg-cyan/10 border border-cyan/20 text-navy mx-auto flex items-center justify-center">
+              <Bot className="w-8 h-8 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-navy font-heading text-lg">
+                {selectedDifficulty !== 'All' 
+                  ? `No ${selectedDifficulty} Kits Listed Currently` 
+                  : 'Robotics Starter Kits Arriving Soon'}
+              </h4>
+              <p className="text-xs text-secondary max-w-md mx-auto leading-relaxed">
+                Looking for an Arduino, ESP32, or STEM DIY robotics kit tailored for students or university labs? Chat directly with our engineering team on WhatsApp for custom bundles.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {selectedDifficulty !== 'All' && (
+                <button
+                  onClick={() => setSelectedDifficulty('All')}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  View All Levels
+                </button>
+              )}
+              <button
+                onClick={() => openWhatsAppInquiry(selectedDifficulty !== 'All' ? `Inquiry for ${selectedDifficulty} Robotics Starter Kits` : 'Robotics Starter Kits Inquiry')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4 fill-white" />
+                <span>Request Custom Starter Kit on WhatsApp</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
