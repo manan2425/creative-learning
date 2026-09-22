@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { 
   Bot, 
@@ -77,9 +78,16 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Brand Logo & Tagline */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-primary via-blue-600 to-cyan flex items-center justify-center text-white shadow-md shadow-primary/25 group-hover:scale-105 transition-transform duration-300 shrink-0">
-              <Bot className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:rotate-6" />
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink min-w-0">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white border border-border shadow-2xs p-0.5 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300 shrink-0 overflow-hidden">
+              <Image 
+                src="/logo-emblem.png" 
+                alt="Creative Learning Logo" 
+                width={44} 
+                height={44} 
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1 sm:gap-1.5">
@@ -91,7 +99,7 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-secondary font-medium tracking-normal hidden xs:block truncate">
-                Robotics Hardware &amp; Engineering Labs
+                Education can Transform a Nation
               </p>
             </div>
           </Link>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { Bot, Cpu, MessageCircle, Phone, Mail, MapPin, Heart, ShieldCheck, Truck, Clock, Sliders } from 'lucide-react';
 
@@ -70,8 +71,14 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-3.5 group inline-flex">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary via-blue-600 to-cyan flex items-center justify-center text-white shadow-lg shadow-primary/30 group-hover:scale-105 transition-transform duration-300 border border-white/10">
-                <Bot className="w-7 h-7" />
+              <div className="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300 border border-white/20 shrink-0 overflow-hidden">
+                <Image 
+                  src="/logo-emblem.png" 
+                  alt="Creative Learning Logo" 
+                  width={48} 
+                  height={48} 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -83,7 +90,7 @@ export const Footer: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-medium">
-                  Robotics Hardware &amp; Engineering Labs
+                  Education can Transform a Nation
                 </p>
               </div>
             </Link>

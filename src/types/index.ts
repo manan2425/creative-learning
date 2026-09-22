@@ -190,6 +190,7 @@ export interface StoreSettings {
   _id?: string;
   whatsappNumber: string;
   storeName: string;
+  logoUrl?: string;
   supportEmail: string;
   announcementText: string;
   showAnnouncement: boolean;

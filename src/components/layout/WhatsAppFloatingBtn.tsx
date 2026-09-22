@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
-import { MessageCircle, X, Sparkles, Send, ShieldCheck, Bot, ShoppingCart } from 'lucide-react';
+import { MessageCircle, X, Sparkles, Send, ShieldCheck, ShoppingCart } from 'lucide-react';
 
 export const WhatsAppFloatingBtn: React.FC = () => {
   const { 
@@ -50,8 +51,14 @@ export const WhatsAppFloatingBtn: React.FC = () => {
           <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-3.5 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-2.5">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/20 flex items-center justify-center border border-white/30 shrink-0">
-                  <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white p-0.5 flex items-center justify-center border border-white/30 shrink-0 overflow-hidden shadow-xs">
+                  <Image 
+                    src="/logo-emblem.png" 
+                    alt="Creative Learning Logo" 
+                    width={32} 
+                    height={32} 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div className="min-w-0">
                   <h4 className="font-bold text-xs sm:text-sm leading-tight font-heading truncate">Creative Learning WhatsApp</h4>
@@ -132,8 +139,14 @@ export const WhatsAppFloatingBtn: React.FC = () => {
         <div className="mb-2 flex flex-col items-end gap-1.5 sm:gap-2">
           {/* Small Brand Logo Badge */}
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-navy/95 backdrop-blur-md text-white rounded-full shadow-lg border border-slate-700/80 select-none">
-            <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white shrink-0 shadow-xs">
-              <Bot className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-white p-0.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+              <Image 
+                src="/logo-emblem.png" 
+                alt="Creative Learning Logo" 
+                width={20} 
+                height={20} 
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="text-[10px] sm:text-[11px] font-extrabold font-heading tracking-tight">
               Creative<span className="text-cyan">Learning</span>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Cpu, 
@@ -10,12 +11,12 @@ import {
   Compass, 
   MessageSquare, 
   Settings, 
-  ArrowLeft,
-  Tag,
-  FileEdit,
-  X,
-  Menu,
-  Sparkles
+  ArrowLeft, 
+  Tag, 
+  FileEdit, 
+  X, 
+  Menu, 
+  Sparkles 
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -56,8 +57,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {/* Brand Header */}
         <div className="p-5 border-b border-slate-800 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 text-white">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-cyan flex items-center justify-center text-white font-bold shadow-sm">
-              <Bot className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
+              <Image 
+                src="/logo-emblem.png" 
+                alt="Creative Learning Logo" 
+                width={36} 
+                height={36} 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="font-extrabold text-sm tracking-tight text-white font-heading">

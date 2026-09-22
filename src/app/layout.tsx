@@ -35,6 +35,17 @@ export const metadata: Metadata = {
   title: "Creative Learning | Robotics Hardware, Starter Kits & STEM Labs",
   description: "High-precision electronics components, DIY robotics kits, guided labs, and engineering blueprints with direct 1-click WhatsApp checkout and express dispatch.",
   keywords: ["robotics kits", "electronics components", "ESP32", "Arduino Uno", "STEM practicals", "robotics starter kits", "science fair projects"],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+      { url: "/logo-emblem.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

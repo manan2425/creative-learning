@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
-import { Settings, Save, ShieldAlert, Phone, Mail, Megaphone, Truck, RefreshCw } from 'lucide-react';
+import { Settings, Save, ShieldAlert, Phone, Mail, Megaphone, Truck, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { ImageUploadField } from '@/components/common/ImageUploadField';
 
 export const AdminSettings: React.FC = () => {
   const { settings, updateSettings, showToast, refreshData } = useStore();
@@ -10,6 +11,7 @@ export const AdminSettings: React.FC = () => {
   const [formData, setFormData] = useState({
     whatsappNumber: settings.whatsappNumber || '+919714045096',
     storeName: settings.storeName || 'Creative Learning - Robotics & Electronics',
+    logoUrl: settings.logoUrl || '/logo-emblem.png',
     supportEmail: settings.supportEmail || 'support@creativelearning.in',
     announcementText: settings.announcementText || '⚡ Welcome to Creative Learning! Direct WhatsApp Ordering • Pan-India Express Delivery',
     showAnnouncement: settings.showAnnouncement ?? true,
@@ -108,6 +110,15 @@ export const AdminSettings: React.FC = () => {
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-navy focus:outline-hidden focus:border-primary focus:bg-white"
               />
             </div>
+          </div>
+
+          <div className="pt-2">
+            <ImageUploadField
+              label="Store Brand Logo / Emblem"
+              description="Upload a custom logo from device, capture with camera, or enter an image URL."
+              value={formData.logoUrl}
+              onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+            />
           </div>
         </div>
 

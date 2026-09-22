@@ -23,6 +23,7 @@ export const INITIAL_CATEGORIES: string[] = [
 export const INITIAL_SETTINGS: StoreSettings = {
   whatsappNumber: '+919714045096',
   storeName: 'Creative Learning - Robotics & Electronics',
+  logoUrl: '/logo-emblem.png',
   supportEmail: 'support@creativelearning.in',
   announcementText: '⚡ Welcome to Creative Learning! Direct WhatsApp Ordering • Pan-India Express Delivery',
   showAnnouncement: true,
