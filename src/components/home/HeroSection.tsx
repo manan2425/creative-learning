@@ -14,7 +14,8 @@ import {
   Terminal,
   Layers,
   ChevronRight,
-  Sliders
+  Sliders,
+  Radio
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -122,80 +123,89 @@ export const HeroSection: React.FC = () => {
 
           </div>
 
-          {/* Right Column: High-Tech Telemetry & Robot Visualizer Showcase Card */}
+          {/* Right Column: Official Logo Brand Terminal Showcase Card */}
           <div className="lg:col-span-5">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
               {/* Card Container */}
-              <div className="glass-dark bg-dark-robotic rounded-3xl p-4 sm:p-6 text-white shadow-2xl border border-slate-700 relative overflow-hidden">
+              <div className="bg-white/95 rounded-3xl p-6 sm:p-8 text-navy shadow-xl border border-sky-200 relative overflow-hidden backdrop-blur-md">
                 
-                {/* Scanline Effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan/15 to-transparent opacity-30 animate-scanline pointer-events-none" />
+                {/* Top Accent Line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan via-primary to-orange" />
 
-                {/* Top Status Header */}
-                <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-700">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
-                    <span className="text-[11px] sm:text-xs font-mono text-slate-300 ml-1.5 sm:ml-2">robotics_os_v2.bin</span>
-                  </div>
-                  <span className="px-2 sm:px-2.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold bg-cyan/20 text-cyan rounded-full border border-cyan/40 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-ping" />
-                    SYSTEM ONLINE
+                {/* Top Status Badge */}
+                <div className="flex items-center justify-between pb-4 border-b border-border/70">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-extrabold bg-sky-50 text-sky-800 rounded-lg border border-sky-200 tracking-wider">
+                    <Radio className="w-3.5 h-3.5 text-cyan animate-pulse" />
+                    ROBOTICS COMMAND TERMINAL
+                  </span>
+                  <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping" />
+                    VERIFIED DESK
                   </span>
                 </div>
 
-                {/* Robot Visualizer Image */}
-                <div className="my-3.5 sm:my-5 aspect-4/3 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 p-3 sm:p-4 border border-slate-700 relative overflow-hidden flex flex-col justify-between">
+                {/* Official Logo Brand Panel */}
+                <div className="my-6 py-6 px-4 rounded-2xl bg-gradient-to-b from-sky-50/70 to-slate-50 border border-sky-100 flex flex-col items-center justify-center text-center relative group">
                   <img
-                    src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80"
-                    alt="Autonomous AI Robot Rover"
-                    className="w-full h-full object-cover rounded-xl opacity-90"
+                    src="/images/branding/creative-learning-hero-logo.png"
+                    alt="Creative Learning - Robotics & Electronics Innovation"
+                    className="max-h-24 sm:max-h-28 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/logo.png';
+                    }}
                   />
+                  <p className="text-cyan font-heading font-semibold text-xs sm:text-sm mt-3 tracking-wide">
+                    Robotics & Electronics Innovation Hub
+                  </p>
+                </div>
 
-                  {/* Overlay Badges */}
-                  <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-navy/90 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-lg border border-cyan/40 text-[10px] sm:text-xs font-mono text-cyan flex items-center gap-1.5 shadow-lg">
-                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan" />
-                    <span>RoboNav AI Kernel</span>
+                {/* Inspiration Quote / Mission Pill */}
+                <div className="bg-slate-50 rounded-xl p-4 border border-border/80 text-left relative overflow-hidden">
+                  <div className="text-3xl text-cyan/20 font-serif font-black absolute top-1 right-3 select-none leading-none">
+                    &ldquo;
                   </div>
-
-                  <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 bg-navy/90 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-lg border border-emerald-500/40 text-[10px] sm:text-xs font-mono text-emerald-400 flex items-center gap-1.5 shadow-lg">
-                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
-                    <span>WhatsApp Verified</span>
-                  </div>
+                  <p className="text-xs sm:text-[13px] italic text-slate-700 font-sans leading-relaxed relative z-10 pr-4">
+                    The future belongs to students and makers who build what they imagine with hands-on silicon.
+                  </p>
+                  <small className="text-[11px] font-mono font-bold text-cyan mt-2 block">
+                    — Creative Learning Engineering Lab
+                  </small>
                 </div>
 
                 {/* Live Telemetry Data Box */}
-                <div className="bg-slate-900/90 rounded-2xl p-3 sm:p-4 border border-slate-700 font-mono text-xs space-y-2">
+                <div className="mt-4 bg-slate-900 text-white rounded-2xl p-3.5 border border-slate-700 font-mono text-xs space-y-2">
                   <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-[11px]">
-                    <span>HARDWARE TELEMETRY</span>
-                    <span className="text-emerald-400 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                    <span className="flex items-center gap-1.5">
+                      <Cpu className="w-3 h-3 text-cyan" />
+                      HARDWARE TELEMETRY
+                    </span>
+                    <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
                       BENCH READY
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-1 text-[10px] sm:text-[11px]">
-                    <div className="bg-slate-800/80 p-2 sm:p-2.5 rounded-xl border border-slate-700 min-w-0">
-                      <span className="text-slate-400 block text-[9px] sm:text-[10px]">ORDER MODE</span>
+                  <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] sm:text-[11px]">
+                    <div className="bg-slate-800 p-2 rounded-lg border border-slate-700 min-w-0">
+                      <span className="text-slate-400 block text-[9px]">ORDER MODE</span>
                       <span className="text-cyan font-bold block truncate">1-Click WhatsApp</span>
                     </div>
 
-                    <div className="bg-slate-800/80 p-2 sm:p-2.5 rounded-xl border border-slate-700 min-w-0">
-                      <span className="text-slate-400 block text-[9px] sm:text-[10px]">FREE SHIPPING ON</span>
+                    <div className="bg-slate-800 p-2 rounded-lg border border-slate-700 min-w-0">
+                      <span className="text-slate-400 block text-[9px]">FREE SHIPPING ON</span>
                       <span className="text-emerald-400 font-bold block">₹{settings.freeShippingThreshold || 999}+</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick WhatsApp Inquiry Action */}
+                {/* Quick WhatsApp Technical Consultation */}
                 <button
                   onClick={() => openWhatsAppInquiry('Hardware Storefront Quick Inquiry')}
-                  className="mt-3.5 sm:mt-4 w-full py-2.5 sm:py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-bold font-heading text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="mt-4 w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-bold font-heading text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Instant Technical Consultation on WhatsApp</span>
+                  <span>Instant Technical Desk on WhatsApp</span>
                 </button>
 
               </div>

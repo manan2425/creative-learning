@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { 
   Bot, 
@@ -68,44 +67,44 @@ export const Navbar: React.FC = () => {
 
   return (
     <header 
-      className={`sticky top-0 z-40 w-full max-w-full transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full max-w-full transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-border/80 py-2 sm:py-2.5' 
-          : 'bg-white/95 backdrop-blur-md border-b border-border py-2.5 sm:py-3.5'
+          ? 'bg-white/98 backdrop-blur-md shadow-sm border-b border-border py-2 sm:py-2.5' 
+          : 'bg-white/98 backdrop-blur-md border-b border-border py-2.5 sm:py-3.5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-3 sm:gap-6">
           
-          {/* Brand Logo & Tagline */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink min-w-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white border border-border shadow-2xs p-0.5 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300 shrink-0 overflow-hidden">
-              <Image 
-                src="/logo-emblem.png" 
+          {/* Brand Logo & Name */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0 min-w-0" aria-label="Creative Learning Home">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border border-border/90 shadow-2xs p-1 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300 shrink-0 overflow-hidden">
+              <img 
+                src="/images/branding/creative-learning-logo.png" 
                 alt="Creative Learning Logo" 
-                width={44} 
-                height={44} 
                 className="w-full h-full object-contain"
-                priority
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/logo.png';
+                }}
               />
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <span className="font-extrabold text-base sm:text-xl text-navy tracking-tight font-heading truncate">
-                  Creative<span className="text-primary">Learning</span>
+            <div className="flex flex-col justify-center min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-black text-xl sm:text-2xl text-navy tracking-tight font-heading leading-tight truncate">
+                  CREATIVE <span className="text-primary">LEARNING</span>
                 </span>
-                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] uppercase font-mono font-bold tracking-wider rounded-md bg-cyan/15 text-navy border border-cyan/30 shrink-0">
+                <span className="hidden xl:inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] uppercase font-mono font-bold tracking-wider rounded-md bg-cyan/15 text-navy border border-cyan/30 shrink-0">
                   STEM • DIY
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-secondary font-medium tracking-normal hidden xs:block truncate">
+              <p className="text-xs sm:text-[12px] text-secondary font-medium tracking-normal hidden xs:block truncate">
                 Education can Transform a Nation
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation Links with Active State Indicator */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-50/80 p-1 rounded-2xl border border-border/60">
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-50/90 p-1.5 rounded-2xl border border-border/80">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = activeSection === link.id;
@@ -116,7 +115,7 @@ export const Navbar: React.FC = () => {
                   href={link.href}
                   className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs xl:text-sm font-bold transition-all font-heading ${
                     isActive
-                      ? 'bg-white text-primary shadow-xs border border-border/80'
+                      ? 'bg-white text-primary shadow-xs border border-border'
                       : 'text-navy hover:text-primary hover:bg-white/60'
                   }`}
                 >
@@ -137,16 +136,16 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Action Cluster: Search & Mobile Menu Toggle */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
             {/* Desktop / Mobile Search Trigger Pill */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
               title="Search components, kits, and codes (Ctrl+K)"
             >
               <Search className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-              <span className="hidden md:inline text-slate-500">Search components...</span>
+              <span className="hidden md:inline text-slate-500 font-medium">Search components...</span>
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[9px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
                 ⌘K
               </kbd>
@@ -197,7 +196,7 @@ export const Navbar: React.FC = () => {
                   key={link.id}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-colors font-heading ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all font-heading ${
                     isActive
                       ? 'bg-primary-light text-primary font-extrabold'
                       : 'text-navy hover:bg-slate-50'

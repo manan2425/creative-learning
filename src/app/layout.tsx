@@ -9,6 +9,7 @@ import { ProductQuickViewModal } from "@/components/modals/ProductQuickViewModal
 import { PracticalDetailModal } from "@/components/modals/PracticalDetailModal";
 import { SearchModal } from "@/components/modals/SearchModal";
 import { WhatsAppFloatingBtn } from "@/components/layout/WhatsAppFloatingBtn";
+import { RoboticsBackground } from "@/components/layout/RoboticsBackground";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -55,9 +56,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}>
-      <body className="min-h-screen bg-background font-sans text-navy antialiased selection:bg-cyan/20 selection:text-navy">
+      <body className="min-h-screen bg-background font-sans text-navy antialiased selection:bg-cyan/20 selection:text-navy relative">
+        <RoboticsBackground />
         <StoreProvider>
-          {children}
+          <div className="relative z-10 min-h-screen">
+            {children}
+          </div>
           <CartDrawer />
           <WhatsAppCheckoutModal />
           <ProductQuickViewModal />
