@@ -48,7 +48,7 @@ export const PracticalSection: React.FC = () => {
           {/* Quick Lab Help */}
           <button
             onClick={() => openWhatsAppInquiry('STEM Practical Curriculum & Lab Manual Inquiry')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-navy font-bold text-xs rounded-xl border border-border shadow-2xs transition-colors cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-navy font-bold text-xs rounded-xl border border-border shadow-2xs transition-colors cursor-pointer shrink-0"
           >
             <BookOpen className="w-4 h-4 text-primary" />
             <span>Download Full Lab Curriculum PDF</span>

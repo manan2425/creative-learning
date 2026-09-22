@@ -44,7 +44,7 @@ export const InspirationSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Quote Card */}
-          <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-border shadow-2xs flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:col-span-8 bg-white rounded-3xl p-5 sm:p-10 lg:p-12 border border-border shadow-2xs flex flex-col justify-between relative overflow-hidden w-full max-w-full">
             <div className="absolute top-6 right-6 text-slate-100 pointer-events-none">
               <Quote className="w-28 h-28 opacity-80" />
             </div>
@@ -66,12 +66,12 @@ export const InspirationSection: React.FC = () => {
               </div>
             ) : (
               <>
-                <div className="space-y-6 relative z-10">
-                  <div className="w-12 h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary">
-                    <Quote className="w-6 h-6 fill-primary/20" />
+                <div className="space-y-4 sm:space-y-6 relative z-10">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary">
+                    <Quote className="w-5 h-5 sm:w-6 sm:h-6 fill-primary/20" />
                   </div>
 
-                  <blockquote className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-navy leading-snug tracking-tight font-heading">
+                  <blockquote className="text-base sm:text-2xl lg:text-3xl font-extrabold text-navy leading-snug tracking-tight font-heading break-words">
                     &ldquo;{activeQuote?.text}&rdquo;
                   </blockquote>
 

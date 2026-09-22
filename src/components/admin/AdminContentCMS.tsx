@@ -43,8 +43,8 @@ export const AdminContentCMS: React.FC = () => {
     stat1Label: settings.hero?.stat1Label || 'Pre-Tested Silicon',
     stat2Value: settings.hero?.stat2Value || '48h',
     stat2Label: settings.hero?.stat2Label || 'Pan-India Dispatch',
-    stat3Value: settings.hero?.stat3Value || '+91 9714045096',
-    stat3Label: settings.hero?.stat3Label || 'WhatsApp Direct Support',
+    stat3Value: settings.hero?.stat3Value || '1-Click Direct',
+    stat3Label: settings.hero?.stat3Label || 'WhatsApp Dispatch & Support',
   });
 
   // Why Us State
@@ -68,7 +68,7 @@ export const AdminContentCMS: React.FC = () => {
       {
         stepNumber: '03',
         title: 'Direct WhatsApp Support',
-        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp (+91 9714045096).',
+        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp.',
         highlight: 'Engineer on Chat'
       },
       {
@@ -84,18 +84,18 @@ export const AdminContentCMS: React.FC = () => {
 
   // Quotes State
   const [quotesList, setQuotesList] = useState<QuoteItem[]>(
-    settings.quotes && settings.quotes.length > 0
-      ? settings.quotes
+    settings.quotes && settings.quotes.length > 0 
+      ? settings.quotes 
       : [
           {
-            id: 'q-1',
+            id: 'quote-1',
             text: "The present is theirs; the future, for which I really worked, is mine.",
             author: "Nikola Tesla",
-            role: "Father of Alternating Current & Wireless Robotics"
+            role: "Electrical Pioneer & Inventor"
           },
           {
-            id: 'q-2',
-            text: "Sometimes it is the people no one can imagine anything of who do the things no one can imagine.",
+            id: 'quote-2',
+            text: "Sometimes it is the people no one can imagine anything of who do the things that no one can imagine.",
             author: "Alan Turing",
             role: "Father of Modern Computer Science & AI"
           }
@@ -106,7 +106,7 @@ export const AdminContentCMS: React.FC = () => {
   const [footerData, setFooterData] = useState({
     footerBio: settings.footerBio || 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
     footerAddress: settings.footerAddress || 'Electronics & Robotics Innovation Hub, Ahmedabad, Gujarat, India',
-    footerPhone: settings.footerPhone || '+91 9714045096',
+    footerPhone: settings.footerPhone || 'WhatsApp Direct Chat',
   });
 
   const handleSaveHero = async (e: React.FormEvent) => {
@@ -379,7 +379,7 @@ export const AdminContentCMS: React.FC = () => {
                 <span className="text-[10px] font-mono font-bold text-slate-500 uppercase">Metric 3</span>
                 <input
                   type="text"
-                  placeholder="+91 9714045096"
+                  placeholder="1-Click Direct"
                   value={heroData.stat3Value}
                   onChange={(e) => setHeroData({ ...heroData, stat3Value: e.target.value })}
                   className="w-full px-2.5 py-1.5 bg-white border border-border rounded-lg text-xs font-bold font-mono text-navy"

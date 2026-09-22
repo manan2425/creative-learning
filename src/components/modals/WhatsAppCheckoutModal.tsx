@@ -114,7 +114,7 @@ export const WhatsAppCheckoutModal: React.FC = () => {
                 {orderComplete ? 'Order Placed on WhatsApp!' : 'Quick WhatsApp Checkout'}
               </h3>
               <p className="text-xs text-slate-300">
-                Direct Dispatch by Creative Learning • WhatsApp: {settings.whatsappNumber || '+91 9714045096'}
+                Direct Dispatch by Creative Learning • Instant WhatsApp Connect
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export const WhatsAppCheckoutModal: React.FC = () => {
             <div className="space-y-2 max-w-md mx-auto">
               <h4 className="font-extrabold text-xl text-navy">Order Summary Sent to WhatsApp! 🚀</h4>
               <p className="text-sm text-secondary leading-relaxed">
-                We have prepared your formatted order message and launched WhatsApp to chat directly with our engineering team at <strong>{settings.whatsappNumber || '+91 9714045096'}</strong>.
+                We have prepared your formatted order message and launched WhatsApp to chat directly with our engineering team.
               </p>
             </div>
 

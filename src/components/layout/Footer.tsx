@@ -10,7 +10,6 @@ export const Footer: React.FC = () => {
 
   const bio = settings.footerBio || 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.';
   const address = settings.footerAddress || 'Electronics & Robotics Innovation Hub, Ahmedabad, Gujarat, India';
-  const phone = settings.footerPhone || settings.whatsappNumber || '+91 9714045096';
 
   return (
     <footer className="bg-navy text-slate-300 border-t border-slate-800 relative overflow-hidden">
@@ -98,7 +97,7 @@ export const Footer: React.FC = () => {
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold font-heading shadow-md transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
-                <span>WhatsApp: {settings.whatsappNumber || '+91 9714045096'}</span>
+                <span>Chat on WhatsApp Direct</span>
               </button>
             </div>
           </div>
@@ -139,12 +138,15 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-3 text-xs">
               <li className="flex items-start gap-2.5">
-                <Phone className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-mono">WhatsApp Hotline</span>
-                  <a href={`https://wa.me/${(settings.whatsappNumber || '919714045096').replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white font-mono hover:text-emerald-400 font-bold">
-                    {phone}
-                  </a>
+                  <span className="text-[10px] text-slate-400 block font-mono">Live Support</span>
+                  <button 
+                    onClick={() => openWhatsAppInquiry('Footer Contact Support')}
+                    className="text-white hover:text-emerald-400 font-bold transition-colors cursor-pointer text-left"
+                  >
+                    Open Live WhatsApp Chat →
+                  </button>
                 </div>
               </li>
 

@@ -33,7 +33,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Creative Learning | Robotics Hardware, Starter Kits & STEM Labs",
-  description: "High-precision electronics components, DIY robotics kits, guided labs, and engineering blueprints with direct WhatsApp checkout (+91 9714045096).",
+  description: "High-precision electronics components, DIY robotics kits, guided labs, and engineering blueprints with direct 1-click WhatsApp checkout and express dispatch.",
   keywords: ["robotics kits", "electronics components", "ESP32", "Arduino Uno", "STEM practicals", "robotics starter kits", "science fair projects"],
 };
 

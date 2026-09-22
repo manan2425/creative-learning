@@ -70,8 +70,8 @@ export const CartDrawer: React.FC = () => {
         aria-hidden="true"
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
-        <div className="w-screen max-w-md sm:max-w-lg bg-white shadow-2xl flex flex-col border-l border-slate-200 h-full transform transition-transform duration-300 ease-out">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <div className="w-full sm:w-screen max-w-md sm:max-w-lg bg-white shadow-2xl flex flex-col border-l border-slate-200 h-full transform transition-transform duration-300 ease-out">
           
           {/* Header */}
           <div className="p-4 sm:p-5 bg-gradient-to-r from-navy via-slate-900 to-navy text-white flex items-center justify-between border-b border-slate-800 shrink-0 relative overflow-hidden">
@@ -344,7 +344,7 @@ export const CartDrawer: React.FC = () => {
 
                 <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
                   <span className="flex items-center gap-1 text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp Hotline: {settings.whatsappNumber || '+91 9714045096'}
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp Direct Order &amp; Dispatch
                   </span>
                   <button 
                     onClick={clearCart} 

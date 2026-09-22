@@ -11,7 +11,7 @@ export const AdminSettings: React.FC = () => {
     whatsappNumber: settings.whatsappNumber || '+919714045096',
     storeName: settings.storeName || 'Creative Learning - Robotics & Electronics',
     supportEmail: settings.supportEmail || 'support@creativelearning.in',
-    announcementText: settings.announcementText || '⚡ Welcome to Creative Learning! WhatsApp Ordering: +91 9714045096',
+    announcementText: settings.announcementText || '⚡ Welcome to Creative Learning! Direct WhatsApp Ordering • Pan-India Express Delivery',
     showAnnouncement: settings.showAnnouncement ?? true,
     freeShippingThreshold: settings.freeShippingThreshold || 999,
     defaultDeliveryFee: settings.defaultDeliveryFee || 60,

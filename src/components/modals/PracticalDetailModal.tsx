@@ -97,10 +97,10 @@ export const PracticalDetailModal: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-border bg-slate-50 px-6 shrink-0">
+        <div className="flex border-b border-border bg-slate-50 px-3 sm:px-6 shrink-0 overflow-x-auto scrollbar-none max-w-full">
           <button
             onClick={() => setActiveTab('wiring')}
-            className={`flex items-center gap-2 py-3 px-4 font-bold text-xs border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-3 px-3 sm:px-4 font-bold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'wiring'
                 ? 'border-primary text-primary bg-white'
                 : 'border-transparent text-secondary hover:text-navy'
@@ -112,7 +112,7 @@ export const PracticalDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('code')}
-            className={`flex items-center gap-2 py-3 px-4 font-bold text-xs border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-3 px-3 sm:px-4 font-bold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'code'
                 ? 'border-primary text-primary bg-white'
                 : 'border-transparent text-secondary hover:text-navy'
@@ -124,7 +124,7 @@ export const PracticalDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('troubleshooting')}
-            className={`flex items-center gap-2 py-3 px-4 font-bold text-xs border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-3 px-3 sm:px-4 font-bold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'troubleshooting'
                 ? 'border-primary text-primary bg-white'
                 : 'border-transparent text-secondary hover:text-navy'

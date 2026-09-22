@@ -81,8 +81,8 @@ export default function AdminPage() {
       />
 
       {/* Main Admin Content View */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(100vh-60px)] md:max-h-screen">
-        <div className="max-w-6xl mx-auto">
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(100vh-60px)] md:max-h-screen w-full max-w-full overflow-x-hidden">
+        <div className="max-w-6xl mx-auto w-full">
           {currentTab === 'overview' && (
             <AdminOverview setCurrentTab={setCurrentTab} orders={orders} />
           )}

@@ -38,7 +38,7 @@ export const WhyUsSection: React.FC = () => {
       {
         stepNumber: '03',
         title: 'Direct WhatsApp Support',
-        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp (+91 9714045096).',
+        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp.',
         highlight: 'Engineer on Chat'
       },
       {
@@ -104,8 +104,8 @@ export const WhyUsSection: React.FC = () => {
         </div>
 
         {/* Institutional STEM Lab Setup Banner */}
-        <div className="bg-gradient-to-br from-navy to-slate-900 rounded-3xl p-6 sm:p-10 lg:p-12 text-white border border-slate-700 shadow-xl relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        <div className="bg-gradient-to-br from-navy to-slate-900 rounded-3xl p-5 sm:p-10 lg:p-12 text-white border border-slate-700 shadow-xl relative overflow-hidden w-full max-w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center relative z-10">
             
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan/20 text-cyan text-xs font-bold border border-cyan/40">
@@ -142,7 +142,7 @@ export const WhyUsSection: React.FC = () => {
               </button>
 
               <div className="text-center text-xs text-slate-400 font-mono">
-                Direct WhatsApp: {settings.whatsappNumber || '+91 9714045096'}
+                Direct 1-Click WhatsApp Support &amp; Quotations
               </div>
             </div>
 

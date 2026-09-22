@@ -78,7 +78,7 @@ export const ProjectsSection: React.FC = () => {
 
           <button
             onClick={() => openWhatsAppInquiry('Custom Capstone / Final Year Engineering Project Blueprint Consultation')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs rounded-xl hover:bg-emerald-100 transition-colors cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs rounded-xl hover:bg-emerald-100 transition-colors cursor-pointer shrink-0"
           >
             <MessageCircle className="w-4 h-4 text-emerald-600" />
             <span>Request Custom Capstone Blueprint</span>

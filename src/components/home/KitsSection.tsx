@@ -49,12 +49,12 @@ export const KitsSection: React.FC = () => {
           </div>
 
           {/* Difficulty Filters */}
-          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-border">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100 p-1.5 rounded-xl border border-border overflow-x-auto max-w-full scrollbar-none">
             {(['All', 'Beginner', 'Intermediate', 'Advanced'] as const).map((lvl) => (
               <button
                 key={lvl}
                 onClick={() => setSelectedDifficulty(lvl)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   selectedDifficulty === lvl
                     ? 'bg-white text-navy shadow-xs border border-border'
                     : 'text-secondary hover:text-navy'

@@ -24,7 +24,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   whatsappNumber: '+919714045096',
   storeName: 'Creative Learning - Robotics & Electronics',
   supportEmail: 'support@creativelearning.in',
-  announcementText: '⚡ Welcome to Creative Learning! WhatsApp Ordering: +91 9714045096 • Pan-India Delivery',
+  announcementText: '⚡ Welcome to Creative Learning! Direct WhatsApp Ordering • Pan-India Express Delivery',
   showAnnouncement: true,
   freeShippingThreshold: 999,
   defaultDeliveryFee: 60,
@@ -45,8 +45,8 @@ export const INITIAL_SETTINGS: StoreSettings = {
     stat1Label: 'Pre-Tested Silicon',
     stat2Value: '48h',
     stat2Label: 'Pan-India Dispatch',
-    stat3Value: '+91 9714045096',
-    stat3Label: 'WhatsApp Direct Support'
+    stat3Value: '1-Click Direct',
+    stat3Label: 'WhatsApp Dispatch & Support'
   },
   whyUs: {
     badge: 'HARDWARE QUALITY GUARANTEE',
@@ -68,7 +68,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
       {
         stepNumber: '03',
         title: 'Direct WhatsApp Support',
-        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp (+91 9714045096).',
+        subtitle: 'Get instant hardware troubleshooting, schematic reviews, and bulk lab quotations directly from engineers on WhatsApp.',
         highlight: 'Engineer on Chat'
       },
       {
@@ -84,5 +84,5 @@ export const INITIAL_SETTINGS: StoreSettings = {
   quotes: [],
   footerBio: 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
   footerAddress: 'Electronics & Robotics Innovation Hub, Ahmedabad, Gujarat, India',
-  footerPhone: '+91 9714045096'
+  footerPhone: 'WhatsApp Direct Chat'
 };
