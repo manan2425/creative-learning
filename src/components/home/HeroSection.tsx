@@ -128,15 +128,15 @@ export const HeroSection: React.FC = () => {
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
               {/* Card Container */}
-              <div className="bg-white/95 rounded-3xl p-6 sm:p-8 text-navy shadow-xl border border-sky-200 relative overflow-hidden backdrop-blur-md">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 text-navy shadow-xl border border-border relative overflow-hidden">
                 
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan via-primary to-orange" />
 
                 {/* Top Status Badge */}
                 <div className="flex items-center justify-between pb-4 border-b border-border/70">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-extrabold bg-sky-50 text-sky-800 rounded-lg border border-sky-200 tracking-wider">
-                    <Radio className="w-3.5 h-3.5 text-cyan animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-extrabold bg-slate-50 text-navy rounded-lg border border-border tracking-wider">
+                    <Radio className="w-3.5 h-3.5 text-primary animate-pulse" />
                     ROBOTICS COMMAND TERMINAL
                   </span>
                   <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 flex items-center gap-1.5">
@@ -145,59 +145,39 @@ export const HeroSection: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Official Logo Brand Panel */}
-                <div className="my-6 py-6 px-4 rounded-2xl bg-gradient-to-b from-sky-50/70 to-slate-50 border border-sky-100 flex flex-col items-center justify-center text-center relative group">
+                {/* Official Logo Brand Panel - Pure White Background */}
+                <div className="my-6 py-6 px-4 rounded-2xl bg-white border border-border shadow-2xs flex flex-col items-center justify-center text-center relative group">
                   <img
                     src="/images/branding/creative-learning-hero-logo.png"
                     alt="Creative Learning - Robotics & Electronics Innovation"
-                    className="max-h-24 sm:max-h-28 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                    className="max-h-24 sm:max-h-28 w-auto object-contain drop-shadow-2xs transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = '/logo.png';
                     }}
                   />
-                  <p className="text-cyan font-heading font-semibold text-xs sm:text-sm mt-3 tracking-wide">
-                    Robotics & Electronics Innovation Hub
+                  <p className="text-primary font-heading font-semibold text-xs sm:text-sm mt-3 tracking-wide">
+                    Robotics &amp; Electronics Innovation Hub
                   </p>
                 </div>
 
                 {/* Inspiration Quote / Mission Pill */}
-                <div className="bg-slate-50 rounded-xl p-4 border border-border/80 text-left relative overflow-hidden">
-                  <div className="text-3xl text-cyan/20 font-serif font-black absolute top-1 right-3 select-none leading-none">
-                    &ldquo;
-                  </div>
-                  <p className="text-xs sm:text-[13px] italic text-slate-700 font-sans leading-relaxed relative z-10 pr-4">
-                    The future belongs to students and makers who build what they imagine with hands-on silicon.
-                  </p>
-                  <small className="text-[11px] font-mono font-bold text-cyan mt-2 block">
-                    — Creative Learning Engineering Lab
-                  </small>
-                </div>
-
-                {/* Live Telemetry Data Box */}
-                <div className="mt-4 bg-slate-900 text-white rounded-2xl p-3.5 border border-slate-700 font-mono text-xs space-y-2">
-                  <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-[11px]">
-                    <span className="flex items-center gap-1.5">
-                      <Cpu className="w-3 h-3 text-cyan" />
-                      HARDWARE TELEMETRY
-                    </span>
-                    <span className="text-emerald-400 flex items-center gap-1 font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                      BENCH READY
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] sm:text-[11px]">
-                    <div className="bg-slate-800 p-2 rounded-lg border border-slate-700 min-w-0">
-                      <span className="text-slate-400 block text-[9px]">ORDER MODE</span>
-                      <span className="text-cyan font-bold block truncate">1-Click WhatsApp</span>
+                {(() => {
+                  const quoteText = settings.heroQuoteText || settings.sectionQuotes?.globalQuoteText || 'The future belongs to students and makers who build what they imagine with hands-on silicon.';
+                  const quoteAuthor = settings.heroQuoteAuthor || settings.sectionQuotes?.globalQuoteAuthor || 'Creative Learning Engineering Lab';
+                  return (
+                    <div className="bg-slate-50 rounded-xl p-4 border border-border/80 text-left relative overflow-hidden">
+                      <div className="text-3xl text-primary/20 font-serif font-black absolute top-1 right-3 select-none leading-none">
+                        &ldquo;
+                      </div>
+                      <p className="text-xs sm:text-[13px] italic text-slate-700 font-sans leading-relaxed relative z-10 pr-4">
+                        {quoteText}
+                      </p>
+                      <small className="text-[11px] font-mono font-bold text-primary mt-2 block">
+                        {quoteAuthor.startsWith('—') ? quoteAuthor : `— ${quoteAuthor}`}
+                      </small>
                     </div>
-
-                    <div className="bg-slate-800 p-2 rounded-lg border border-slate-700 min-w-0">
-                      <span className="text-slate-400 block text-[9px]">FREE SHIPPING ON</span>
-                      <span className="text-emerald-400 font-bold block">₹{settings.freeShippingThreshold || 999}+</span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* Quick WhatsApp Technical Consultation */}
                 <button

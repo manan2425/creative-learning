@@ -58,16 +58,16 @@ export const Navbar: React.FC = () => {
   }, [setIsSearchOpen]);
 
   const navLinks = [
-    { id: 'products', name: 'Hardware Store', href: '#products', icon: Cpu, badge: 'Components' },
-    { id: 'kits', name: 'Starter Kits', href: '#kits', icon: Bot, badge: 'DIY' },
-    { id: 'practical', name: 'Guided Labs', href: '#practical', icon: Layers, badge: 'Code' },
-    { id: 'projects', name: 'Blueprints', href: '#projects', icon: Compass, badge: 'BOM' },
+    { id: 'products', name: 'Products', href: '#products', icon: Cpu },
+    { id: 'kits', name: 'Starter Kits', href: '#kits', icon: Bot },
+    { id: 'practical', name: 'Guided Labs', href: '#practical', icon: Layers },
+    { id: 'projects', name: 'Blueprints', href: '#projects', icon: Compass },
     { id: 'why-us', name: 'Diagnostics', href: '#why-us', icon: Wrench },
   ];
 
   return (
     <header 
-      className={`sticky top-0 z-50 w-full max-w-full transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full max-w-full transition-all duration-300 golden-navbar-border ${
         isScrolled 
           ? 'bg-white/98 backdrop-blur-md shadow-sm border-b border-border py-2 sm:py-2.5' 
           : 'bg-white/98 backdrop-blur-md border-b border-border py-2.5 sm:py-3.5'
@@ -77,8 +77,8 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between gap-3 sm:gap-6">
           
           {/* Brand Logo & Name */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0 min-w-0" aria-label="Creative Learning Home">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border border-border/90 shadow-2xs p-1 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300 shrink-0 overflow-hidden">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink min-w-0" aria-label="Creative Learning Home">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-xl sm:rounded-2xl bg-white border border-border shadow-2xs p-1 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300 shrink-0 overflow-hidden">
               <img 
                 src="/images/branding/creative-learning-logo.png" 
                 alt="Creative Learning Logo" 
@@ -89,17 +89,12 @@ export const Navbar: React.FC = () => {
               />
             </div>
             <div className="flex flex-col justify-center min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-black text-xl sm:text-2xl text-navy tracking-tight font-heading leading-tight truncate">
-                  CREATIVE <span className="text-primary">LEARNING</span>
-                </span>
-                <span className="hidden xl:inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] uppercase font-mono font-bold tracking-wider rounded-md bg-cyan/15 text-navy border border-cyan/30 shrink-0">
-                  STEM • DIY
-                </span>
-              </div>
-              <p className="text-xs sm:text-[12px] text-secondary font-medium tracking-normal hidden xs:block truncate">
+              <span className="font-black text-base sm:text-xl lg:text-2xl text-black tracking-tight font-heading leading-tight block truncate">
+                Creative Learning
+              </span>
+              <span className="text-[10px] sm:text-[12px] text-slate-600 font-medium tracking-tight sm:tracking-normal leading-tight block truncate mt-0.5">
                 Education can Transform a Nation
-              </p>
+              </span>
             </div>
           </Link>
 
@@ -121,15 +116,6 @@ export const Navbar: React.FC = () => {
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                   <span>{link.name}</span>
-                  {link.badge && (
-                    <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded uppercase font-mono transition-colors ${
-                      isActive 
-                        ? 'bg-primary-light text-primary' 
-                        : 'bg-slate-200/70 text-slate-500'
-                    }`}>
-                      {link.badge}
-                    </span>
-                  )}
                 </a>
               );
             })}
@@ -141,7 +127,7 @@ export const Navbar: React.FC = () => {
             {/* Desktop / Mobile Search Trigger Pill */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs text-secondary bg-slate-50 hover:bg-slate-100 hover:border-slate-300 border border-border rounded-xl transition-all cursor-pointer font-medium shadow-2xs group"
               title="Search components, kits, and codes (Ctrl+K)"
             >
               <Search className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
@@ -206,11 +192,6 @@ export const Navbar: React.FC = () => {
                     <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                     <span>{link.name}</span>
                   </div>
-                  {link.badge && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-500 border border-border uppercase font-mono">
-                      {link.badge}
-                    </span>
-                  )}
                 </a>
               );
             })}

@@ -21,6 +21,9 @@ export async function GET() {
         hero: { ...INITIAL_SETTINGS.hero, ...(settings.hero || {}) },
         whyUs: { ...INITIAL_SETTINGS.whyUs, ...(settings.whyUs || {}) },
         quotes: settings.quotes?.length ? settings.quotes : INITIAL_SETTINGS.quotes,
+        heroQuoteText: settings.heroQuoteText || INITIAL_SETTINGS.heroQuoteText,
+        heroQuoteAuthor: settings.heroQuoteAuthor || INITIAL_SETTINGS.heroQuoteAuthor,
+        sectionQuotes: { ...INITIAL_SETTINGS.sectionQuotes, ...(settings.sectionQuotes || {}) },
       };
     }
     return NextResponse.json(

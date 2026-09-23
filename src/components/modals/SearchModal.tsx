@@ -135,9 +135,7 @@ export const SearchModal: React.FC = () => {
                           {prod.name}
                         </h4>
                         <div className="flex items-center gap-2 text-[10px] text-secondary">
-                          <span>{prod.category}</span>
-                          <span>•</span>
-                          <span className="font-mono">SKU: {prod.sku}</span>
+                          <span className="font-medium text-primary">{prod.category}</span>
                         </div>
                       </div>
                     </div>

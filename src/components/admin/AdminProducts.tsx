@@ -17,9 +17,11 @@ import {
   FolderPlus,
   SlidersHorizontal,
   Package,
-  MessageCircle
+  MessageCircle,
+  FileText
 } from 'lucide-react';
-import { ImageUploadField } from '@/components/common/ImageUploadField';
+import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
+import { PdfUploadField } from '@/components/common/PdfUploadField';
 
 export const AdminProducts: React.FC = () => {
   const { products, addProduct, updateProduct, deleteProduct, categories, showToast } = useStore();
@@ -28,6 +30,26 @@ export const AdminProducts: React.FC = () => {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Close on Escape and prevent body scrolling when modal is open
+  React.useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsModalOpen(false);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen]);
 
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
@@ -39,6 +61,9 @@ export const AdminProducts: React.FC = () => {
     inStock: true,
     sku: '',
     image: '',
+    images: [],
+    pdfUrl: '',
+    pdfName: '',
     shortDescription: '',
     description: '',
     voltage: '5V DC',
@@ -71,6 +96,9 @@ export const AdminProducts: React.FC = () => {
       inStock: true,
       sku: 'MCU-' + Math.floor(1000 + Math.random() * 9000),
       image: '',
+      images: [],
+      pdfUrl: '',
+      pdfName: '',
       shortDescription: '',
       description: '',
       voltage: '5V DC',
@@ -84,8 +112,12 @@ export const AdminProducts: React.FC = () => {
 
   const handleOpenEdit = (p: Product) => {
     setEditingProduct(p);
+    const initialImages = p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []);
     setFormData({ 
       ...p,
+      images: initialImages,
+      pdfUrl: p.pdfUrl || p.datasheetUrl || '',
+      pdfName: p.pdfName || '',
       hidePrice: Boolean(p.hidePrice)
     });
     
@@ -134,13 +166,20 @@ export const AdminProducts: React.FC = () => {
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
 
+    const allImgs = formData.images && formData.images.length > 0 ? formData.images : (formData.image ? [formData.image] : []);
+    const primaryImg = allImgs[0] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80';
+
     const productPayload: Product = {
       ...(formData as Product),
       id: editingProduct ? editingProduct.id : (formData.id || 'prod-' + Date.now()),
       category: formData.category || 'Microcontrollers',
       price: formData.hidePrice ? 0 : Number(formData.price || 0),
       hidePrice: Boolean(formData.hidePrice),
-      image: formData.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
+      image: primaryImg,
+      images: allImgs,
+      pdfUrl: formData.pdfUrl || '',
+      pdfName: formData.pdfName || '',
+      datasheetUrl: formData.pdfUrl || '',
       specs: parsedSpecs,
       pinout: parsedPinout,
     };
@@ -250,9 +289,27 @@ export const AdminProducts: React.FC = () => {
                           className="w-10 h-10 rounded-lg object-cover bg-slate-100 border border-border shrink-0"
                         />
                         <div className="space-y-0.5">
-                          <span className="font-bold text-navy hover:text-primary transition-colors block">
-                            {prod.name}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-bold text-navy hover:text-primary transition-colors block">
+                              {prod.name}
+                            </span>
+                            {prod.images && prod.images.length > 1 && (
+                              <span className="px-1.5 py-0.2 bg-slate-100 text-slate-700 text-[9px] font-mono font-bold rounded">
+                                📷 {prod.images.length}
+                              </span>
+                            )}
+                            {(prod.pdfUrl || prod.datasheetUrl) && (
+                              <a
+                                href={prod.pdfUrl || prod.datasheetUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-1.5 py-0.2 bg-red-100 text-red-700 text-[9px] font-mono font-bold rounded hover:bg-red-200 transition-colors flex items-center gap-0.5"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                PDF
+                              </a>
+                            )}
+                          </div>
                           <span className="text-[10px] font-mono text-slate-400 block">
                             SKU: {prod.sku || 'N/A'} • {prod.category}
                           </span>
@@ -325,31 +382,54 @@ export const AdminProducts: React.FC = () => {
 
       {/* Add / Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-4 max-h-[92vh] flex flex-col">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 animate-fade-in touch-manipulation">
+          {/* Backdrop Overlay */}
+          <div 
+            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 bg-navy/80 backdrop-blur-xs transition-opacity cursor-pointer z-0"
+            aria-hidden="true"
+          />
+
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+          >
             
             {/* Modal Header */}
-            <div className="bg-navy text-white p-4 px-6 flex items-center justify-between shrink-0">
+            <div className="bg-navy text-white p-3.5 sm:p-4 px-4 sm:px-6 flex items-center justify-between shrink-0 border-b border-navy-light sticky top-0 z-20">
               <h3 className="font-extrabold text-sm font-heading flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-cyan" />
                 <span>{editingProduct ? 'Edit Hardware Component' : 'Add New Hardware Component'}</span>
               </h3>
               <button 
+                type="button"
                 onClick={() => setIsModalOpen(false)} 
-                className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-red-600 active:bg-red-700 text-white transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-bold border border-slate-700"
+                title="Cancel & Close (Esc)"
+                aria-label="Cancel & Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>Cancel</span>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               
-              {/* Image Upload Component */}
-              <ImageUploadField
-                value={formData.image || ''}
-                onChange={(url) => setFormData({ ...formData, image: url })}
-                label="Component Picture (Device Upload / Camera)"
-                description="Tap to select photo from phone gallery, capture with camera, or paste link."
+              {/* Multi-Image Upload Component */}
+              <MultiImageUploadField
+                images={formData.images || (formData.image ? [formData.image] : [])}
+                onChange={(imgs) => setFormData({ ...formData, images: imgs, image: imgs[0] || '' })}
+                label="Component Photographs (Multiple Photos Allowed)"
+                description="Upload multiple pictures of this component. The 1st photo is the primary cover."
+              />
+
+              {/* Single PDF Upload Component */}
+              <PdfUploadField
+                pdfUrl={formData.pdfUrl || formData.datasheetUrl || ''}
+                pdfName={formData.pdfName || ''}
+                onChange={(url, name) => setFormData({ ...formData, pdfUrl: url, datasheetUrl: url, pdfName: name || '' })}
+                label="Component Datasheet / Pinout PDF (1 Document Allowed)"
+                description="Attach an official technical datasheet or pinout schematic guide."
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
@@ -485,32 +565,34 @@ export const AdminProducts: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-2 space-y-1">
-                  <label className="text-xs font-bold text-navy">Pinout Schematic Map (1 Pin per line)</label>
+                  <label className="text-xs font-bold text-navy">Applications &amp; Pinout Guide (1 per line)</label>
                   <textarea
                     rows={3}
                     value={pinoutInput}
                     onChange={(e) => setPinoutInput(e.target.value)}
-                    placeholder="VCC: 5V Power&#10;GND: Ground (0V)&#10;GPIO2: Built-in Blue LED"
+                    placeholder="IoT Weather Stations&#10;Robotics Motor Control&#10;Home Automation Controller"
                     className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                 </div>
 
               </div>
 
-              {/* Submit Buttons */}
+              {/* Submit / Cancel Buttons */}
               <div className="pt-4 border-t border-border flex items-center justify-end gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-navy rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  Cancel
+                  <X className="w-4 h-4 text-slate-500" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-sm transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl text-xs font-bold shadow-sm transition-colors cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  {editingProduct ? 'Update Component' : 'Save to MongoDB'}
+                  <Check className="w-4 h-4" />
+                  <span>{editingProduct ? 'Update Component' : 'Save to MongoDB'}</span>
                 </button>
               </div>
 

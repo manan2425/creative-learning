@@ -20,21 +20,23 @@ export async function POST(req: NextRequest) {
     let mimeType = 'image/jpeg';
     let base64Data = '';
     let buffer: Buffer | null = null;
-    let originalName = 'upload.jpg';
+    let originalName = 'upload';
 
     if (base64Input && base64Input.startsWith('data:')) {
       base64Data = base64Input;
-      const match = base64Input.match(/^data:(image\/[a-zA-Z0-9.+]+);base64,(.+)$/);
+      const match = base64Input.match(/^data:([a-zA-Z0-9.+/-]+);base64,(.+)$/);
       if (match) {
         mimeType = match[1];
         buffer = Buffer.from(match[2], 'base64');
       }
       if (file) {
         originalName = file.name;
+      } else {
+        originalName = mimeType.includes('pdf') ? 'document.pdf' : 'image.jpg';
       }
     } else if (file) {
       originalName = file.name;
-      mimeType = file.type || 'image/jpeg';
+      mimeType = file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
       const bytes = await file.arrayBuffer();
       buffer = Buffer.from(bytes);
       base64Data = `data:${mimeType};base64,${buffer.toString('base64')}`;
@@ -77,6 +79,8 @@ export async function POST(req: NextRequest) {
       success: true,
       url: publicUrl,
       base64: base64Data,
+      name: originalName,
+      type: mimeType
     });
   } catch (error: any) {
     console.error('File upload handler error:', error);

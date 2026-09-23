@@ -11,6 +11,9 @@ export interface Product {
   inStock: boolean;
   stockQuantity: number;
   image: string;
+  images?: string[];
+  pdfUrl?: string;
+  pdfName?: string;
   shortDescription: string;
   description: string;
   specs: Record<string, string>;
@@ -35,6 +38,9 @@ export interface RoboticsKit {
   rating: number;
   reviewsCount: number;
   image: string;
+  images?: string[];
+  pdfUrl?: string;
+  pdfName?: string;
   badge?: string;
   features: string[];
   bomList: {
@@ -57,6 +63,9 @@ export interface PracticalExperiment {
   topic: string;
   durationMin: number;
   image: string;
+  images?: string[];
+  pdfUrl?: string;
+  pdfName?: string;
   description: string;
   objective: string;
   requiredComponents: {
@@ -87,6 +96,9 @@ export interface EngineeringProject {
   estimatedCost: number;
   hidePrice?: boolean;
   image: string;
+  images?: string[];
+  pdfUrl?: string;
+  pdfName?: string;
   description: string;
   highlights: string[];
   bom: {
@@ -186,6 +198,19 @@ export interface QuoteItem {
   role: string;
 }
 
+export interface SectionQuotesConfig {
+  globalQuoteText: string;
+  globalQuoteAuthor: string;
+  productsQuoteText?: string;
+  productsQuoteAuthor?: string;
+  kitsQuoteText?: string;
+  kitsQuoteAuthor?: string;
+  practicalsQuoteText?: string;
+  practicalsQuoteAuthor?: string;
+  projectsQuoteText?: string;
+  projectsQuoteAuthor?: string;
+}
+
 export interface StoreSettings {
   _id?: string;
   whatsappNumber: string;
@@ -201,6 +226,9 @@ export interface StoreSettings {
   categories: string[];
   hero?: CMSHeroContent;
   whyUs?: CMSWhyUsContent;
+  heroQuoteText?: string;
+  heroQuoteAuthor?: string;
+  sectionQuotes?: SectionQuotesConfig;
   quotes?: QuoteItem[];
   footerBio?: string;
   footerAddress?: string;

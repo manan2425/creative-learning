@@ -102,6 +102,20 @@ export const AdminContentCMS: React.FC = () => {
         ]
   );
 
+  // Master & Section Quote Banner State
+  const [quoteSettings, setQuoteSettings] = useState({
+    heroQuoteText: settings.heroQuoteText || settings.sectionQuotes?.globalQuoteText || 'The future belongs to students and makers who build what they imagine with hands-on silicon.',
+    heroQuoteAuthor: settings.heroQuoteAuthor || settings.sectionQuotes?.globalQuoteAuthor || 'Creative Learning Engineering Lab',
+    productsQuoteText: settings.sectionQuotes?.productsQuoteText || 'Every great invention starts with a single semiconductor, a spark of curiosity, and the courage to build.',
+    productsQuoteAuthor: settings.sectionQuotes?.productsQuoteAuthor || 'Creative Learning Silicon Lab',
+    kitsQuoteText: settings.sectionQuotes?.kitsQuoteText || 'Robotics is not just about building machines; it is about building the creative minds that will shape tomorrow.',
+    kitsQuoteAuthor: settings.sectionQuotes?.kitsQuoteAuthor || 'Creative Learning Robotics Team',
+    practicalsQuoteText: settings.sectionQuotes?.practicalsQuoteText || 'True understanding comes from connecting the wires, measuring the signals, and watching theoretical formulas come alive on the breadboard.',
+    practicalsQuoteAuthor: settings.sectionQuotes?.practicalsQuoteAuthor || 'Creative Learning Practical Division',
+    projectsQuoteText: settings.sectionQuotes?.projectsQuoteText || 'When hardware blueprints and firmware are shared openly, human innovation accelerates for every student across the nation.',
+    projectsQuoteAuthor: settings.sectionQuotes?.projectsQuoteAuthor || 'Creative Learning Open-Source Community',
+  });
+
   // Footer State
   const [footerData, setFooterData] = useState({
     footerBio: settings.footerBio || 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
@@ -132,7 +146,23 @@ export const AdminContentCMS: React.FC = () => {
   const handleSaveQuotes = async () => {
     setIsSaving(true);
     try {
-      await updateCMSContent('quotes', quotesList);
+      await updateCMSContent('sectionQuotes', {
+        heroQuoteText: quoteSettings.heroQuoteText,
+        heroQuoteAuthor: quoteSettings.heroQuoteAuthor,
+        sectionQuotes: {
+          globalQuoteText: quoteSettings.heroQuoteText,
+          globalQuoteAuthor: quoteSettings.heroQuoteAuthor,
+          productsQuoteText: quoteSettings.productsQuoteText,
+          productsQuoteAuthor: quoteSettings.productsQuoteAuthor,
+          kitsQuoteText: quoteSettings.kitsQuoteText,
+          kitsQuoteAuthor: quoteSettings.kitsQuoteAuthor,
+          practicalsQuoteText: quoteSettings.practicalsQuoteText,
+          practicalsQuoteAuthor: quoteSettings.practicalsQuoteAuthor,
+          projectsQuoteText: quoteSettings.projectsQuoteText,
+          projectsQuoteAuthor: quoteSettings.projectsQuoteAuthor,
+        },
+        quotes: quotesList
+      });
     } finally {
       setIsSaving(false);
     }
@@ -510,85 +540,247 @@ export const AdminContentCMS: React.FC = () => {
         </form>
       )}
 
-      {/* 3. INSPIRATION QUOTES */}
+      {/* 3. INSPIRATION & SECTION QUOTES CMS */}
       {activeTab === 'quotes' && (
-        <div className="bg-white p-6 rounded-2xl border border-border shadow-2xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-extrabold text-navy uppercase tracking-wider font-mono flex items-center gap-2">
-              <Quote className="w-4 h-4 text-cyan" />
-              STEM Pioneer &amp; Robotics Quotes
-            </h3>
-            <button
-              type="button"
-              onClick={handleAddQuote}
-              className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-primary text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add New Quote</span>
-            </button>
-          </div>
+        <div className="space-y-6">
+          {/* A. Master Engineering Lab Quote (Hero Logo & Section Default) */}
+          <div className="bg-white p-6 rounded-2xl border border-border shadow-2xs space-y-5">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-extrabold text-navy uppercase tracking-wider font-mono flex items-center gap-2">
+                <Quote className="w-4 h-4 text-cyan" />
+                Master Engineering Lab Quote (Hero &amp; Homepage Banners)
+              </h3>
+              <p className="text-xs text-secondary mt-1">
+                This quote appears directly under the official logo in the Hero section and serves as the default quote banner between all main storefront sections.
+              </p>
+            </div>
 
-          <div className="space-y-4">
-            {quotesList.map((q, idx) => (
-              <div key={q.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-border space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-slate-500">
-                    Quote #{idx + 1}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteQuote(idx)}
-                    className="p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
-                    title="Delete Quote"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Form Inputs */}
+              <div className="lg:col-span-7 space-y-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-navy">Quote Text</label>
                   <textarea
-                    rows={2}
-                    value={q.text}
-                    onChange={(e) => handleUpdateQuote(idx, 'text', e.target.value)}
-                    className="w-full px-3.5 py-2 bg-white border border-border rounded-xl text-xs text-navy font-serif italic"
+                    rows={3}
+                    value={quoteSettings.heroQuoteText}
+                    onChange={(e) => setQuoteSettings({ ...quoteSettings, heroQuoteText: e.target.value })}
+                    placeholder="Enter inspiring quote for students and makers..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-border rounded-xl text-xs text-navy font-sans leading-relaxed transition-all"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-navy">Author</label>
-                    <input
-                      type="text"
-                      value={q.author}
-                      onChange={(e) => handleUpdateQuote(idx, 'author', e.target.value)}
-                      className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-bold text-navy"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-navy">Role / Title</label>
-                    <input
-                      type="text"
-                      value={q.role}
-                      onChange={(e) => handleUpdateQuote(idx, 'role', e.target.value)}
-                      className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs text-secondary"
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy">Author / Lab Signature</label>
+                  <input
+                    type="text"
+                    value={quoteSettings.heroQuoteAuthor}
+                    onChange={(e) => setQuoteSettings({ ...quoteSettings, heroQuoteAuthor: e.target.value })}
+                    placeholder="e.g. Creative Learning Engineering Lab"
+                    className="w-full px-3.5 py-2 bg-slate-50 focus:bg-white border border-border rounded-xl text-xs font-bold font-mono text-primary transition-all"
+                  />
                 </div>
               </div>
-            ))}
+
+              {/* Live Preview Card */}
+              <div className="lg:col-span-5 space-y-2">
+                <label className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
+                  Live Card Preview
+                </label>
+                <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-border/80 text-left relative overflow-hidden shadow-2xs">
+                  <div className="text-3xl sm:text-4xl text-primary/20 font-serif font-black absolute top-1 sm:top-2 right-3 sm:right-4 select-none leading-none">
+                    &ldquo;
+                  </div>
+                  <p className="text-xs italic text-slate-700 font-sans leading-relaxed relative z-10 pr-4">
+                    {quoteSettings.heroQuoteText || 'The future belongs to students and makers who build what they imagine with hands-on silicon.'}
+                  </p>
+                  <small className="text-[11px] font-mono font-bold text-primary mt-2 block">
+                    {quoteSettings.heroQuoteAuthor.startsWith('—') 
+                      ? quoteSettings.heroQuoteAuthor 
+                      : `— ${quoteSettings.heroQuoteAuthor || 'Creative Learning Engineering Lab'}`}
+                  </small>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
-            <button
-              type="button"
-              onClick={handleSaveQuotes}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-            >
-              <Save className="w-4 h-4" />
-              <span>{isSaving ? 'Saving...' : 'Save Quotes List'}</span>
-            </button>
+          {/* B. Optional Custom Section Quotes */}
+          <div className="bg-white p-6 rounded-2xl border border-border shadow-2xs space-y-4">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-extrabold text-navy uppercase tracking-wider font-mono flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-primary" />
+                Custom Section Quote Banners (Optional Overrides)
+              </h3>
+              <p className="text-xs text-secondary mt-1">
+                Leave these empty to automatically use the Master Engineering Lab quote configured above across all sections.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 1. Products Section Quote */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-border space-y-2.5">
+                <span className="text-xs font-mono font-bold text-primary block">
+                  1. Electronics Components &amp; ICs Banner
+                </span>
+                <textarea
+                  rows={2}
+                  value={quoteSettings.productsQuoteText}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, productsQuoteText: e.target.value })}
+                  placeholder="Custom quote (leave blank to use Master quote)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs italic text-navy"
+                />
+                <input
+                  type="text"
+                  value={quoteSettings.productsQuoteAuthor}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, productsQuoteAuthor: e.target.value })}
+                  placeholder="Author (optional)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-mono text-primary"
+                />
+              </div>
+
+              {/* 2. Kits Section Quote */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-border space-y-2.5">
+                <span className="text-xs font-mono font-bold text-primary block">
+                  2. Robot Kits &amp; STEM Bundles Banner
+                </span>
+                <textarea
+                  rows={2}
+                  value={quoteSettings.kitsQuoteText}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, kitsQuoteText: e.target.value })}
+                  placeholder="Custom quote (leave blank to use Master quote)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs italic text-navy"
+                />
+                <input
+                  type="text"
+                  value={quoteSettings.kitsQuoteAuthor}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, kitsQuoteAuthor: e.target.value })}
+                  placeholder="Author (optional)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-mono text-primary"
+                />
+              </div>
+
+              {/* 3. Practicals Section Quote */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-border space-y-2.5">
+                <span className="text-xs font-mono font-bold text-primary block">
+                  3. Interactive Hardware Practicals Banner
+                </span>
+                <textarea
+                  rows={2}
+                  value={quoteSettings.practicalsQuoteText}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, practicalsQuoteText: e.target.value })}
+                  placeholder="Custom quote (leave blank to use Master quote)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs italic text-navy"
+                />
+                <input
+                  type="text"
+                  value={quoteSettings.practicalsQuoteAuthor}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, practicalsQuoteAuthor: e.target.value })}
+                  placeholder="Author (optional)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-mono text-primary"
+                />
+              </div>
+
+              {/* 4. Projects Section Quote */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-border space-y-2.5">
+                <span className="text-xs font-mono font-bold text-primary block">
+                  4. Open-Source Robotics Blueprints Banner
+                </span>
+                <textarea
+                  rows={2}
+                  value={quoteSettings.projectsQuoteText}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, projectsQuoteText: e.target.value })}
+                  placeholder="Custom quote (leave blank to use Master quote)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs italic text-navy"
+                />
+                <input
+                  type="text"
+                  value={quoteSettings.projectsQuoteAuthor}
+                  onChange={(e) => setQuoteSettings({ ...quoteSettings, projectsQuoteAuthor: e.target.value })}
+                  placeholder="Author (optional)"
+                  className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-mono text-primary"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* C. STEM Pioneer Carousel Quotes */}
+          <div className="bg-white p-6 rounded-2xl border border-border shadow-2xs space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-extrabold text-navy uppercase tracking-wider font-mono flex items-center gap-2">
+                <Quote className="w-4 h-4 text-cyan" />
+                STEM Pioneer &amp; Robotics Carousel Quotes
+              </h3>
+              <button
+                type="button"
+                onClick={handleAddQuote}
+                className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-primary text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add New Quote</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {quotesList.map((q, idx) => (
+                <div key={q.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-border space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-slate-500">
+                      Pioneer Quote #{idx + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteQuote(idx)}
+                      className="p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Delete Quote"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-navy">Quote Text</label>
+                    <textarea
+                      rows={2}
+                      value={q.text}
+                      onChange={(e) => handleUpdateQuote(idx, 'text', e.target.value)}
+                      className="w-full px-3.5 py-2 bg-white border border-border rounded-xl text-xs text-navy font-serif italic"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Author</label>
+                      <input
+                        type="text"
+                        value={q.author}
+                        onChange={(e) => handleUpdateQuote(idx, 'author', e.target.value)}
+                        className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-bold text-navy"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Role / Title</label>
+                      <input
+                        type="text"
+                        value={q.role}
+                        onChange={(e) => handleUpdateQuote(idx, 'role', e.target.value)}
+                        className="w-full px-3 py-1.5 bg-white border border-border rounded-lg text-xs text-secondary"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSaveQuotes}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? 'Saving...' : 'Save All Quotes Live'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

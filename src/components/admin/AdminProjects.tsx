@@ -3,14 +3,35 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { EngineeringProject } from '@/types';
-import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2, MessageCircle, Check } from 'lucide-react';
-import { ImageUploadField } from '@/components/common/ImageUploadField';
+import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2, MessageCircle, Check, FileText } from 'lucide-react';
+import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
+import { PdfUploadField } from '@/components/common/PdfUploadField';
 
 export const AdminProjects: React.FC = () => {
   const { projects, addProject, updateProject, deleteProject, showToast } = useStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<EngineeringProject | null>(null);
+
+  // Close on Escape and prevent body scrolling when modal is open
+  React.useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsModalOpen(false);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen]);
 
   const [formData, setFormData] = useState<Partial<EngineeringProject>>({
     title: '',
@@ -19,6 +40,9 @@ export const AdminProjects: React.FC = () => {
     estimatedCost: 1950,
     hidePrice: false,
     image: '',
+    images: [],
+    pdfUrl: '',
+    pdfName: '',
     description: '',
     cadModelAvailable: true,
     gerberAvailable: true,
@@ -38,6 +62,9 @@ export const AdminProjects: React.FC = () => {
       estimatedCost: 0,
       hidePrice: false,
       image: '',
+      images: [],
+      pdfUrl: '',
+      pdfName: '',
       description: '',
       cadModelAvailable: true,
       gerberAvailable: true,
@@ -50,8 +77,12 @@ export const AdminProjects: React.FC = () => {
 
   const handleOpenEdit = (proj: EngineeringProject) => {
     setEditingProject(proj);
+    const initialImages = proj.images && proj.images.length > 0 ? proj.images : (proj.image ? [proj.image] : []);
     setFormData({ 
       ...proj,
+      images: initialImages,
+      pdfUrl: proj.pdfUrl || '',
+      pdfName: proj.pdfName || '',
       hidePrice: Boolean(proj.hidePrice)
     });
     setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}: ${b.unitPrice}`).join('\n') : '');
@@ -81,12 +112,18 @@ export const AdminProjects: React.FC = () => {
 
     const parsedHighlights = highlightsInput.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
 
+    const allImgs = formData.images && formData.images.length > 0 ? formData.images : (formData.image ? [formData.image] : []);
+    const primaryImg = allImgs[0] || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80';
+
     const projectPayload: EngineeringProject = {
       ...(formData as EngineeringProject),
       id: editingProject ? editingProject.id : (formData.id || 'proj-' + Date.now()),
       estimatedCost: formData.hidePrice ? 0 : Number(formData.estimatedCost || 0),
       hidePrice: Boolean(formData.hidePrice),
-      image: formData.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80',
+      image: primaryImg,
+      images: allImgs,
+      pdfUrl: formData.pdfUrl || '',
+      pdfName: formData.pdfName || '',
       bom: parsedBom,
       highlights: parsedHighlights,
     };
@@ -204,26 +241,53 @@ export const AdminProjects: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-4 max-h-[92vh] flex flex-col">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 animate-fade-in touch-manipulation">
+          {/* Backdrop Overlay */}
+          <div 
+            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 bg-navy/80 backdrop-blur-xs transition-opacity cursor-pointer z-0"
+            aria-hidden="true"
+          />
+
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+          >
             
-            <div className="bg-navy text-white p-4 px-6 flex items-center justify-between shrink-0">
+            <div className="bg-navy text-white p-3.5 sm:p-4 px-4 sm:px-6 flex items-center justify-between shrink-0 border-b border-navy-light sticky top-0 z-20">
               <h3 className="font-extrabold text-sm font-heading flex items-center gap-2">
                 <Compass className="w-4 h-4 text-cyan" />
                 <span>{editingProject ? 'Edit Engineering Blueprint' : 'Add New Engineering Blueprint'}</span>
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                <X className="w-5 h-5" />
+              <button 
+                type="button"
+                onClick={() => setIsModalOpen(false)} 
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-red-600 active:bg-red-700 text-white transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-bold border border-slate-700"
+                title="Cancel & Close (Esc)"
+                aria-label="Cancel & Close modal"
+              >
+                <X className="w-4 h-4" />
+                <span>Cancel</span>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               
-              <ImageUploadField
-                value={formData.image || ''}
-                onChange={(url) => setFormData({ ...formData, image: url })}
-                label="Blueprint Schematic / Prototype Photo"
-                description="Upload circuit diagram, CAD rendering, or finished project photo."
+              {/* Multi-Image Upload Component */}
+              <MultiImageUploadField
+                images={formData.images || (formData.image ? [formData.image] : [])}
+                onChange={(imgs) => setFormData({ ...formData, images: imgs, image: imgs[0] || '' })}
+                label="Blueprint Photographs & Schematics (Multiple Photos Allowed)"
+                description="Upload circuit schematics, breadboard prototype photos, and 3D CAD renders."
+              />
+
+              {/* Single PDF Upload Component */}
+              <PdfUploadField
+                pdfUrl={formData.pdfUrl || ''}
+                pdfName={formData.pdfName || ''}
+                onChange={(url, name) => setFormData({ ...formData, pdfUrl: url, pdfName: name || '' })}
+                label="Project Blueprint / Gerber Guide (1 PDF Allowed)"
+                description="Attach complete PDF documentation, circuit schematic, or report."
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
@@ -348,19 +412,22 @@ export const AdminProjects: React.FC = () => {
 
               </div>
 
-              <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
+              {/* Submit / Cancel Buttons */}
+              <div className="pt-4 border-t border-border flex items-center justify-end gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-navy rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  Cancel
+                  <X className="w-4 h-4 text-slate-500" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-sm transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl text-xs font-bold shadow-sm transition-colors cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  {editingProject ? 'Update Blueprint' : 'Save to MongoDB'}
+                  <Check className="w-4 h-4" />
+                  <span>{editingProject ? 'Update Blueprint' : 'Save to MongoDB'}</span>
                 </button>
               </div>
 

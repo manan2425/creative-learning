@@ -44,6 +44,31 @@ export const WhatsAppCheckoutModal: React.FC = () => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
 
+  const handleClose = () => {
+    setIsCheckoutOpen(false);
+    setOrderComplete(false);
+  };
+
+  // Close on Escape and prevent body scrolling when modal is open
+  React.useEffect(() => {
+    if (!isCheckoutOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isCheckoutOpen]);
+
   if (!isCheckoutOpen) return null;
 
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -92,38 +117,47 @@ export const WhatsAppCheckoutModal: React.FC = () => {
     }
   };
 
-  const handleClose = () => {
-    setIsCheckoutOpen(false);
-    setOrderComplete(false);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-navy/70 backdrop-blur-xs animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 animate-fade-in touch-manipulation">
+      {/* Dedicated Backdrop Overlay */}
+      <div 
+        onClick={handleClose}
+        className="fixed inset-0 bg-navy/80 backdrop-blur-xs transition-opacity cursor-pointer z-0"
+        aria-hidden="true"
+      />
+
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-border w-full max-w-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+      >
         
         {/* Modal Header */}
-        <div className="bg-navy text-white p-5 flex items-center justify-between border-b border-navy-light relative overflow-hidden">
+        <div className="bg-navy text-white p-3.5 sm:p-5 px-4 sm:px-6 flex items-center justify-between border-b border-navy-light relative overflow-hidden shrink-0 sticky top-0 z-20">
           <div className="absolute inset-0 bg-circuit-grid opacity-10 pointer-events-none" />
           
-          <div className="flex items-center gap-3 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-              <MessageCircle className="w-6 h-6 fill-emerald-500/20" />
+          <div className="flex items-center gap-2.5 sm:gap-3 relative z-10 min-w-0 pr-2">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 fill-emerald-500/20" />
             </div>
-            <div>
-              <h3 className="font-extrabold text-lg text-white">
+            <div className="min-w-0">
+              <h3 className="font-extrabold text-sm sm:text-lg text-white truncate">
                 {orderComplete ? 'Order Placed on WhatsApp!' : 'Quick WhatsApp Checkout'}
               </h3>
-              <p className="text-xs text-slate-300">
+              <p className="text-[11px] sm:text-xs text-slate-300 truncate">
                 Direct Dispatch by Creative Learning • Instant WhatsApp Connect
               </p>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={handleClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer relative z-10"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-red-600 active:bg-red-700 text-white transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-bold border border-slate-700 relative z-10 shrink-0"
+            title="Cancel & Close (Esc)"
+            aria-label="Cancel & Close modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
+            <span>Cancel</span>
           </button>
         </div>
 

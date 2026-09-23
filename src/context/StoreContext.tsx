@@ -83,6 +83,7 @@ interface StoreContextType {
 
   // File Upload Helper
   uploadImage: (file: File, base64Preview?: string) => Promise<{ success: boolean; url: string; base64?: string; error?: string }>;
+  uploadFile: (file: File, base64Preview?: string) => Promise<{ success: boolean; url: string; base64?: string; name?: string; error?: string }>;
 
   // Dynamic Categories Management
   addCategory: (categoryName: string) => Promise<boolean>;
@@ -90,7 +91,7 @@ interface StoreContextType {
   updateCategories: (categories: string[]) => Promise<boolean>;
 
   // Visual CMS & Settings
-  updateCMSContent: (section: 'hero' | 'whyUs' | 'quotes' | 'general', data: any) => Promise<boolean>;
+  updateCMSContent: (section: 'hero' | 'whyUs' | 'quotes' | 'sectionQuotes' | 'general', data: any) => Promise<boolean>;
   updateSettings: (newSettings: Partial<StoreSettings>) => Promise<void>;
 
   // Database CRUD
@@ -330,6 +331,45 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Upload general document or PDF file from device
+  const uploadFile = async (file: File, base64Preview?: string): Promise<{ success: boolean; url: string; base64?: string; name?: string; error?: string }> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (base64Preview) {
+        formData.append('base64', base64Preview);
+      }
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      const isPdf = file.name.toLowerCase().endsWith('.pdf') || (file.type && file.type.includes('pdf'));
+      const label = isPdf ? 'PDF Document' : 'File';
+
+      if (data.success && data.url) {
+        showToast(`${label} Attached`, `${file.name} ready for saving.`, 'success');
+        return { success: true, url: data.url, base64: data.base64 || base64Preview, name: data.name || file.name };
+      } else {
+        if (base64Preview) {
+          showToast(`${label} Attached`, `${file.name} processed successfully.`, 'success');
+          return { success: true, url: base64Preview, base64: base64Preview, name: file.name };
+        }
+        showToast('Upload Notice', data.error || `Could not process ${label.toLowerCase()}`, 'warning');
+        return { success: false, url: '', error: data.error };
+      }
+    } catch (err: any) {
+      if (base64Preview) {
+        showToast('File Attached', `${file.name} processed directly.`, 'success');
+        return { success: true, url: base64Preview, base64: base64Preview, name: file.name };
+      }
+      showToast('Upload Error', err.message || 'Network error during upload', 'error');
+      return { success: false, url: '', error: err.message };
+    }
+  };
+
   // Dynamic Categories Management
   const updateCategories = async (newCats: string[]): Promise<boolean> => {
     try {
@@ -366,7 +406,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Dynamic CMS Text Editor
-  const updateCMSContent = async (section: 'hero' | 'whyUs' | 'quotes' | 'general', data: any): Promise<boolean> => {
+  const updateCMSContent = async (section: 'hero' | 'whyUs' | 'quotes' | 'sectionQuotes' | 'general', data: any): Promise<boolean> => {
     try {
       let updatedSettings: Partial<StoreSettings> = {};
       if (section === 'hero') {
@@ -375,6 +415,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updatedSettings = { whyUs: data as CMSWhyUsContent };
       } else if (section === 'quotes') {
         updatedSettings = { quotes: data as QuoteItem[] };
+      } else if (section === 'sectionQuotes') {
+        updatedSettings = {
+          heroQuoteText: data.heroQuoteText,
+          heroQuoteAuthor: data.heroQuoteAuthor,
+          sectionQuotes: data.sectionQuotes,
+          ...(data.quotes ? { quotes: data.quotes } : {})
+        };
       } else {
         updatedSettings = data;
       }
@@ -828,6 +875,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         openWhatsAppInquiry,
         processWhatsAppCheckout,
         uploadImage,
+        uploadFile,
         addCategory,
         deleteCategory,
         updateCategories,

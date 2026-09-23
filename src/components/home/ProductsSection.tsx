@@ -239,23 +239,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.voltage}
               </span>
             )}
+            {product.images && product.images.length > 1 && (
+              <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-black/75 text-white backdrop-blur-xs flex items-center gap-0.5">
+                📷 {product.images.length}
+              </span>
+            )}
+            {product.pdfUrl && (
+              <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-red-600/90 text-white backdrop-blur-xs">
+                PDF
+              </span>
+            )}
           </div>
 
-          {/* Quick View Button Overlay */}
+          {/* Quick View & Specs Button Overlay */}
           <button
             onClick={onQuickView}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 text-navy hover:text-primary hover:bg-white flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-            title="Pinout & Specs Quick View"
+            className="absolute top-3 right-3 px-2.5 py-1.5 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1.5 shadow-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer text-xs font-bold font-heading"
+            title="View Specifications & Pinouts"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5 text-primary" />
+            <span>Specs</span>
           </button>
         </div>
 
         {/* Product Details */}
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[11px] font-mono text-slate-400">
-              {product.sku ? `SKU: ${product.sku}` : 'GENUINE SILICON'}
+            <span className="text-[11px] font-semibold text-primary font-sans">
+              {product.category || 'Hardware'}
             </span>
             <div className="flex items-center gap-1 text-amber-500 font-bold">
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -297,9 +308,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
 
-          <span className="text-[10px] text-success font-bold flex items-center gap-1">
-            <Check className="w-3 h-3" /> Ready to Ship
-          </span>
+          {/* Quick Specs Eye Trigger */}
+          <button
+            onClick={onQuickView}
+            className="text-[11px] text-primary hover:text-primary-hover font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            title="View Specifications & Pinouts"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Specifications</span>
+          </button>
         </div>
 
         {/* Buttons Grid */}

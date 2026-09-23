@@ -14,7 +14,9 @@ import {
   AlertTriangle, 
   HelpCircle,
   Code2,
-  ListChecks
+  ListChecks,
+  Eye,
+  FileText
 } from 'lucide-react';
 
 export const PracticalDetailModal: React.FC = () => {
@@ -23,12 +25,32 @@ export const PracticalDetailModal: React.FC = () => {
     setActivePracticalModal, 
     addToCart, 
     products, 
-    openWhatsAppInquiry,
+    openWhatsAppInquiry, 
     showToast 
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'wiring' | 'code' | 'troubleshooting'>('wiring');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  // Close on Escape and prevent body scrolling when modal is open
+  React.useEffect(() => {
+    if (!activePracticalModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActivePracticalModal(null);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activePracticalModal, setActivePracticalModal]);
 
   if (!activePracticalModal) return null;
 
@@ -66,33 +88,47 @@ export const PracticalDetailModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-navy/70 backdrop-blur-xs animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-border w-full max-w-4xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 animate-fade-in touch-manipulation">
+      {/* Backdrop Overlay */}
+      <div 
+        onClick={() => setActivePracticalModal(null)}
+        className="fixed inset-0 bg-navy/80 backdrop-blur-xs transition-opacity cursor-pointer z-0"
+        aria-hidden="true"
+      />
+
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-border w-full max-w-4xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+      >
         
         {/* Header */}
-        <div className="bg-navy text-white p-5 flex items-center justify-between border-b border-navy-light shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan/20 text-cyan border border-cyan/30 flex items-center justify-center">
-              <Layers className="w-5 h-5" />
+        <div className="bg-navy text-white p-3.5 sm:p-5 px-4 sm:px-6 flex items-center justify-between border-b border-navy-light shrink-0 sticky top-0 z-20">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-cyan/20 text-cyan border border-cyan/30 flex items-center justify-center shrink-0">
+              <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-cyan text-navy">
+                <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-cyan text-navy shrink-0">
                   {lab.level} Level
                 </span>
-                <span className="text-xs text-slate-400 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-cyan" /> {lab.durationMin} Minutes Lab
+                <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1 truncate">
+                  <Clock className="w-3.5 h-3.5 text-cyan" /> {lab.durationMin} Mins Lab
                 </span>
               </div>
-              <h3 className="font-extrabold text-lg text-white mt-0.5">{lab.title}</h3>
+              <h3 className="font-extrabold text-sm sm:text-lg text-white mt-0.5 truncate">{lab.title}</h3>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={() => setActivePracticalModal(null)}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-red-600 active:bg-red-700 text-white transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-bold border border-slate-700 shrink-0"
+            title="Cancel & Close (Esc)"
+            aria-label="Cancel & Close modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
+            <span>Cancel</span>
           </button>
         </div>
 
@@ -145,6 +181,34 @@ export const PracticalDetailModal: React.FC = () => {
             </span>
             <p className="leading-relaxed">{lab.objective}</p>
           </div>
+
+          {/* PDF Lab Guide (if attached) */}
+          {lab.pdfUrl && (
+            <a
+              href={lab.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 bg-red-50/70 hover:bg-red-50 border border-red-200 rounded-2xl flex items-center justify-between transition-colors group cursor-pointer shadow-2xs"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+                  PDF
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-navy group-hover:text-red-700 transition-colors block truncate">
+                    {lab.pdfName || 'Lab Experiment Sheet & Theory Manual'}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono block">
+                    Download and read full printable lab document
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-xl text-navy hover:text-primary text-xs font-bold shadow-2xs border border-border shrink-0">
+                <Eye className="w-3.5 h-3.5 text-primary" />
+                <span>View PDF</span>
+              </div>
+            </a>
+          )}
 
           {/* TAB 1: WIRING & COMPONENTS */}
           {activeTab === 'wiring' && (
@@ -294,20 +358,23 @@ export const PracticalDetailModal: React.FC = () => {
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-border bg-slate-50 flex items-center justify-between shrink-0">
+        <div className="p-3 sm:p-4 border-t border-border bg-slate-50 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
           <button
+            type="button"
             onClick={() => setActivePracticalModal(null)}
-            className="px-4 py-2 text-xs font-bold text-secondary hover:text-navy cursor-pointer"
+            className="px-4 py-2.5 bg-slate-200/80 hover:bg-slate-300 active:bg-slate-400 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
           >
-            Close Lab Guide
+            <X className="w-4 h-4 text-slate-500" />
+            <span>Cancel &amp; Close</span>
           </button>
 
           <button
+            type="button"
             onClick={() => openWhatsAppInquiry(`Practical Kit Inquiry: ${lab.title}`)}
-            className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
           >
             <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Order Complete Lab Hardware on WhatsApp</span>
+            <span>Order Lab Hardware on WhatsApp</span>
           </button>
         </div>
 

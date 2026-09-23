@@ -82,8 +82,23 @@ export const INITIAL_SETTINGS: StoreSettings = {
     guaranteeTitle: 'School, College & Maker Lab Package Consultation',
     guaranteeDesc: 'Equipping a robotics lab or organizing a STEM workshop? We provide custom hardware bundles with itemized GST invoices, curriculum manuals, and component replacement warranties.'
   },
+  heroQuoteText: 'The future belongs to students and makers who build what they imagine with hands-on silicon.',
+  heroQuoteAuthor: 'Creative Learning Engineering Lab',
+  sectionQuotes: {
+    globalQuoteText: 'The future belongs to students and makers who build what they imagine with hands-on silicon.',
+    globalQuoteAuthor: 'Creative Learning Engineering Lab',
+    productsQuoteText: 'Every great invention starts with a single semiconductor, a spark of curiosity, and the courage to build.',
+    productsQuoteAuthor: 'Creative Learning Silicon Lab',
+    kitsQuoteText: 'Robotics is not just about building machines; it is about building the creative minds that will shape tomorrow.',
+    kitsQuoteAuthor: 'Creative Learning Robotics Team',
+    practicalsQuoteText: 'True understanding comes from connecting the wires, measuring the signals, and watching theoretical formulas come alive on the breadboard.',
+    practicalsQuoteAuthor: 'Creative Learning Practical Division',
+    projectsQuoteText: 'When hardware blueprints and firmware are shared openly, human innovation accelerates for every student across the nation.',
+    projectsQuoteAuthor: 'Creative Learning Open-Source Community',
+  },
   quotes: [],
   footerBio: 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
   footerAddress: 'Electronics & Robotics Innovation Hub, Ahmedabad, Gujarat, India',
   footerPhone: 'WhatsApp Direct Chat'
 };
+
