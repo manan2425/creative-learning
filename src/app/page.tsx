@@ -34,49 +34,51 @@ export default function Home() {
   const projectsAuthor = sq?.projectsQuoteAuthor || 'Creative Learning Open-Source Community';
 
   return (
-    <main className="min-h-screen flex flex-col bg-background text-navy w-full max-w-full overflow-x-clip">
+    <div className="min-h-screen flex flex-col bg-background text-navy w-full max-w-full">
       {/* 1. Announcement Bar */}
       <AnnouncementBar />
 
-      {/* 2. Main Navigation */}
+      {/* 2. Main Navigation (Sticky on Mobile & Laptop) */}
       <Navbar />
 
-      {/* 3. Hero Section with Robot Showcase */}
-      <HeroSection />
+      <main className="flex-1 w-full max-w-full">
+        {/* 3. Hero Section with Robot Showcase */}
+        <HeroSection />
 
-      {/* 4. Hardware Storefront (#products - Electronics Components & ICs) */}
-      <ProductsSection />
+        {/* 4. Hardware Storefront (#products - Electronics Components & ICs) */}
+        <ProductsSection />
 
-      {/* Quote after Electronics Components & ICs */}
-      <SectionQuoteBanner quote={productsQuote} author={productsAuthor} />
+        {/* Quote after Electronics Components & ICs */}
+        <SectionQuoteBanner quote={productsQuote} author={productsAuthor} />
 
-      {/* 5. Robotics Starter Kits (#kits - Hands-On Robot Kits & STEM Bundles) */}
-      <KitsSection />
+        {/* 5. Robotics Starter Kits (#kits - Hands-On Robot Kits & STEM Bundles) */}
+        <KitsSection />
 
-      {/* Quote after Hands-On Robot Kits & STEM Bundles */}
-      <SectionQuoteBanner quote={kitsQuote} author={kitsAuthor} />
+        {/* Quote after Hands-On Robot Kits & STEM Bundles */}
+        <SectionQuoteBanner quote={kitsQuote} author={kitsAuthor} />
 
-      {/* 6. Guided Labs & Practicals (#practical - Interactive Hardware Practicals) */}
-      <PracticalSection />
+        {/* 6. Guided Labs & Practicals (#practical - Interactive Hardware Practicals) */}
+        <PracticalSection />
 
-      {/* Quote after Interactive Hardware Practicals */}
-      <SectionQuoteBanner quote={practicalsQuote} author={practicalsAuthor} />
+        {/* Quote after Interactive Hardware Practicals */}
+        <SectionQuoteBanner quote={practicalsQuote} author={practicalsAuthor} />
 
-      {/* 7. Engineering Blueprints & DIY Projects (#projects - Open-Source Robotics Blueprints) */}
-      <ProjectsSection />
+        {/* 7. Engineering Blueprints & DIY Projects (#projects - Open-Source Robotics Blueprints) */}
+        <ProjectsSection />
 
-      {/* Quote after Open-Source Robotics Blueprints */}
-      <SectionQuoteBanner quote={projectsQuote} author={projectsAuthor} />
+        {/* Quote after Open-Source Robotics Blueprints */}
+        <SectionQuoteBanner quote={projectsQuote} author={projectsAuthor} />
 
-      {/* 8. Inspiration & Pioneer Quotes (#inspiration) */}
-      <InspirationSection />
+        {/* 8. Inspiration & Pioneer Quotes (#inspiration) */}
+        <InspirationSection />
 
-      {/* 9. Diagnostics & Why Us (#why-us) */}
-      <WhyUsSection />
+        {/* 9. Diagnostics & Why Us (#why-us) */}
+        <WhyUsSection />
+      </main>
 
       {/* 10. Footer */}
       <Footer />
-    </main>
+    </div>
   );
 }
 

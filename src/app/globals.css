@@ -169,7 +169,7 @@
 }
 
 .golden-navbar-border {
-  position: relative;
+  /* Retains sticky positioning of header while establishing containing block for shimmer pseudo-element */
 }
 
 .golden-navbar-border::after {

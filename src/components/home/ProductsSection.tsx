@@ -50,8 +50,8 @@ export const ProductsSection: React.FC = () => {
   }, [products, selectedCategory, searchTerm, sortBy]);
 
   return (
-    <section id="products" className="py-14 lg:py-20 bg-background border-b border-border relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="products" className="py-10 sm:py-14 lg:py-20 bg-background border-b border-border relative">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -135,7 +135,7 @@ export const ProductsSection: React.FC = () => {
 
         </div>
 
-        {/* Products Grid */}
+        {/* Products Grid - 2 columns on mobile, 3-4 on larger screens */}
         {filteredProducts.length === 0 ? (
           <div className="bg-white rounded-3xl border border-border p-8 sm:p-12 text-center space-y-4 shadow-2xs">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 text-primary mx-auto flex items-center justify-center">
@@ -172,7 +172,7 @@ export const ProductsSection: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -218,7 +218,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const isQuoteItem = product.hidePrice || !product.price;
 
   return (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group">
+    <div className="bg-card rounded-xl sm:rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group">
       
       <div>
         {/* Product Image Box */}
@@ -229,23 +229,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-            <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-navy/90 text-white backdrop-blur-xs border border-slate-700">
+          {/* Badges Overlay */}
+          <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 flex flex-wrap gap-1 max-w-[85%]">
+            <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-navy/90 text-white backdrop-blur-xs border border-slate-700 truncate max-w-full">
               {product.category}
             </span>
             {product.voltage && (
-              <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-cyan/90 text-navy">
+              <span className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-cyan/90 text-navy">
                 {product.voltage}
               </span>
             )}
             {product.images && product.images.length > 1 && (
-              <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-black/75 text-white backdrop-blur-xs flex items-center gap-0.5">
+              <span className="px-1 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-black/75 text-white backdrop-blur-xs flex items-center gap-0.5">
                 📷 {product.images.length}
               </span>
             )}
             {product.pdfUrl && (
-              <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-red-600/90 text-white backdrop-blur-xs">
+              <span className="px-1 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-red-600/90 text-white backdrop-blur-xs">
                 PDF
               </span>
             )}
@@ -254,64 +254,68 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Quick View & Specs Button Overlay */}
           <button
             onClick={onQuickView}
-            className="absolute top-3 right-3 px-2.5 py-1.5 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1.5 shadow-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer text-xs font-bold font-heading"
+            className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 p-1 sm:px-2.5 sm:py-1.5 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1 shadow-md transition-all opacity-90 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer text-[10px] sm:text-xs font-bold font-heading"
             title="View Specifications & Pinouts"
+            aria-label="View Specifications"
           >
-            <Eye className="w-3.5 h-3.5 text-primary" />
-            <span>Specs</span>
+            <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+            <span className="hidden sm:inline">Specs</span>
           </button>
         </div>
 
         {/* Product Details */}
-        <div className="p-4 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-[11px] font-semibold text-primary font-sans">
+        <div className="p-2.5 sm:p-4 space-y-1 sm:space-y-2">
+          <div className="flex items-center justify-between text-[10px] sm:text-xs">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-primary font-sans truncate max-w-[65%]">
               {product.category || 'Hardware'}
             </span>
-            <div className="flex items-center gap-1 text-amber-500 font-bold">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{product.rating || 4.8}</span>
+            <div className="flex items-center gap-0.5 sm:gap-1 text-amber-500 font-bold shrink-0">
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-[10px] sm:text-xs">{product.rating || 4.8}</span>
             </div>
           </div>
 
           <h3 
             onClick={onQuickView}
-            className="font-bold font-heading text-sm text-navy line-clamp-2 hover:text-primary transition-colors cursor-pointer leading-snug"
+            className="font-bold font-heading text-xs sm:text-sm text-navy line-clamp-2 hover:text-primary transition-colors cursor-pointer leading-tight sm:leading-snug min-h-[2rem] sm:min-h-[2.5rem]"
+            title={product.name}
           >
             {product.name}
           </h3>
 
-          <p className="text-xs text-secondary line-clamp-2 leading-relaxed font-sans">
-            {product.shortDescription}
-          </p>
+          {product.shortDescription && (
+            <p className="hidden sm:block text-xs text-secondary line-clamp-2 leading-relaxed font-sans">
+              {product.shortDescription}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Bottom Price & Action Buttons */}
-      <div className="p-4 pt-0 space-y-3">
-        <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+      <div className="p-2.5 sm:p-4 pt-0 space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-between border-t border-slate-100 pt-2 sm:pt-3">
           {isQuoteItem ? (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-xs font-extrabold font-heading">Price on Request</span>
+            <div className="inline-flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+              <span className="text-[10px] sm:text-xs font-extrabold font-heading">On Request</span>
             </div>
           ) : (
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-extrabold font-mono text-navy">
+            <div className="flex items-baseline gap-1 sm:gap-2">
+              <span className="text-sm sm:text-lg font-extrabold font-mono text-navy">
                 ₹{product.price}
               </span>
               {product.originalPrice && (
-                <span className="text-xs text-slate-400 line-through font-mono">
+                <span className="text-[10px] sm:text-xs text-slate-400 line-through font-mono">
                   ₹{product.originalPrice}
                 </span>
               )}
             </div>
           )}
 
-          {/* Quick Specs Eye Trigger */}
+          {/* Quick Specs Eye Trigger (Desktop / Tablet) */}
           <button
             onClick={onQuickView}
-            className="text-[11px] text-primary hover:text-primary-hover font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            className="hidden sm:flex text-[11px] text-primary hover:text-primary-hover font-bold items-center gap-1 cursor-pointer transition-colors"
             title="View Specifications & Pinouts"
           >
             <Eye className="w-3.5 h-3.5" />
@@ -320,22 +324,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Buttons Grid */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
           <button
             onClick={onAddToCart}
-            className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-2xs transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 sm:px-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-heading shadow-2xs transition-colors cursor-pointer"
+            title="Add to Cart"
           >
-            <ShoppingCart className="w-3.5 h-3.5" />
-            <span>Add to Cart</span>
+            <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="sm:hidden font-semibold">Add</span>
+            <span className="hidden sm:inline">Add to Cart</span>
           </button>
 
           <button
             onClick={onWhatsApp}
-            className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 sm:px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-heading transition-colors cursor-pointer"
             title="Ask on WhatsApp"
           >
-            <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600/20" />
-            <span>WhatsApp</span>
+            <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 fill-emerald-600/20 shrink-0" />
+            <span className="sm:hidden font-semibold">Chat</span>
+            <span className="hidden sm:inline">WhatsApp</span>
           </button>
         </div>
       </div>

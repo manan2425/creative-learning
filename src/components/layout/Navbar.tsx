@@ -152,7 +152,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-border shadow-xl px-4 pt-4 pb-6 animate-fade-in divide-y divide-border max-w-full overflow-hidden">
+        <div className="lg:hidden bg-white border-b border-border shadow-xl px-4 pt-4 pb-6 animate-fade-in divide-y divide-border max-w-full max-h-[calc(100vh-4rem)] overflow-y-auto">
           
           {/* Mobile Search Quick Bar */}
           <div className="pb-3">
