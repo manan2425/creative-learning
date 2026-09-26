@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { PracticalExperiment } from '@/types';
-import { Plus, Trash2, Edit3, Layers, X, Clock, Code2, FileText, Check } from 'lucide-react';
+import { Plus, Trash2, Edit3, Layers, X, Clock, Code2, FileText, Check, Download } from 'lucide-react';
 import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
 import { PdfUploadField } from '@/components/common/PdfUploadField';
+import { exportPracticalsToCSV } from '@/lib/exportUtils';
 
 export const AdminPracticals: React.FC = () => {
   const { practicals, addPractical, updatePractical, deletePractical, showToast } = useStore();
@@ -164,13 +165,27 @@ export const AdminPracticals: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer self-stretch sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Guided Practical</span>
-        </button>
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <button
+            onClick={() => {
+              exportPracticalsToCSV(practicals);
+              showToast('Download Complete', `Exported ${practicals.length} practical experiments to CSV.`, 'success');
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer border border-border"
+            title="Download full practical experiments catalog as CSV"
+          >
+            <Download className="w-4 h-4 text-primary" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Practical</span>
+          </button>
+        </div>
       </div>
 
       {/* Grid */}

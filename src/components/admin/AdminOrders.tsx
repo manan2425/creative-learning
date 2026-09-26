@@ -14,8 +14,10 @@ import {
   Package, 
   Truck, 
   XCircle,
-  CreditCard
+  CreditCard,
+  Download
 } from 'lucide-react';
+import { exportOrdersToCSV } from '@/lib/exportUtils';
 
 interface AdminOrdersProps {
   orders: any[];
@@ -73,12 +75,26 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, refreshOrders 
           </p>
         </div>
 
-        <button
-          onClick={refreshOrders}
-          className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-navy font-bold text-xs rounded-xl transition-colors cursor-pointer"
-        >
-          ↻ Refresh Logs
-        </button>
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <button
+            onClick={() => {
+              exportOrdersToCSV(orders);
+              showToast('Download Complete', `Exported ${orders.length} orders to CSV.`, 'success');
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-navy font-bold text-xs rounded-xl transition-colors cursor-pointer border border-border"
+            title="Download orders log as CSV spreadsheet"
+          >
+            <Download className="w-4 h-4 text-primary" />
+            <span>Export Orders CSV</span>
+          </button>
+
+          <button
+            onClick={refreshOrders}
+            className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-navy font-bold text-xs rounded-xl transition-colors cursor-pointer border border-border"
+          >
+            ↻ Refresh Logs
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

@@ -14,6 +14,8 @@ export const WhatsAppFloatingBtn: React.FC = () => {
     isSearchOpen,
     activePracticalModal,
     activeQuickViewProduct,
+    activeQuickViewKit,
+    activeQuickViewProject,
     cart,
     setIsCartOpen
   } = useStore();
@@ -23,7 +25,7 @@ export const WhatsAppFloatingBtn: React.FC = () => {
   const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   // Automatically hide floating button if cart, checkout, search, or details modal is open
-  if (isCartOpen || isCheckoutOpen || isSearchOpen || activePracticalModal || activeQuickViewProduct) {
+  if (isCartOpen || isCheckoutOpen || isSearchOpen || activePracticalModal || activeQuickViewProduct || activeQuickViewKit || activeQuickViewProject) {
     return null;
   }
 

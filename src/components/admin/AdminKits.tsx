@@ -3,15 +3,18 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { RoboticsKit } from '@/types';
-import { Plus, Trash2, Edit3, Bot, X, Star, Clock, Layers, MessageCircle, Check, FileText } from 'lucide-react';
+import { Plus, Trash2, Edit3, Bot, X, Star, Clock, Layers, MessageCircle, Check, FileText, Download, Eye } from 'lucide-react';
 import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
 import { PdfUploadField } from '@/components/common/PdfUploadField';
+import { exportKitsToCSV } from '@/lib/exportUtils';
+import { RatingChangeModal } from '@/components/modals/RatingChangeModal';
 
 export const AdminKits: React.FC = () => {
-  const { kits, addKit, updateKit, deleteKit, showToast } = useStore();
+  const { kits, addKit, updateKit, deleteKit, showToast, setActiveQuickViewKit } = useStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingKit, setEditingKit] = useState<RoboticsKit | null>(null);
+  const [ratingModalKit, setRatingModalKit] = useState<RoboticsKit | null>(null);
 
   // Close on Escape and prevent body scrolling when modal is open
   React.useEffect(() => {
@@ -163,13 +166,27 @@ export const AdminKits: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer self-stretch sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Robotics Kit</span>
-        </button>
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <button
+            onClick={() => {
+              exportKitsToCSV(kits);
+              showToast('Download Complete', `Exported ${kits.length} starter kits to CSV.`, 'success');
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer border border-border"
+            title="Download full starter kits catalog as CSV"
+          >
+            <Download className="w-4 h-4 text-primary" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Robotics Kit</span>
+          </button>
+        </div>
       </div>
 
       {/* Kits Grid */}
@@ -230,16 +247,37 @@ export const AdminKits: React.FC = () => {
                     <h4 className="font-bold text-navy text-sm font-heading line-clamp-1">{kit.title}</h4>
                     <p className="text-xs text-secondary line-clamp-2">{kit.subtitle}</p>
                     
-                    <div className="pt-2 text-[11px] text-slate-500 font-mono">
-                      {kit.bomList?.length || 0} Components in BOM bundle
+                    {/* Rating row with click-to-edit */}
+                    <div className="pt-2 flex items-center justify-between text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setRatingModalKit(kit)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg text-amber-800 text-[11px] font-bold font-mono transition-colors cursor-pointer group"
+                        title="Click to edit kit rating & reviews"
+                      >
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span>{kit.rating || 4.9}</span>
+                        <span className="text-slate-400 font-normal">({kit.reviewsCount || 0})</span>
+                      </button>
+                      <span className="text-slate-500 font-mono text-[11px]">
+                        {kit.bomList?.length || 0} BOM items
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 pt-0 flex items-center justify-end gap-2">
+                <div className="p-4 pt-0 flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => setActiveQuickViewKit(kit)}
+                    className="p-1.5 text-slate-500 hover:text-primary hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Preview Kit Details (Quick View)"
+                  >
+                    <Eye className="w-4 h-4 text-primary" />
+                  </button>
                   <button
                     onClick={() => handleOpenEdit(kit)}
                     className="p-1.5 text-slate-500 hover:text-primary hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Edit Kit"
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
@@ -248,6 +286,7 @@ export const AdminKits: React.FC = () => {
                       if (confirm(`Delete ${kit.title}?`)) deleteKit(kit.id);
                     }}
                     className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Delete Kit"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -430,6 +469,36 @@ export const AdminKits: React.FC = () => {
                   />
                 </div>
 
+                {/* Rating & Reviews Count in Edit Modal */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy flex items-center justify-between">
+                    <span>Customer Rating (1.0 to 5.0)</span>
+                    <span className="text-amber-500 font-bold flex items-center gap-1 text-[11px]">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {formData.rating || 4.9}
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1.0"
+                    max="5.0"
+                    step="0.1"
+                    value={formData.rating ?? 4.9}
+                    onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) || 4.9 })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy">Reviews Count</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.reviewsCount ?? 20}
+                    onChange={(e) => setFormData({ ...formData, reviewsCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy"
+                  />
+                </div>
+
                 <div className="sm:col-span-2 space-y-1">
                   <label className="text-xs font-bold text-navy">Bill of Materials (Part Name: Quantity per line)</label>
                   <textarea
@@ -477,6 +546,27 @@ export const AdminKits: React.FC = () => {
 
           </div>
         </div>
+      )}
+
+      {/* Quick Rating Change Modal */}
+      {ratingModalKit && (
+        <RatingChangeModal
+          isOpen={Boolean(ratingModalKit)}
+          onClose={() => setRatingModalKit(null)}
+          itemTitle={ratingModalKit.title}
+          itemType="Starter Kit"
+          initialRating={ratingModalKit.rating || 4.9}
+          initialReviewsCount={ratingModalKit.reviewsCount || 0}
+          onSave={async (newRating, newReviewsCount) => {
+            await updateKit({
+              ...ratingModalKit,
+              rating: newRating,
+              reviewsCount: newReviewsCount,
+            });
+            showToast('Rating Saved', `${ratingModalKit.title} rating updated to ${newRating} ★ (${newReviewsCount} reviews).`, 'success');
+            setRatingModalKit(null);
+          }}
+        />
       )}
 
     </div>

@@ -95,6 +95,8 @@ export interface EngineeringProject {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   estimatedCost: number;
   hidePrice?: boolean;
+  rating?: number;
+  reviewsCount?: number;
   image: string;
   images?: string[];
   pdfUrl?: string;

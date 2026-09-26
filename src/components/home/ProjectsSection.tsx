@@ -12,11 +12,13 @@ import {
   ArrowRight, 
   Check, 
   Download,
-  Share2
+  Share2,
+  Eye,
+  Star
 } from 'lucide-react';
 
 export const ProjectsSection: React.FC = () => {
-  const { projects, addToCart, openWhatsAppInquiry, showToast } = useStore();
+  const { projects, addToCart, openWhatsAppInquiry, showToast, setActiveQuickViewProject } = useStore();
 
   const handleAddProjectBOMToCart = (project: any) => {
     let totalAdded = 0;
@@ -117,7 +119,10 @@ export const ProjectsSection: React.FC = () => {
                 <div>
                   
                   {/* Image */}
-                  <div className="aspect-16/10 bg-slate-900 relative overflow-hidden">
+                  <div 
+                    onClick={() => setActiveQuickViewProject(project)}
+                    className="aspect-16/10 bg-slate-900 relative overflow-hidden cursor-pointer"
+                  >
                     <img
                       src={project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80'}
                       alt={project.title}
@@ -128,6 +133,20 @@ export const ProjectsSection: React.FC = () => {
                     <div className="absolute top-3 left-3 bg-navy/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700">
                       {project.difficulty}
                     </div>
+
+                    {/* Quick View Button Overlay */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveQuickViewProject(project);
+                      }}
+                      className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1 shadow-md transition-all cursor-pointer text-xs font-bold font-heading z-10 opacity-95 group-hover:scale-105"
+                      title="View Project Blueprint & BOM"
+                      aria-label="View Project Blueprint"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-primary" />
+                      <span>Blueprint</span>
+                    </button>
 
                     <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold font-mono text-navy border border-border shadow-md">
                       {project.hidePrice || !project.estimatedCost ? (
@@ -144,10 +163,20 @@ export const ProjectsSection: React.FC = () => {
                   {/* Body Content */}
                   <div className="p-6 space-y-4">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-primary tracking-wider">
-                        {project.category}
-                      </span>
-                      <h3 className="text-base sm:text-lg font-extrabold text-navy mt-1 leading-snug group-hover:text-primary transition-colors">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-[10px] uppercase font-bold text-primary tracking-wider">
+                          {project.category}
+                        </span>
+                        <div className="flex items-center gap-1 text-amber-500 font-bold shrink-0">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span className="text-xs">{project.rating || 4.9}</span>
+                          <span className="text-slate-400 font-normal text-[10px]">({project.reviewsCount || 18})</span>
+                        </div>
+                      </div>
+                      <h3 
+                        onClick={() => setActiveQuickViewProject(project)}
+                        className="text-base sm:text-lg font-extrabold text-navy mt-1 leading-snug group-hover:text-primary transition-colors cursor-pointer"
+                      >
                         {project.title}
                       </h3>
                     </div>

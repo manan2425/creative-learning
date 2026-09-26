@@ -3,15 +3,18 @@
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
 import { EngineeringProject } from '@/types';
-import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2, MessageCircle, Check, FileText } from 'lucide-react';
+import { Plus, Trash2, Edit3, Compass, X, Box, FileCode2, MessageCircle, Check, FileText, Download, Eye, Star } from 'lucide-react';
 import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
 import { PdfUploadField } from '@/components/common/PdfUploadField';
+import { exportProjectsToCSV } from '@/lib/exportUtils';
+import { RatingChangeModal } from '@/components/modals/RatingChangeModal';
 
 export const AdminProjects: React.FC = () => {
-  const { projects, addProject, updateProject, deleteProject, showToast } = useStore();
+  const { projects, addProject, updateProject, deleteProject, showToast, setActiveQuickViewProject } = useStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<EngineeringProject | null>(null);
+  const [ratingModalProject, setRatingModalProject] = useState<EngineeringProject | null>(null);
 
   // Close on Escape and prevent body scrolling when modal is open
   React.useEffect(() => {
@@ -39,6 +42,8 @@ export const AdminProjects: React.FC = () => {
     difficulty: 'Intermediate',
     estimatedCost: 1950,
     hidePrice: false,
+    rating: 4.9,
+    reviewsCount: 18,
     image: '',
     images: [],
     pdfUrl: '',
@@ -61,6 +66,8 @@ export const AdminProjects: React.FC = () => {
       difficulty: 'Intermediate',
       estimatedCost: 0,
       hidePrice: false,
+      rating: 4.9,
+      reviewsCount: 15,
       image: '',
       images: [],
       pdfUrl: '',
@@ -83,7 +90,9 @@ export const AdminProjects: React.FC = () => {
       images: initialImages,
       pdfUrl: proj.pdfUrl || '',
       pdfName: proj.pdfName || '',
-      hidePrice: Boolean(proj.hidePrice)
+      hidePrice: Boolean(proj.hidePrice),
+      rating: proj.rating || 4.9,
+      reviewsCount: proj.reviewsCount || 0
     });
     setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}: ${b.unitPrice}`).join('\n') : '');
     setHighlightsInput(proj.highlights ? proj.highlights.join('\n') : '');
@@ -120,6 +129,8 @@ export const AdminProjects: React.FC = () => {
       id: editingProject ? editingProject.id : (formData.id || 'proj-' + Date.now()),
       estimatedCost: formData.hidePrice ? 0 : Number(formData.estimatedCost || 0),
       hidePrice: Boolean(formData.hidePrice),
+      rating: Number(formData.rating || 4.9),
+      reviewsCount: Number(formData.reviewsCount || 0),
       image: primaryImg,
       images: allImgs,
       pdfUrl: formData.pdfUrl || '',
@@ -149,13 +160,27 @@ export const AdminProjects: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer self-stretch sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Blueprint</span>
-        </button>
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <button
+            onClick={() => {
+              exportProjectsToCSV(projects);
+              showToast('Download Complete', `Exported ${projects.length} project blueprints to CSV.`, 'success');
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer border border-border"
+            title="Download full project blueprints as CSV"
+          >
+            <Download className="w-4 h-4 text-primary" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Blueprint</span>
+          </button>
+        </div>
       </div>
 
       {/* Grid */}
@@ -211,16 +236,37 @@ export const AdminProjects: React.FC = () => {
                     <h4 className="font-bold text-navy text-sm font-heading line-clamp-1">{proj.title}</h4>
                     <p className="text-xs text-secondary line-clamp-2">{proj.description}</p>
                     
-                    <div className="pt-2 text-[11px] text-slate-500 font-mono">
-                      {proj.bom?.length || 0} Parts in BOM
+                    {/* Rating and BOM parts row */}
+                    <div className="pt-2 flex items-center justify-between text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setRatingModalProject(proj)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg text-amber-800 text-[11px] font-bold font-mono transition-colors cursor-pointer group"
+                        title="Click to edit project rating & reviews"
+                      >
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span>{proj.rating || 4.9}</span>
+                        <span className="text-slate-400 font-normal">({proj.reviewsCount || 0})</span>
+                      </button>
+                      <span className="text-slate-500 font-mono text-[11px]">
+                        {proj.bom?.length || 0} Parts in BOM
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 pt-0 flex items-center justify-end gap-2">
+                <div className="p-4 pt-0 flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => setActiveQuickViewProject(proj)}
+                    className="p-1.5 text-slate-500 hover:text-primary hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Preview Blueprint Specs (Quick View)"
+                  >
+                    <Eye className="w-4 h-4 text-primary" />
+                  </button>
                   <button
                     onClick={() => handleOpenEdit(proj)}
                     className="p-1.5 text-slate-500 hover:text-primary hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Edit Blueprint"
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
@@ -229,6 +275,7 @@ export const AdminProjects: React.FC = () => {
                       if (confirm(`Delete ${proj.title}?`)) deleteProject(proj.id);
                     }}
                     className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                    title="Delete Blueprint"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -377,6 +424,36 @@ export const AdminProjects: React.FC = () => {
                   />
                 </div>
 
+                {/* Rating & Reviews Count in Edit Modal */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy flex items-center justify-between">
+                    <span>Project Rating (1.0 to 5.0)</span>
+                    <span className="text-amber-500 font-bold flex items-center gap-1 text-[11px]">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {formData.rating || 4.9}
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1.0"
+                    max="5.0"
+                    step="0.1"
+                    value={formData.rating ?? 4.9}
+                    onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) || 4.9 })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy">Reviews Count</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.reviewsCount ?? 15}
+                    onChange={(e) => setFormData({ ...formData, reviewsCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy"
+                  />
+                </div>
+
                 <div className="sm:col-span-2 space-y-1">
                   <label className="text-xs font-bold text-navy">Project Overview Description</label>
                   <textarea
@@ -435,6 +512,27 @@ export const AdminProjects: React.FC = () => {
 
           </div>
         </div>
+      )}
+
+      {/* Quick Rating Change Modal */}
+      {ratingModalProject && (
+        <RatingChangeModal
+          isOpen={Boolean(ratingModalProject)}
+          onClose={() => setRatingModalProject(null)}
+          itemTitle={ratingModalProject.title}
+          itemType="Engineering Project"
+          initialRating={ratingModalProject.rating || 4.9}
+          initialReviewsCount={ratingModalProject.reviewsCount || 0}
+          onSave={async (newRating, newReviewsCount) => {
+            await updateProject({
+              ...ratingModalProject,
+              rating: newRating,
+              reviewsCount: newReviewsCount,
+            });
+            showToast('Rating Saved', `${ratingModalProject.title} rating updated to ${newRating} ★ (${newReviewsCount} reviews).`, 'success');
+            setRatingModalProject(null);
+          }}
+        />
       )}
 
     </div>

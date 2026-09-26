@@ -43,6 +43,8 @@ interface StoreContextType {
   isSearchOpen: boolean;
   isCheckoutOpen: boolean;
   activeQuickViewProduct: Product | null;
+  activeQuickViewKit: RoboticsKit | null;
+  activeQuickViewProject: EngineeringProject | null;
   activePracticalModal: PracticalExperiment | null;
   toasts: Toast[];
   isLoading: boolean;
@@ -54,6 +56,8 @@ interface StoreContextType {
   setIsSearchOpen: (open: boolean) => void;
   setIsCheckoutOpen: (open: boolean) => void;
   setActiveQuickViewProduct: (product: Product | null) => void;
+  setActiveQuickViewKit: (kit: RoboticsKit | null) => void;
+  setActiveQuickViewProject: (project: EngineeringProject | null) => void;
   setActivePracticalModal: (practical: PracticalExperiment | null) => void;
   
   // Cart & Wishlist
@@ -131,6 +135,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [activeQuickViewProduct, setActiveQuickViewProduct] = useState<Product | null>(null);
+  const [activeQuickViewKit, setActiveQuickViewKit] = useState<RoboticsKit | null>(null);
+  const [activeQuickViewProject, setActiveQuickViewProject] = useState<EngineeringProject | null>(null);
   const [activePracticalModal, setActivePracticalModal] = useState<PracticalExperiment | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -852,6 +858,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isSearchOpen,
         isCheckoutOpen,
         activeQuickViewProduct,
+        activeQuickViewKit,
+        activeQuickViewProject,
         activePracticalModal,
         toasts,
         isLoading,
@@ -861,6 +869,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsSearchOpen,
         setIsCheckoutOpen,
         setActiveQuickViewProduct,
+        setActiveQuickViewKit,
+        setActiveQuickViewProject,
         setActivePracticalModal,
         addToCart,
         removeFromCart,

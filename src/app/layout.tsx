@@ -6,6 +6,8 @@ import { ToastContainer } from "@/components/common/ToastContainer";
 import { CartDrawer } from "@/components/modals/CartDrawer";
 import { WhatsAppCheckoutModal } from "@/components/modals/WhatsAppCheckoutModal";
 import { ProductQuickViewModal } from "@/components/modals/ProductQuickViewModal";
+import { KitQuickViewModal } from "@/components/modals/KitQuickViewModal";
+import { ProjectQuickViewModal } from "@/components/modals/ProjectQuickViewModal";
 import { PracticalDetailModal } from "@/components/modals/PracticalDetailModal";
 import { SearchModal } from "@/components/modals/SearchModal";
 import { WhatsAppFloatingBtn } from "@/components/layout/WhatsAppFloatingBtn";
@@ -65,6 +67,8 @@ export default function RootLayout({
           <CartDrawer />
           <WhatsAppCheckoutModal />
           <ProductQuickViewModal />
+          <KitQuickViewModal />
+          <ProjectQuickViewModal />
           <PracticalDetailModal />
           <SearchModal />
           <WhatsAppFloatingBtn />

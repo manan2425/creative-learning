@@ -18,13 +18,18 @@ import {
   SlidersHorizontal,
   Package,
   MessageCircle,
-  FileText
+  FileText,
+  Download,
+  Eye
 } from 'lucide-react';
 import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
 import { PdfUploadField } from '@/components/common/PdfUploadField';
+import { exportProductsToCSV } from '@/lib/exportUtils';
+import { RatingChangeModal } from '@/components/modals/RatingChangeModal';
 
 export const AdminProducts: React.FC = () => {
-  const { products, addProduct, updateProduct, deleteProduct, categories, showToast } = useStore();
+  const { products, addProduct, updateProduct, deleteProduct, categories, showToast, setActiveQuickViewProduct } = useStore();
+  const [ratingModalProduct, setRatingModalProduct] = useState<Product | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
@@ -205,13 +210,27 @@ export const AdminProducts: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer self-stretch sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Component</span>
-        </button>
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <button
+            onClick={() => {
+              exportProductsToCSV(products);
+              showToast('Download Complete', `Exported ${products.length} products to CSV.`, 'success');
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-navy rounded-xl text-xs font-bold font-heading transition-colors cursor-pointer border border-border"
+            title="Download full products inventory as CSV"
+          >
+            <Download className="w-4 h-4 text-primary" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold font-heading shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Component</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -274,7 +293,8 @@ export const AdminProducts: React.FC = () => {
                   <th className="p-4 hidden sm:table-cell">Category</th>
                   <th className="p-4">Price</th>
                   <th className="p-4 hidden md:table-cell">Stock</th>
-                  <th className="p-4 hidden lg:table-cell">Voltage</th>
+                  <th className="p-4 hidden lg:table-cell">Rating</th>
+                  <th className="p-4 hidden xl:table-cell">Voltage</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -346,12 +366,32 @@ export const AdminProducts: React.FC = () => {
                       </span>
                     </td>
 
-                    <td className="p-4 hidden lg:table-cell font-mono text-slate-500">
+                    <td className="p-4 hidden lg:table-cell">
+                      <button
+                        type="button"
+                        onClick={() => setRatingModalProduct(prod)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg text-amber-800 text-[11px] font-bold font-mono transition-colors cursor-pointer group"
+                        title="Click to edit rating & reviews"
+                      >
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span>{prod.rating || 4.8}</span>
+                        <span className="text-slate-400 font-normal">({prod.reviewsCount || 0})</span>
+                      </button>
+                    </td>
+
+                    <td className="p-4 hidden xl:table-cell font-mono text-slate-500">
                       {prod.voltage || '5V DC'}
                     </td>
 
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setActiveQuickViewProduct(prod)}
+                          className="p-1.5 text-slate-500 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          title="View Component Specs (Quick View)"
+                        >
+                          <Eye className="w-4 h-4 text-primary" />
+                        </button>
                         <button
                           onClick={() => handleOpenEdit(prod)}
                           className="p-1.5 text-slate-500 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
@@ -542,6 +582,36 @@ export const AdminProducts: React.FC = () => {
                   />
                 </div>
 
+                {/* Rating & Reviews Count in Edit Modal */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy flex items-center justify-between">
+                    <span>Customer Rating (1.0 to 5.0)</span>
+                    <span className="text-amber-500 font-bold flex items-center gap-1 text-[11px]">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {formData.rating || 4.8}
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1.0"
+                    max="5.0"
+                    step="0.1"
+                    value={formData.rating ?? 4.8}
+                    onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) || 4.8 })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy focus:outline-hidden focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-navy">Reviews Count</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.reviewsCount ?? 20}
+                    onChange={(e) => setFormData({ ...formData, reviewsCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary"
+                  />
+                </div>
+
                 <div className="sm:col-span-2 space-y-1">
                   <label className="text-xs font-bold text-navy">Short Description</label>
                   <input
@@ -600,6 +670,27 @@ export const AdminProducts: React.FC = () => {
 
           </div>
         </div>
+      )}
+
+      {/* Quick Rating Change Modal */}
+      {ratingModalProduct && (
+        <RatingChangeModal
+          isOpen={Boolean(ratingModalProduct)}
+          onClose={() => setRatingModalProduct(null)}
+          itemTitle={ratingModalProduct.name}
+          itemType="Component"
+          initialRating={ratingModalProduct.rating || 4.8}
+          initialReviewsCount={ratingModalProduct.reviewsCount || 0}
+          onSave={async (newRating, newReviewsCount) => {
+            await updateProduct({
+              ...ratingModalProduct,
+              rating: newRating,
+              reviewsCount: newReviewsCount,
+            });
+            showToast('Rating Saved', `${ratingModalProduct.name} rating updated to ${newRating} ★ (${newReviewsCount} reviews).`, 'success');
+            setRatingModalProduct(null);
+          }}
+        />
       )}
 
     </div>

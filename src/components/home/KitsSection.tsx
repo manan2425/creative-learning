@@ -14,11 +14,12 @@ import {
   Layers, 
   BookOpen,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Eye
 } from 'lucide-react';
 
 export const KitsSection: React.FC = () => {
-  const { kits, addToCart, openWhatsAppInquiry } = useStore();
+  const { kits, addToCart, openWhatsAppInquiry, setActiveQuickViewKit } = useStore();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
 
   const filteredKits = selectedDifficulty === 'All' 
@@ -110,7 +111,10 @@ export const KitsSection: React.FC = () => {
                 <div>
                   
                   {/* Image Banner */}
-                  <div className="aspect-16/9 bg-slate-900 relative overflow-hidden">
+                  <div 
+                    onClick={() => setActiveQuickViewKit(kit)}
+                    className="aspect-16/9 bg-slate-900 relative overflow-hidden cursor-pointer"
+                  >
                     <img
                       src={kit.image || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80'}
                       alt={kit.title}
@@ -133,6 +137,20 @@ export const KitsSection: React.FC = () => {
                       <Clock className="w-3.5 h-3.5 text-cyan" />
                       <span>{kit.buildTimeHours || 2} hrs Build</span>
                     </div>
+
+                    {/* Quick View Button Overlay */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveQuickViewKit(kit);
+                      }}
+                      className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1.5 shadow-md transition-all cursor-pointer text-xs font-bold font-heading z-10 opacity-95 group-hover:scale-105"
+                      title="View Specifications & Included Parts"
+                      aria-label="View Kit Details"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-primary" />
+                      <span>View Kit</span>
+                    </button>
 
                     {/* Price Tag Overlay */}
                     <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-border shadow-lg flex items-baseline gap-2">
@@ -170,7 +188,10 @@ export const KitsSection: React.FC = () => {
                         </div>
                       </div>
 
-                      <h3 className="text-lg sm:text-xl font-extrabold text-navy leading-snug group-hover:text-primary transition-colors">
+                      <h3 
+                        onClick={() => setActiveQuickViewKit(kit)}
+                        className="text-lg sm:text-xl font-extrabold text-navy leading-snug group-hover:text-primary transition-colors cursor-pointer"
+                      >
                         {kit.title}
                       </h3>
                       <p className="text-xs text-secondary mt-1 leading-relaxed">
