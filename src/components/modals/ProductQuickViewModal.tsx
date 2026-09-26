@@ -103,6 +103,11 @@ export const ProductQuickViewModal: React.FC = () => {
             <span className="px-2 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider rounded-md bg-cyan/20 text-cyan border border-cyan/40 shrink-0">
               {product.category}
             </span>
+            {product.sku && (
+              <span className="px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-bold rounded-md bg-slate-800 text-cyan border border-slate-700 shrink-0">
+                {product.sku}
+              </span>
+            )}
             <span className="text-[11px] sm:text-xs text-slate-400 font-medium truncate">Hardware Component</span>
           </div>
 

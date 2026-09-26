@@ -239,9 +239,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-navy/90 text-white backdrop-blur-xs border border-slate-700 truncate max-w-full">
               {product.category}
             </span>
-            {product.voltage && (
-              <span className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-cyan/90 text-navy">
-                {product.voltage}
+            {product.sku && (
+              <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-cyan/90 text-navy truncate max-w-[120px]">
+                {product.sku}
               </span>
             )}
             {product.images && product.images.length > 1 && (
