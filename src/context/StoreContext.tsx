@@ -253,12 +253,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     window.addEventListener('focus', handleFocus);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 4. Background polling interval (every 6 seconds) for cross-device updates
+    // 4. Background polling interval (every 60 seconds) for cross-device updates
     const pollInterval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         refreshData(true);
       }
-    }, 6000);
+    }, 60000);
 
     return () => {
       if (bc) bc.close();
