@@ -1,12 +1,27 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { INITIAL_SETTINGS } from '@/data/initialData';
+import { getCachedApiResponse, setCachedApiResponse, invalidateApiCache } from '@/lib/serverCache';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const SETTINGS_CACHE_KEY = 'store_settings';
+
 export async function GET() {
   try {
+    const cached = getCachedApiResponse(SETTINGS_CACHE_KEY);
+    if (cached) {
+      return NextResponse.json(
+        { success: true, data: cached },
+        {
+          headers: {
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          },
+        }
+      );
+    }
+
     const { db } = await connectToDatabase();
     let settings = await db.collection('settings').findOne({});
     if (!settings) {
@@ -26,11 +41,14 @@ export async function GET() {
         sectionQuotes: { ...INITIAL_SETTINGS.sectionQuotes, ...(settings.sectionQuotes || {}) },
       };
     }
+
+    setCachedApiResponse(SETTINGS_CACHE_KEY, settings, 120);
+
     return NextResponse.json(
       { success: true, data: settings },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
         },
       }
     );
@@ -56,6 +74,9 @@ export async function PUT(request: Request) {
       },
       { upsert: true }
     );
+
+    invalidateApiCache('store_settings');
+
     return NextResponse.json({ success: true, message: 'Settings saved', data: settingsData });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });

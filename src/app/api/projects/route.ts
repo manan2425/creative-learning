@@ -1,18 +1,34 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { getCachedApiResponse, setCachedApiResponse, invalidateApiCache } from '@/lib/serverCache';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
   try {
+    const queryKey = 'projects_list_all';
+    const cached = getCachedApiResponse(queryKey);
+    if (cached) {
+      return NextResponse.json(
+        { success: true, data: cached },
+        {
+          headers: {
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          },
+        }
+      );
+    }
+
     const { db } = await connectToDatabase();
     const projects = await db.collection('projects').find({}).toArray();
+    setCachedApiResponse(queryKey, projects, 120);
+
     return NextResponse.json(
       { success: true, data: projects },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
         },
       }
     );
@@ -28,6 +44,7 @@ export async function POST(request: Request) {
     const { db } = await connectToDatabase();
     if (!body.id) body.id = 'proj-' + Date.now();
     const result = await db.collection('projects').insertOne(body);
+    invalidateApiCache('projects_list');
     return NextResponse.json({ success: true, data: { ...body, _id: result.insertedId } });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
@@ -40,6 +57,7 @@ export async function PUT(request: Request) {
     const { db } = await connectToDatabase();
     const { id, _id, ...updateData } = body;
     await db.collection('projects').updateOne({ id: id }, { $set: updateData }, { upsert: true });
+    invalidateApiCache('projects_list');
     return NextResponse.json({ success: true, message: 'Project updated' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
@@ -51,8 +69,10 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ success: false, error: 'ID required' }, { status: 400 });
+
     const { db } = await connectToDatabase();
     await db.collection('projects').deleteOne({ id: id });
+    invalidateApiCache('projects_list');
     return NextResponse.json({ success: true, message: 'Project deleted' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });

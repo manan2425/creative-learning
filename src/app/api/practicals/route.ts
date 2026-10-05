@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { getCachedApiResponse, setCachedApiResponse, invalidateApiCache } from '@/lib/serverCache';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -8,6 +9,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const level = searchParams.get('level');
+    const queryKey = `practicals_list_${level || 'all'}`;
+
+    const cached = getCachedApiResponse(queryKey);
+    if (cached) {
+      return NextResponse.json(
+        { success: true, data: cached },
+        {
+          headers: {
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          },
+        }
+      );
+    }
 
     const { db } = await connectToDatabase();
     let query: any = {};
@@ -16,11 +30,13 @@ export async function GET(request: Request) {
     }
 
     const practicals = await db.collection('practicals').find(query).toArray();
+    setCachedApiResponse(queryKey, practicals, 120);
+
     return NextResponse.json(
       { success: true, data: practicals },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
         },
       }
     );
@@ -40,6 +56,7 @@ export async function POST(request: Request) {
     }
     
     const result = await db.collection('practicals').insertOne(body);
+    invalidateApiCache('practicals_list');
     return NextResponse.json({ success: true, data: { ...body, _id: result.insertedId } });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
@@ -57,6 +74,7 @@ export async function PUT(request: Request) {
       { $set: updateData },
       { upsert: true }
     );
+    invalidateApiCache('practicals_list');
     return NextResponse.json({ success: true, message: 'Practical updated' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
@@ -71,6 +89,7 @@ export async function DELETE(request: Request) {
 
     const { db } = await connectToDatabase();
     await db.collection('practicals').deleteOne({ id: id });
+    invalidateApiCache('practicals_list');
     return NextResponse.json({ success: true, message: 'Practical deleted' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });

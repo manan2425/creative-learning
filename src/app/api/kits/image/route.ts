@@ -10,10 +10,10 @@ export async function GET(request: Request) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return new NextResponse('Missing product ID', { status: 400 });
+      return new NextResponse('Missing kit ID', { status: 400 });
     }
 
-    const cacheKey = `prod_img_${id}`;
+    const cacheKey = `kit_img_${id}`;
     const cached = getCachedImage(cacheKey);
 
     if (cached) {
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     }
 
     const { db } = await connectToDatabase();
-    const doc = await db.collection('products').findOne(
+    const doc = await db.collection('kits').findOne(
       { id: id },
       { projection: { image: 1, images: 1 } }
     );
@@ -45,12 +45,11 @@ export async function GET(request: Request) {
 
     if (!rawImage) {
       return NextResponse.redirect(
-        new URL('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80', request.url),
+        new URL('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80', request.url),
         307
       );
     }
 
-    // If it's an external URL (http / https)
     if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
       return NextResponse.redirect(new URL(rawImage), {
         status: 307,
@@ -58,14 +57,13 @@ export async function GET(request: Request) {
       });
     }
 
-    // If it's a data URL (e.g. data:image/jpeg;base64,...)
     if (rawImage.startsWith('data:')) {
       const match = rawImage.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
       if (match) {
         const mimeType = match[1];
         const base64Data = match[2];
         const buffer = Buffer.from(base64Data, 'base64');
-        const etag = `W/"prod-${id}-${buffer.length}"`;
+        const etag = `W/"kit-${id}-${buffer.length}"`;
 
         setCachedImage(cacheKey, buffer, mimeType, etag);
 
@@ -86,15 +84,14 @@ export async function GET(request: Request) {
       }
     }
 
-    // Default fallback
     return NextResponse.redirect(
-      new URL('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80', request.url),
+      new URL('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80', request.url),
       307
     );
   } catch (error: any) {
-    console.error('Product image serve error:', error);
+    console.error('Kit image serve error:', error);
     return NextResponse.redirect(
-      new URL('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80', request.url),
+      new URL('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80', request.url),
       307
     );
   }

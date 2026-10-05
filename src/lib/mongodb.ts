@@ -12,39 +12,36 @@ const uri = process.env.MONGODB_URI || 'mongodb+srv://mananpatel448_db_user:vAtp
 const dbName = process.env.MONGODB_DB || 'creative_learning';
 
 declare global {
+  // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<{ client: MongoClient; db: Db }> | undefined;
 }
 
-let cachedPromise: Promise<{ client: MongoClient; db: Db }> | null = global._mongoClientPromise || null;
-
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
-  if (cachedPromise) {
-    return cachedPromise;
+  if (global._mongoClientPromise) {
+    return global._mongoClientPromise;
   }
 
-  cachedPromise = (async () => {
+  const promise = (async () => {
     try {
       const client = new MongoClient(uri, {
-        serverSelectionTimeoutMS: 10000,
+        maxPoolSize: 50,
+        minPoolSize: 5,
+        maxIdleTimeMS: 120000,
+        serverSelectionTimeoutMS: 8000,
         connectTimeoutMS: 10000,
-        maxIdleTimeMS: 60000,
       });
       await client.connect();
       const db = client.db(dbName);
       return { client, db };
     } catch (error) {
       console.error('Failed to connect to MongoDB Atlas:', error);
-      cachedPromise = null;
-      if (global._mongoClientPromise) delete global._mongoClientPromise;
+      global._mongoClientPromise = undefined;
       throw error;
     }
   })();
 
-  if (process.env.NODE_ENV !== 'production') {
-    global._mongoClientPromise = cachedPromise;
-  }
-
-  return cachedPromise;
+  global._mongoClientPromise = promise;
+  return promise;
 }
 
 

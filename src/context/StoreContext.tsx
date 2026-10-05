@@ -118,6 +118,7 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_CART_KEY = 'cl_robotics_cart_v1';
 const LOCAL_STORAGE_WISHLIST_KEY = 'cl_robotics_wishlist_v1';
+const LOCAL_STORAGE_DATA_KEY = 'cl_robotics_cached_data_v1';
 const SYNC_CHANNEL_NAME = 'creative_learning_realtime_sync';
 const LOCAL_STORAGE_SYNC_KEY = 'cl_sync_trigger';
 
@@ -166,40 +167,79 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     try {
       const [resProd, resKits, resPrac, resProj, resSettings] = await Promise.all([
-        fetch('/api/products', { cache: 'no-store' }),
-        fetch('/api/kits', { cache: 'no-store' }),
-        fetch('/api/practicals', { cache: 'no-store' }),
-        fetch('/api/projects', { cache: 'no-store' }),
-        fetch('/api/settings', { cache: 'no-store' }),
+        fetch('/api/products'),
+        fetch('/api/kits'),
+        fetch('/api/practicals'),
+        fetch('/api/projects'),
+        fetch('/api/settings'),
       ]);
+
+      let updatedProducts: Product[] | null = null;
+      let updatedKits: RoboticsKit[] | null = null;
+      let updatedPracticals: PracticalExperiment[] | null = null;
+      let updatedProjects: EngineeringProject[] | null = null;
+      let updatedSettings: StoreSettings | null = null;
+      let updatedCategories: string[] | null = null;
 
       if (resProd.ok) {
         const d = await resProd.json();
-        if (Array.isArray(d.data)) setProducts(d.data);
+        if (Array.isArray(d.data)) {
+          setProducts(d.data);
+          updatedProducts = d.data;
+        }
       }
 
       if (resKits.ok) {
         const d = await resKits.json();
-        if (Array.isArray(d.data)) setKits(d.data);
+        if (Array.isArray(d.data)) {
+          setKits(d.data);
+          updatedKits = d.data;
+        }
       }
 
       if (resPrac.ok) {
         const d = await resPrac.json();
-        if (Array.isArray(d.data)) setPracticals(d.data);
+        if (Array.isArray(d.data)) {
+          setPracticals(d.data);
+          updatedPracticals = d.data;
+        }
       }
 
       if (resProj.ok) {
         const d = await resProj.json();
-        if (Array.isArray(d.data)) setProjects(d.data);
+        if (Array.isArray(d.data)) {
+          setProjects(d.data);
+          updatedProjects = d.data;
+        }
       }
 
       if (resSettings.ok) {
         const d = await resSettings.json();
         if (d.data) {
           setSettings(d.data);
+          updatedSettings = d.data;
           if (Array.isArray(d.data.categories) && d.data.categories.length > 0) {
             setCategories(d.data.categories);
+            updatedCategories = d.data.categories;
           }
+        }
+      }
+
+      // Save fresh data snapshot to localStorage for instantaneous future page loads
+      if (typeof window !== 'undefined') {
+        try {
+          const snapshot = {
+            products: updatedProducts,
+            kits: updatedKits,
+            practicals: updatedPracticals,
+            projects: updatedProjects,
+            settings: updatedSettings,
+            categories: updatedCategories,
+            cachedAt: Date.now(),
+          };
+          localStorage.setItem(LOCAL_STORAGE_DATA_KEY, JSON.stringify(snapshot));
+        } catch (e) {
+          // LocalStorage quota may be reached, ignore safely
         }
       }
     } catch (error) {
@@ -213,27 +253,57 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Load local storage on mount & set up real-time auto-refresh listeners
   useEffect(() => {
+    let hasLoadedCache = false;
+
     try {
       const savedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
       if (savedCart) setCart(JSON.parse(savedCart));
 
       const savedWishlist = localStorage.getItem(LOCAL_STORAGE_WISHLIST_KEY);
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+
+      // Instant 0ms render from localStorage cache
+      const cachedData = localStorage.getItem(LOCAL_STORAGE_DATA_KEY);
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        if (Array.isArray(parsed.products) && parsed.products.length > 0) {
+          setProducts(parsed.products);
+          hasLoadedCache = true;
+        }
+        if (Array.isArray(parsed.kits) && parsed.kits.length > 0) {
+          setKits(parsed.kits);
+        }
+        if (Array.isArray(parsed.practicals) && parsed.practicals.length > 0) {
+          setPracticals(parsed.practicals);
+        }
+        if (Array.isArray(parsed.projects) && parsed.projects.length > 0) {
+          setProjects(parsed.projects);
+        }
+        if (parsed.settings) {
+          setSettings(parsed.settings);
+        }
+        if (Array.isArray(parsed.categories) && parsed.categories.length > 0) {
+          setCategories(parsed.categories);
+        }
+        if (hasLoadedCache) {
+          setIsLoading(false);
+        }
+      }
     } catch (e) {
       console.warn('LocalStorage load error:', e);
     }
 
-    // Initial load
-    refreshData(false);
+    // Background fetch to ensure newest data is always synchronized
+    refreshData(hasLoadedCache);
 
-    // 1. Multi-tab BroadcastChannel listener
+    // 1. Multi-tab BroadcastChannel listener (instant real-time sync across admin and storefront tabs)
     let bc: BroadcastChannel | null = null;
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       try {
         bc = new BroadcastChannel(SYNC_CHANNEL_NAME);
         bc.onmessage = (event) => {
           if (event.data?.timestamp) {
-            refreshData(true); // Silent real-time update
+            refreshData(true);
           }
         };
       } catch (e) {
@@ -249,28 +319,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     window.addEventListener('storage', handleStorage);
 
-    // 3. Auto-refresh when tab gains focus or returns to visibility
-    const handleFocus = () => refreshData(true);
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        refreshData(true);
-      }
-    };
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // 4. Background polling interval (every 60 seconds) for cross-device updates
+    // 3. Gentle background sync every 2 minutes
     const pollInterval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         refreshData(true);
       }
-    }, 60000);
+    }, 120000);
 
     return () => {
       if (bc) bc.close();
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(pollInterval);
     };
   }, []);
