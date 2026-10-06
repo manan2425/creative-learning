@@ -121,7 +121,8 @@ export const ProjectsSection: React.FC = () => {
                   {/* Image */}
                   <div 
                     onClick={() => setActiveQuickViewProject(project)}
-                    className="aspect-16/10 bg-slate-900 relative overflow-hidden cursor-pointer"
+                    className="aspect-video bg-slate-900 relative overflow-hidden cursor-pointer"
+                    style={{ aspectRatio: '16 / 9' }}
                   >
                     <img
                       src={project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80'}
@@ -131,8 +132,8 @@ export const ProjectsSection: React.FC = () => {
 
                     {/* Level & Cost Badge */}
                     <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      <span className="bg-gradient-to-r from-amber-500 to-rose-500 text-white px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase shadow-sm tracking-wider">
-                        ✨ NEW
+                      <span className="bg-gradient-to-r from-primary to-cyan text-white px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase shadow-sm tracking-wider">
+                        NEW
                       </span>
                       <div className="bg-navy/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700">
                         {project.difficulty}

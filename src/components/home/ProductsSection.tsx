@@ -218,11 +218,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const isQuoteItem = product.hidePrice || !product.price;
 
   return (
-    <div className="bg-card rounded-xl sm:rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group">
+    <div className="bg-card rounded-xl sm:rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group h-full">
       
-      <div>
-        {/* Product Image Box */}
-        <div className="relative aspect-4/3 bg-slate-100 overflow-hidden">
+      <div className="flex flex-col">
+        {/* Product Image Box - Standardized uniform square (1:1) size for all components */}
+        <div 
+          onClick={onQuickView}
+          className="relative w-full aspect-square bg-slate-100 overflow-hidden cursor-pointer flex items-center justify-center border-b border-slate-100"
+          style={{ aspectRatio: '1 / 1' }}
+        >
           <img
             src={product.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'}
             alt={product.name}
@@ -236,8 +240,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Badges Overlay */}
           <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 flex flex-wrap gap-1 max-w-[85%]">
-            <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-extrabold rounded sm:rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs tracking-wider">
-              ✨ NEW
+            <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-extrabold rounded sm:rounded-md bg-gradient-to-r from-primary to-cyan text-white shadow-xs tracking-wider">
+              NEW
             </span>
             <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-navy/90 text-white backdrop-blur-xs border border-slate-700 truncate max-w-full">
               {product.category}

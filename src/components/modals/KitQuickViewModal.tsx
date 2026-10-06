@@ -132,9 +132,6 @@ export const KitQuickViewModal: React.FC = () => {
           <div className="space-y-2 border-b border-border pb-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs">
-                  ✨ NEW
-                </span>
                 <span className="text-xs font-semibold text-primary font-mono">
                   {kit.ageRange || 'Age 10+ / Engineering Students'}
                 </span>

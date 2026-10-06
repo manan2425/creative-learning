@@ -113,7 +113,8 @@ export const KitsSection: React.FC = () => {
                   {/* Image Banner */}
                   <div 
                     onClick={() => setActiveQuickViewKit(kit)}
-                    className="aspect-16/9 bg-slate-900 relative overflow-hidden cursor-pointer"
+                    className="aspect-video bg-slate-900 relative overflow-hidden cursor-pointer"
+                    style={{ aspectRatio: '16 / 9' }}
                   >
                     <img
                       src={kit.image || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80'}
@@ -125,9 +126,6 @@ export const KitsSection: React.FC = () => {
 
                     {/* Badges */}
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                      <span className="px-2.5 py-1 text-xs font-extrabold uppercase rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md flex items-center gap-1 tracking-wider">
-                        ✨ NEW
-                      </span>
                       {kit.badge && (
                         <span className="px-3 py-1 text-xs font-extrabold rounded-full bg-gradient-to-r from-primary to-cyan text-white shadow-md">
                           ★ {kit.badge}

@@ -109,8 +109,8 @@ export const PracticalDetailModal: React.FC = () => {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs">
-                  ✨ NEW
+                <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-gradient-to-r from-primary to-cyan text-white shadow-xs">
+                  NEW
                 </span>
                 <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-cyan text-navy shrink-0">
                   {lab.level} Level

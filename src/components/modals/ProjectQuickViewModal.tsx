@@ -157,8 +157,8 @@ export const ProjectQuickViewModal: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs tracking-wider">
-                ✨ NEW
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md bg-gradient-to-r from-primary to-cyan text-white shadow-xs tracking-wider">
+                NEW
               </span>
               <h3 className="font-extrabold text-xl sm:text-2xl text-navy leading-snug font-heading">
                 {project.title}

@@ -89,8 +89,8 @@ export const PracticalSection: React.FC = () => {
                   {/* Top Badges */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 text-[10px] uppercase font-extrabold tracking-wider rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs">
-                        ✨ NEW
+                      <span className="px-2 py-0.5 text-[10px] uppercase font-extrabold tracking-wider rounded-md bg-gradient-to-r from-primary to-cyan text-white shadow-xs">
+                        NEW
                       </span>
                       <span className="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider rounded-lg bg-primary-light text-primary border border-blue-100">
                         {prac.level || 'Beginner'} Level
