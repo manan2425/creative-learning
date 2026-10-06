@@ -73,8 +73,8 @@ export const WhatsAppCheckoutModal: React.FC = () => {
 
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const discountAmount = Math.round(subtotal * couponDiscount);
-  const deliveryFee = subtotal >= (settings.freeShippingThreshold || 999) ? 0 : (settings.defaultDeliveryFee || 60);
-  const totalAmount = Math.max(0, subtotal - discountAmount + deliveryFee);
+  const deliveryFee = 0; // Zero courier charges on all orders
+  const totalAmount = Math.max(0, subtotal - discountAmount);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,7 +209,7 @@ export const WhatsAppCheckoutModal: React.FC = () => {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 overscroll-contain">
             
             {/* Quick Order Breakdown Banner */}
             <div className="bg-primary-light/60 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">

@@ -41,7 +41,7 @@ export const PracticalSection: React.FC = () => {
               Interactive Hardware Practicals
             </h2>
             <p className="text-sm text-secondary max-w-xl">
-              Learn by building. Step-by-step practical guides with live wiring schematics, pinout connections, and tested Arduino C++ / MicroPython source code.
+              Learn by building. Step-by-step practical guides with live wiring schematics, pinout connections, and verified source code.
             </p>
           </div>
 
@@ -86,14 +86,15 @@ export const PracticalSection: React.FC = () => {
               >
                 <div className="space-y-4">
                   
-                  {/* Top Badge & Time */}
+                  {/* Top Badges */}
                   <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider rounded-lg bg-primary-light text-primary border border-blue-100">
-                      {prac.level || 'Beginner'} Level
-                    </span>
-                    <div className="flex items-center gap-1 text-xs text-secondary font-mono">
-                      <Clock className="w-3.5 h-3.5 text-primary" />
-                      <span>{prac.durationMin || 30} mins</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 text-[10px] uppercase font-extrabold tracking-wider rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs">
+                        ✨ NEW
+                      </span>
+                      <span className="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider rounded-lg bg-primary-light text-primary border border-blue-100">
+                        {prac.level || 'Beginner'} Level
+                      </span>
                     </div>
                   </div>
 

@@ -236,6 +236,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Badges Overlay */}
           <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 flex flex-wrap gap-1 max-w-[85%]">
+            <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-extrabold rounded sm:rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs tracking-wider">
+              ✨ NEW
+            </span>
             <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded sm:rounded-md bg-navy/90 text-white backdrop-blur-xs border border-slate-700 truncate max-w-full">
               {product.category}
             </span>

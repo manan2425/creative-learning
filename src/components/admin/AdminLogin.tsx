@@ -79,7 +79,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-lg shadow-primary/25 border border-white/20 overflow-hidden group">
             <Image 
               src="/logo-emblem.png" 
-              alt="Creative Learning Logo" 
+              alt="Store Logo" 
               width={64} 
               height={64} 
               className="w-full h-full object-contain"
@@ -93,7 +93,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
               <span>SECURE ACCESS PORTAL</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white font-heading tracking-tight">
-              Creative<span className="text-cyan">Learning</span> Admin
+              Store<span className="text-cyan">Admin</span> Portal
             </h1>
             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
               Enter master administrator password to manage inventory, starter kits, lab practicals, website CMS, and customer orders.
@@ -185,7 +185,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           </Link>
 
           <span className="text-[11px] text-slate-500 font-mono">
-            Creative Learning v1.0
+            Admin v1.0
           </span>
         </div>
 
@@ -194,7 +194,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
       {/* Security Footer Notice */}
       <div className="mt-6 text-center text-xs text-slate-500 flex items-center gap-1.5 relative z-10">
         <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-        <span>Protected by Creative Learning Session Encryption</span>
+        <span>Protected by Session Encryption</span>
       </div>
     </div>
   );

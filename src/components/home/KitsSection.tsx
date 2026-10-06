@@ -125,6 +125,9 @@ export const KitsSection: React.FC = () => {
 
                     {/* Badges */}
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                      <span className="px-2.5 py-1 text-xs font-extrabold uppercase rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md flex items-center gap-1 tracking-wider">
+                        ✨ NEW
+                      </span>
                       {kit.badge && (
                         <span className="px-3 py-1 text-xs font-extrabold rounded-full bg-gradient-to-r from-primary to-cyan text-white shadow-md">
                           ★ {kit.badge}
@@ -135,11 +138,6 @@ export const KitsSection: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="absolute top-4 right-4 bg-navy/90 backdrop-blur-xs text-white px-3 py-1 rounded-full text-xs font-mono font-bold border border-slate-700 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-cyan" />
-                      <span>{kit.buildTimeHours || 2} hrs Build</span>
-                    </div>
-
                     {/* Quick View Button Overlay */}
                     <button
                       onClick={(e) => {
@@ -147,7 +145,7 @@ export const KitsSection: React.FC = () => {
                         setActiveQuickViewKit(kit);
                       }}
                       className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-white/95 text-navy hover:text-primary hover:bg-white flex items-center gap-1.5 shadow-md transition-all cursor-pointer text-xs font-bold font-heading z-10 opacity-95 group-hover:scale-105"
-                      title="View Specifications & Included Parts"
+                      title="View Kit Details"
                       aria-label="View Kit Details"
                     >
                       <Eye className="w-3.5 h-3.5 text-primary" />
@@ -200,47 +198,6 @@ export const KitsSection: React.FC = () => {
                         {kit.subtitle}
                       </p>
                     </div>
-
-                    {/* Highlights Features List */}
-                    {kit.features && kit.features.length > 0 && (
-                      <div className="space-y-1.5 pt-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-navy block">
-                          What&apos;s Included &amp; Highlights:
-                        </span>
-                        <ul className="space-y-1 text-xs text-slate-700">
-                          {kit.features.slice(0, 3).map((feat, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
-                              <span className="leading-tight">{feat}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* BOM Bill of Materials Pill Preview */}
-                    {kit.bomList && kit.bomList.length > 0 && (
-                      <div className="bg-slate-50 p-3 rounded-xl border border-border space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] text-secondary">
-                          <span className="font-bold text-navy flex items-center gap-1">
-                            <Layers className="w-3.5 h-3.5 text-primary" /> Included Components ({kit.bomList.length} items)
-                          </span>
-                          <span className="text-[10px]">Zero Soldering Needed</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {kit.bomList.slice(0, 5).map((b, idx) => (
-                            <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy font-medium">
-                              {b.item} (x{b.qty})
-                            </span>
-                          ))}
-                          {kit.bomList.length > 5 && (
-                            <span className="text-[10px] bg-primary-light text-primary px-2 py-0.5 rounded font-bold">
-                              +{kit.bomList.length - 5} more parts
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
 
                   </div>
                 </div>

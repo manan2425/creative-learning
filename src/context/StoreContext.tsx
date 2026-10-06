@@ -84,6 +84,7 @@ interface StoreContextType {
   }) => string;
   openWhatsAppInquiry: (topic: string, details?: string, targetId?: string) => void;
   processWhatsAppCheckout: (orderData: Omit<WhatsAppOrder, 'orderId' | 'createdAt' | 'status'>) => Promise<string>;
+  quickWhatsAppCheckout: () => Promise<string>;
 
   // File Upload Helper
   uploadImage: (file: File, base64Preview?: string) => Promise<{ success: boolean; url: string; base64?: string; error?: string }>;
@@ -594,12 +595,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       discountAmount = 50;
     }
 
-    const freeThreshold = settings.freeShippingThreshold || 999;
-    const shippingFee = (subtotal - discountAmount >= freeThreshold || cart.length === 0) 
-      ? 0 
-      : (settings.defaultDeliveryFee || 60);
-
-    const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee);
+    const shippingFee = 0; // Courier charges removed (FREE Delivery on all orders)
+    const grandTotal = Math.max(0, subtotal - discountAmount);
 
     const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
 
@@ -698,6 +695,100 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     clearCart();
+    return waUrl;
+  };
+
+  const quickWhatsAppCheckout = async (): Promise<string> => {
+    if (cart.length === 0) {
+      showToast('Cart is Empty', 'Please add components or kits to your cart first.', 'warning');
+      return '';
+    }
+
+    const rawNumber = settings.whatsappNumber || '+919714045096';
+    const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    let discountAmount = 0;
+    if (appliedCoupon === 'ROBO10') {
+      discountAmount = Math.round((subtotal * 10) / 100);
+    } else if (appliedCoupon === 'MAKER50') {
+      discountAmount = 50;
+    }
+
+    const shippingFee = 0; // Courier charges removed (FREE Delivery)
+    const grandTotal = Math.max(0, subtotal - discountAmount);
+    const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && i.price > 0);
+    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+
+    const orderId = 'CL-' + Date.now().toString().slice(-6);
+
+    let message = `⚡ *NEW DIRECT ORDER CHECKOUT*\n`;
+    message += `Reference ID: #${orderId}\n`;
+    message += `===================================\n\n`;
+    message += `📦 *ORDER ITEMS (${cart.length} item${cart.length > 1 ? 's' : ''})*\n`;
+
+    cart.forEach((item, idx) => {
+      const isQuoteItem = item.hidePrice || !item.price || item.price === 0;
+      message += `${idx + 1}. *${item.name}*\n`;
+      if (isQuoteItem) {
+        message += `   Qty: ${item.quantity} × [Price on Request / Quotation Needed]\n`;
+      } else {
+        message += `   Qty: ${item.quantity} × ₹${item.price} = ₹${item.price * item.quantity}\n`;
+      }
+      if (item.sku) message += `   SKU: \`${item.sku}\`\n`;
+      if (item.meta) {
+        if (item.meta.chassis) message += `   Config: ${item.meta.chassis} + ${item.meta.brain}\n`;
+      }
+    });
+
+    message += `\n-----------------------------------\n`;
+    message += `💰 *FINANCIAL SUMMARY*\n`;
+    if (hasPricedItems) {
+      message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Custom Quote Items)' : ''}\n`;
+      if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
+      message += `• Shipping / Delivery: ${shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}\n`;
+      message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
+    } else {
+      message += `• Pricing: *Custom Quotation / Price on Request*\n`;
+    }
+
+    if (hasQuoteItems) {
+      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+    }
+    message += `===================================\n`;
+    message += `🚀 *Please confirm order dispatch, pricing & delivery address.*`;
+
+    const waUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          customerName: 'Direct WhatsApp Customer',
+          customerPhone: 'Via WhatsApp Chat',
+          customerAddress: 'To be provided in WhatsApp chat',
+          customerCity: 'Direct Checkout',
+          customerPincode: 'Direct',
+          paymentMethod: 'WhatsApp UPI / Chat',
+          items: cart,
+          subtotal,
+          discount: discountAmount,
+          deliveryFee: shippingFee,
+          totalAmount: grandTotal,
+          status: 'New',
+          createdAt: new Date().toISOString(),
+        }),
+      });
+    } catch (e) {
+      console.warn('Could not log direct order to database:', e);
+    }
+
+    window.open(waUrl, '_blank');
+    clearCart();
+    setIsCartOpen(false);
+    showToast('Redirecting to WhatsApp 🚀', 'Your order details have been prepared for direct chat.', 'success');
     return waUrl;
   };
 
@@ -942,6 +1033,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         generateWhatsAppOrderUrl,
         openWhatsAppInquiry,
         processWhatsAppCheckout,
+        quickWhatsAppCheckout,
         uploadImage,
         uploadFile,
         addCategory,

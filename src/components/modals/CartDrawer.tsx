@@ -24,7 +24,6 @@ export const CartDrawer: React.FC = () => {
     cart, 
     isCartOpen, 
     setIsCartOpen, 
-    setIsCheckoutOpen,
     updateCartQuantity, 
     removeFromCart, 
     clearCart,
@@ -32,21 +31,20 @@ export const CartDrawer: React.FC = () => {
     couponDiscount, 
     applyCoupon, 
     removeCoupon, 
+    quickWhatsAppCheckout,
     settings 
   } = useStore();
 
   const [couponInput, setCouponInput] = useState('');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   if (!isCartOpen) return null;
 
   const totalItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const discountAmount = Math.round(subtotal * couponDiscount);
-  const freeShippingThreshold = settings.freeShippingThreshold || 999;
-  const isFreeShipping = subtotal >= freeShippingThreshold;
-  const deliveryFee = cart.length === 0 ? 0 : (isFreeShipping ? 0 : (settings.defaultDeliveryFee || 60));
-  const totalAmount = Math.max(0, subtotal - discountAmount + deliveryFee);
-  const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  const deliveryFee = 0; // Zero courier charges on all orders
+  const totalAmount = Math.max(0, subtotal - discountAmount);
   const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -56,9 +54,13 @@ export const CartDrawer: React.FC = () => {
     if (ok) setCouponInput('');
   };
 
-  const handleProceedToCheckout = () => {
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+  const handleProceedToCheckout = async () => {
+    setIsCheckingOut(true);
+    try {
+      await quickWhatsAppCheckout();
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -101,28 +103,13 @@ export const CartDrawer: React.FC = () => {
             </button>
           </div>
 
-          {/* Free Shipping Progress Indicator */}
+          {/* Zero Courier Charge Indicator */}
           {cart.length > 0 && (
-            <div className="bg-primary-light/50 px-4 sm:px-5 py-2.5 border-b border-blue-100 text-xs shrink-0">
-              {isFreeShipping ? (
-                <div className="flex items-center gap-2 text-primary font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  <span>🎉 Free Express Shipping Unlocked!</span>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-secondary">
-                    <span>Add <strong className="text-primary font-bold font-mono">₹{amountToFreeShipping}</strong> more for <strong>FREE Delivery</strong></span>
-                    <span className="font-bold font-mono text-navy">{Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100))}%</span>
-                  </div>
-                  <div className="w-full bg-blue-200/60 h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-primary h-full transition-all duration-300 rounded-full"
-                      style={{ width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              )}
+            <div className="bg-emerald-50 px-4 sm:px-5 py-2.5 border-b border-emerald-100 text-xs shrink-0">
+              <div className="flex items-center gap-2 text-emerald-800 font-bold">
+                <Truck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>🎉 Zero Courier Charge • Free Pan-India Delivery on Every Order!</span>
+              </div>
             </div>
           )}
 
@@ -306,9 +293,9 @@ export const CartDrawer: React.FC = () => {
                 )}
 
                 <div className="flex justify-between">
-                  <span>Shipping &amp; Delivery</span>
-                  <span className="font-mono font-bold text-navy">
-                    {deliveryFee === 0 ? <span className="text-success font-bold">FREE</span> : `₹${deliveryFee}`}
+                  <span>Courier &amp; Delivery</span>
+                  <span className="font-mono font-bold text-success">
+                    FREE (₹0)
                   </span>
                 </div>
 
@@ -335,10 +322,11 @@ export const CartDrawer: React.FC = () => {
                 <button
                   id="checkout-whatsapp-btn"
                   onClick={handleProceedToCheckout}
-                  className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-sm font-heading shadow-md shadow-emerald-600/30 transition-all cursor-pointer group"
+                  disabled={isCheckingOut}
+                  className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-sm font-heading shadow-md shadow-emerald-600/30 transition-all cursor-pointer group disabled:opacity-60"
                 >
                   <MessageCircle className="w-5 h-5 fill-white" />
-                  <span>Proceed to WhatsApp Checkout</span>
+                  <span>{isCheckingOut ? 'Opening WhatsApp...' : 'Proceed to WhatsApp Checkout'}</span>
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
 

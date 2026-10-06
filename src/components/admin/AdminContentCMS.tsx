@@ -50,7 +50,7 @@ export const AdminContentCMS: React.FC = () => {
   // Why Us State
   const [whyUsData, setWhyUsData] = useState<CMSWhyUsContent>({
     badge: settings.whyUs?.badge || 'HARDWARE QUALITY GUARANTEE',
-    title: settings.whyUs?.title || 'Why Creative Learning Leads In STEM Robotics',
+    title: settings.whyUs?.title || 'Why We Lead In STEM Robotics',
     subtitle: settings.whyUs?.subtitle || 'Every microcontroller, sensor, and starter kit passes through our multi-stage hardware diagnostic pipeline before dispatch.',
     steps: settings.whyUs?.steps || [
       {
@@ -105,20 +105,20 @@ export const AdminContentCMS: React.FC = () => {
   // Master & Section Quote Banner State
   const [quoteSettings, setQuoteSettings] = useState({
     heroQuoteText: settings.heroQuoteText || settings.sectionQuotes?.globalQuoteText || 'The future belongs to students and makers who build what they imagine with hands-on silicon.',
-    heroQuoteAuthor: settings.heroQuoteAuthor || settings.sectionQuotes?.globalQuoteAuthor || 'Creative Learning Engineering Lab',
+    heroQuoteAuthor: settings.heroQuoteAuthor || settings.sectionQuotes?.globalQuoteAuthor || 'Engineering Lab',
     productsQuoteText: settings.sectionQuotes?.productsQuoteText || 'Every great invention starts with a single semiconductor, a spark of curiosity, and the courage to build.',
-    productsQuoteAuthor: settings.sectionQuotes?.productsQuoteAuthor || 'Creative Learning Silicon Lab',
+    productsQuoteAuthor: settings.sectionQuotes?.productsQuoteAuthor || 'Silicon Lab',
     kitsQuoteText: settings.sectionQuotes?.kitsQuoteText || 'Robotics is not just about building machines; it is about building the creative minds that will shape tomorrow.',
-    kitsQuoteAuthor: settings.sectionQuotes?.kitsQuoteAuthor || 'Creative Learning Robotics Team',
+    kitsQuoteAuthor: settings.sectionQuotes?.kitsQuoteAuthor || 'Robotics Team',
     practicalsQuoteText: settings.sectionQuotes?.practicalsQuoteText || 'True understanding comes from connecting the wires, measuring the signals, and watching theoretical formulas come alive on the breadboard.',
-    practicalsQuoteAuthor: settings.sectionQuotes?.practicalsQuoteAuthor || 'Creative Learning Practical Division',
+    practicalsQuoteAuthor: settings.sectionQuotes?.practicalsQuoteAuthor || 'Practical Division',
     projectsQuoteText: settings.sectionQuotes?.projectsQuoteText || 'When hardware blueprints and firmware are shared openly, human innovation accelerates for every student across the nation.',
-    projectsQuoteAuthor: settings.sectionQuotes?.projectsQuoteAuthor || 'Creative Learning Open-Source Community',
+    projectsQuoteAuthor: settings.sectionQuotes?.projectsQuoteAuthor || 'Open-Source Community',
   });
 
   // Footer State
   const [footerData, setFooterData] = useState({
-    footerBio: settings.footerBio || 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
+    footerBio: settings.footerBio || 'Your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',
     footerAddress: settings.footerAddress || 'Electronics & Robotics Innovation Hub, Ahmedabad, Gujarat, India',
     footerPhone: settings.footerPhone || 'WhatsApp Direct Chat',
   });
@@ -575,7 +575,7 @@ export const AdminContentCMS: React.FC = () => {
                     type="text"
                     value={quoteSettings.heroQuoteAuthor}
                     onChange={(e) => setQuoteSettings({ ...quoteSettings, heroQuoteAuthor: e.target.value })}
-                    placeholder="e.g. Creative Learning Engineering Lab"
+                    placeholder="e.g. Engineering Lab"
                     className="w-full px-3.5 py-2 bg-slate-50 focus:bg-white border border-border rounded-xl text-xs font-bold font-mono text-primary transition-all"
                   />
                 </div>
@@ -596,7 +596,7 @@ export const AdminContentCMS: React.FC = () => {
                   <small className="text-[11px] font-mono font-bold text-primary mt-2 block">
                     {quoteSettings.heroQuoteAuthor.startsWith('—') 
                       ? quoteSettings.heroQuoteAuthor 
-                      : `— ${quoteSettings.heroQuoteAuthor || 'Creative Learning Engineering Lab'}`}
+                      : `— ${quoteSettings.heroQuoteAuthor || 'Engineering Lab'}`}
                   </small>
                 </div>
               </div>

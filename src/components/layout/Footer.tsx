@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
-import { Bot, Cpu, MessageCircle, Phone, Mail, MapPin, Heart, ShieldCheck, Truck, Clock, Sliders } from 'lucide-react';
+import { Bot, Cpu, MessageCircle, Phone, Mail, MapPin, Heart, ShieldCheck, Truck, Clock, Sliders, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { settings, openWhatsAppInquiry } = useStore();
@@ -98,14 +98,25 @@ export const Footer: React.FC = () => {
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm font-sans">
               {bio}
             </p>
-            <div className="pt-2">
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
               <button
                 onClick={() => openWhatsAppInquiry('Direct Inquiry via Footer')}
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold font-heading shadow-md transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
-                <span>Chat on WhatsApp Direct</span>
+                <span>Chat on WhatsApp</span>
               </button>
+
+              <a
+                href="https://www.instagram.com/creative_learning7?stkn=amllaHAzenkxdXh6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white rounded-xl text-xs font-bold font-heading shadow-md transition-all cursor-pointer"
+                title="Follow Creative Learning on Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+                <span>Instagram</span>
+              </a>
             </div>
           </div>
 
@@ -158,10 +169,31 @@ export const Footer: React.FC = () => {
               </li>
 
               <li className="flex items-start gap-2.5">
+                <Instagram className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-mono">Instagram</span>
+                  <a
+                    href="https://www.instagram.com/creative_learning7?stkn=amllaHAzenkxdXh6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white hover:text-pink-400 font-bold transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>@creative_learning7</span>
+                    <span className="text-pink-400 text-[10px]">↗</span>
+                  </a>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-mono">Support Email</span>
-                  <span className="text-white font-mono">{settings.supportEmail || 'support@creativelearning.in'}</span>
+                  <span className="text-[10px] text-slate-400 block font-mono">Official Email</span>
+                  <a
+                    href="mailto:creativelearning13@gmail.com"
+                    className="text-white hover:text-cyan font-mono transition-colors block text-xs"
+                  >
+                    creativelearning13@gmail.com
+                  </a>
                 </div>
               </li>
 

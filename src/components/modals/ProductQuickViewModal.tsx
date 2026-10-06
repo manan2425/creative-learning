@@ -18,6 +18,7 @@ import {
   ChevronRight, 
   ExternalLink 
 } from 'lucide-react';
+import { ZoomableImage } from '@/components/common/ZoomableImage';
 
 export const ProductQuickViewModal: React.FC = () => {
   const { 
@@ -128,9 +129,14 @@ export const ProductQuickViewModal: React.FC = () => {
           
           {/* 1. Component Name (Always First on mobile & desktop) */}
           <div className="space-y-2 border-b border-border pb-4">
-            <h3 className="font-extrabold text-xl sm:text-2xl text-navy leading-snug font-heading">
-              {product.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs tracking-wider">
+                ✨ NEW
+              </span>
+              <h3 className="font-extrabold text-xl sm:text-2xl text-navy leading-snug font-heading">
+                {product.name}
+              </h3>
+            </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
               {/* Price Display */}
@@ -181,15 +187,15 @@ export const ProductQuickViewModal: React.FC = () => {
             {/* Component Photo Gallery */}
             <div className="space-y-3">
               {/* Main Photo Viewer */}
-              <div className="aspect-square bg-slate-50 border border-border rounded-2xl overflow-hidden relative flex items-center justify-center p-2 group shadow-2xs">
-                <img
+              <div className="aspect-square bg-slate-50 border border-border rounded-2xl overflow-hidden relative flex items-center justify-center group shadow-2xs">
+                <ZoomableImage
                   src={currentPhoto}
                   alt={product.name}
-                  className="w-full h-full object-cover rounded-xl transition-all duration-300"
+                  containerClassName="w-full h-full rounded-xl"
                 />
 
                 {/* Verified Silicon Badge */}
-                <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-md text-[11px] font-bold text-navy border border-border flex items-center gap-1 shadow-2xs">
+                <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-md text-[11px] font-bold text-navy border border-border flex items-center gap-1 shadow-2xs z-10 pointer-events-none">
                   <Activity className="w-3.5 h-3.5 text-primary" />
                   <span>Pre-Tested Silicon</span>
                 </div>

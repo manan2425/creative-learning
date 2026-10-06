@@ -130,8 +130,13 @@ export const ProjectsSection: React.FC = () => {
                     />
 
                     {/* Level & Cost Badge */}
-                    <div className="absolute top-3 left-3 bg-navy/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700">
-                      {project.difficulty}
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                      <span className="bg-gradient-to-r from-amber-500 to-rose-500 text-white px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase shadow-sm tracking-wider">
+                        ✨ NEW
+                      </span>
+                      <div className="bg-navy/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700">
+                        {project.difficulty}
+                      </div>
                     </div>
 
                     {/* Quick View Button Overlay */}

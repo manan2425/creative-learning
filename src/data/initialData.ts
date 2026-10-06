@@ -24,7 +24,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   whatsappNumber: '+919714045096',
   storeName: 'Creative Learning - Robotics & Electronics',
   logoUrl: '/logo-emblem.png',
-  supportEmail: 'support@creativelearning.in',
+  supportEmail: 'creativelearning13@gmail.com',
   announcementText: '⚡ Welcome to Creative Learning! Direct WhatsApp Ordering • Pan-India Express Delivery',
   showAnnouncement: true,
   freeShippingThreshold: 999,

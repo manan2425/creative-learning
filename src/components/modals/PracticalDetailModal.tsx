@@ -109,11 +109,11 @@ export const PracticalDetailModal: React.FC = () => {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs">
+                  ✨ NEW
+                </span>
                 <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-cyan text-navy shrink-0">
                   {lab.level} Level
-                </span>
-                <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1 truncate">
-                  <Clock className="w-3.5 h-3.5 text-cyan" /> {lab.durationMin} Mins Lab
                 </span>
               </div>
               <h3 className="font-extrabold text-sm sm:text-lg text-white mt-0.5 truncate">{lab.title}</h3>
@@ -287,7 +287,7 @@ export const PracticalDetailModal: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-navy flex items-center gap-1.5">
                       <Code2 className="w-4 h-4 text-primary" />
-                      {snippet.language} Source Code
+                      Practical Source Code
                     </span>
                     <button
                       onClick={() => handleCopyCode(snippet.code, idx)}

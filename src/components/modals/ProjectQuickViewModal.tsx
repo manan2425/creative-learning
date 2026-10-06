@@ -18,6 +18,7 @@ import {
   Cpu, 
   Check
 } from 'lucide-react';
+import { ZoomableImage } from '@/components/common/ZoomableImage';
 
 export const ProjectQuickViewModal: React.FC = () => {
   const { 
@@ -155,9 +156,14 @@ export const ProjectQuickViewModal: React.FC = () => {
               </div>
             </div>
 
-            <h3 className="font-extrabold text-xl sm:text-2xl text-navy leading-snug font-heading">
-              {project.title}
-            </h3>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs tracking-wider">
+                ✨ NEW
+              </span>
+              <h3 className="font-extrabold text-xl sm:text-2xl text-navy leading-snug font-heading">
+                {project.title}
+              </h3>
+            </div>
 
             {project.description && (
               <p className="text-xs sm:text-sm text-secondary leading-relaxed font-sans">
@@ -187,11 +193,11 @@ export const ProjectQuickViewModal: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-start">
             {/* Project Photo Gallery */}
             <div className="space-y-3">
-              <div className="aspect-4/3 bg-slate-50 border border-border rounded-2xl overflow-hidden relative flex items-center justify-center p-2 group shadow-2xs">
-                <img
+              <div className="aspect-4/3 bg-slate-50 border border-border rounded-2xl overflow-hidden relative flex items-center justify-center group shadow-2xs">
+                <ZoomableImage
                   src={currentPhoto}
                   alt={project.title}
-                  className="w-full h-full object-cover rounded-xl transition-all duration-300"
+                  containerClassName="w-full h-full rounded-xl"
                 />
 
                 {/* Hardware indicators badge */}

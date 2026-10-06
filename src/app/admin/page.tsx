@@ -10,7 +10,6 @@ import { AdminPracticals } from '@/components/admin/AdminPracticals';
 import { AdminProjects } from '@/components/admin/AdminProjects';
 import { AdminContentCMS } from '@/components/admin/AdminContentCMS';
 import { AdminOrders } from '@/components/admin/AdminOrders';
-import { AdminSettings } from '@/components/admin/AdminSettings';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { ToastContainer } from '@/components/common/ToastContainer';
 import { useStore } from '@/context/StoreContext';
@@ -94,14 +93,14 @@ export default function AdminPage() {
           <div className="w-7 h-7 rounded-lg bg-white p-0.5 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
             <Image 
               src="/logo-emblem.png" 
-              alt="Creative Learning Logo" 
+              alt="Store Logo" 
               width={28} 
               height={28} 
               className="w-full h-full object-contain"
             />
           </div>
           <span className="font-extrabold text-xs font-heading">
-            Creative<span className="text-cyan">Learning</span> Admin
+            Store<span className="text-cyan">Admin</span>
           </span>
         </Link>
 
@@ -156,8 +155,6 @@ export default function AdminPage() {
           {currentTab === 'orders' && (
             <AdminOrders orders={orders} refreshOrders={fetchOrders} />
           )}
-
-          {currentTab === 'settings' && <AdminSettings />}
         </div>
       </main>
     </div>

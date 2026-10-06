@@ -45,8 +45,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'practicals', label: 'Guided Labs & Experiments', icon: Layers },
     { id: 'projects', label: 'Engineering Blueprints', icon: Compass },
     { id: 'cms', label: 'Website CMS & Text', icon: FileEdit },
-    { id: 'orders', label: 'WhatsApp Orders & Logs', icon: MessageSquare, badge: orderCount > 0 ? orderCount : undefined },
-    { id: 'settings', label: 'Store & WhatsApp Settings', icon: Settings },
+    { id: 'orders', label: 'Orders & Inquiries', icon: MessageSquare, badge: orderCount > 0 ? orderCount : undefined },
   ];
 
   const handleSelectTab = (id: string) => {
@@ -63,7 +62,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <div className="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
               <Image 
                 src="/logo-emblem.png" 
-                alt="Creative Learning Logo" 
+                alt="Store Logo" 
                 width={36} 
                 height={36} 
                 className="w-full h-full object-contain"
@@ -71,9 +70,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             </div>
             <div>
               <div className="font-extrabold text-sm tracking-tight text-white font-heading">
-                Creative<span className="text-cyan">Learning</span>
+                Store<span className="text-cyan">Admin</span>
               </div>
-              <span className="text-[10px] text-cyan font-mono block">ADMIN CONTROL</span>
+              <span className="text-[10px] text-cyan font-mono block">CONTROL PANEL</span>
             </div>
           </Link>
 
