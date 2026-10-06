@@ -221,10 +221,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div className="bg-card rounded-xl sm:rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group h-full">
       
       <div className="flex flex-col">
-        {/* Product Image Box - Standardized uniform square (1:1) size for all components */}
+        {/* Product Image Box - Standardized uniform square container, preserving original image ratio */}
         <div 
           onClick={onQuickView}
-          className="relative w-full aspect-square bg-slate-100 overflow-hidden cursor-pointer flex items-center justify-center border-b border-slate-100"
+          className="relative w-full aspect-square bg-slate-50 overflow-hidden cursor-pointer flex items-center justify-center p-2.5 sm:p-3.5 border-b border-slate-100"
           style={{ aspectRatio: '1 / 1' }}
         >
           <img
@@ -235,7 +235,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80';
             }}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
           />
 
           {/* Badges Overlay */}

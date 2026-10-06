@@ -97,7 +97,7 @@ export const ZoomableImage: React.FC<ZoomableImageProps> = ({
           src={src}
           alt={alt}
           draggable={false}
-          className={`w-full h-full object-cover transition-opacity duration-300 pointer-events-none ${className}`}
+          className={`w-full h-full object-contain transition-opacity duration-300 pointer-events-none ${className}`}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src =
               'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80';
