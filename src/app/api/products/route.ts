@@ -56,16 +56,66 @@ export async function GET(request: Request) {
       ];
     }
 
-    // Exclude heavy duplicate images array and heavy base64 image field from bulk list
-    // This reduces payload from 50MB down to <100KB, making the response load in ~1 second!
-    const products = await db.collection('products')
-      .find(query, { projection: { images: 0, image: 0 } })
-      .toArray();
+    // Use aggregation to map heavy base64 strings to fast cached URLs without blowing up the payload
+    const products = await db.collection('products').aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          images: {
+            $map: {
+              input: {
+                $range: [
+                  0,
+                  {
+                    $cond: [
+                      { $and: [{ $isArray: '$images' }, { $gt: [{ $size: '$images' }, 0] }] },
+                      { $size: '$images' },
+                      { $cond: [{ $ifNull: ['$image', false] }, 1, 0] }
+                    ]
+                  }
+                ]
+              },
+              as: 'idx',
+              in: {
+                $let: {
+                  vars: {
+                    elem: {
+                      $cond: [
+                        { $isArray: '$images' },
+                        { $arrayElemAt: ['$images', '$$idx'] },
+                        '$image'
+                      ]
+                    }
+                  },
+                  in: {
+                    $cond: [
+                      {
+                        $or: [
+                          { $regexMatch: { input: { $ifNull: ['$$elem', ''] }, regex: '^https?://' } },
+                          { $regexMatch: { input: { $ifNull: ['$$elem', ''] }, regex: '^/uploads/' } }
+                        ]
+                      },
+                      '$$elem',
+                      { $concat: ['/api/products/image?id=', '$id', '&idx=', { $toString: '$$idx' }] }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          image: 0
+        }
+      }
+    ]).toArray();
 
-    // Map image URL to dedicated fast cached image endpoint for each item
+    // Map primary image string to first item of images array
     const optimizedProducts = products.map((prod: any) => ({
       ...prod,
-      image: `/api/products/image?id=${prod.id}`,
+      image: Array.isArray(prod.images) && prod.images.length > 0 ? prod.images[0] : `/api/products/image?id=${prod.id}&idx=0`,
     }));
 
     setCachedApiResponse(queryKey, optimizedProducts, 120);
@@ -109,9 +159,32 @@ export async function PUT(request: Request) {
     const { db } = await connectToDatabase();
     const { id, _id, ...updateData } = body;
     
-    // If the image was unchanged (points to the /api/products/image endpoint), don't overwrite the original in DB
+    // Resolve any endpoint URLs back to existing DB images so original image data is never overwritten
+    const existing = await db.collection('products').findOne({ id: id });
+    if (Array.isArray(updateData.images) && existing) {
+      updateData.images = updateData.images.map((img: string) => {
+        if (typeof img === 'string' && img.includes('/api/products/image')) {
+          const match = img.match(/idx=(\d+)/);
+          const idx = match ? parseInt(match[1], 10) : 0;
+          if (Array.isArray(existing.images) && existing.images[idx]) {
+            return existing.images[idx];
+          }
+          if (idx === 0 && existing.image) {
+            return existing.image;
+          }
+        }
+        return img;
+      });
+    }
+
     if (updateData.image && typeof updateData.image === 'string' && updateData.image.startsWith('/api/products/image')) {
-      delete updateData.image;
+      if (Array.isArray(updateData.images) && updateData.images.length > 0) {
+        updateData.image = updateData.images[0];
+      } else if (existing?.image) {
+        updateData.image = existing.image;
+      } else {
+        delete updateData.image;
+      }
     }
     
     await db.collection('products').updateOne(

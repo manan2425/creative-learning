@@ -8,12 +8,14 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const idxParam = searchParams.get('idx') ?? searchParams.get('index');
+    const idx = idxParam !== null ? Math.max(0, parseInt(idxParam, 10) || 0) : 0;
 
     if (!id) {
       return new NextResponse('Missing product ID', { status: 400 });
     }
 
-    const cacheKey = `prod_img_${id}`;
+    const cacheKey = `prod_img_${id}_${idx}`;
     const cached = getCachedImage(cacheKey);
 
     if (cached) {
@@ -38,7 +40,13 @@ export async function GET(request: Request) {
       { projection: { image: 1, images: 1 } }
     );
 
-    let rawImage = doc?.image;
+    let rawImage: string | undefined = undefined;
+    if (Array.isArray(doc?.images) && doc.images.length > idx) {
+      rawImage = doc.images[idx];
+    }
+    if (!rawImage && idx === 0) {
+      rawImage = doc?.image;
+    }
     if (!rawImage && Array.isArray(doc?.images) && doc.images.length > 0) {
       rawImage = doc.images[0];
     }
@@ -65,7 +73,7 @@ export async function GET(request: Request) {
         const mimeType = match[1];
         const base64Data = match[2];
         const buffer = Buffer.from(base64Data, 'base64');
-        const etag = `W/"prod-${id}-${buffer.length}"`;
+        const etag = `W/"prod-${id}-${idx}-${buffer.length}"`;
 
         setCachedImage(cacheKey, buffer, mimeType, etag);
 

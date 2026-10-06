@@ -47,15 +47,66 @@ export async function GET(request: Request) {
       query.difficulty = difficulty;
     }
 
-    // Exclude heavy images array and base64 image field from bulk list
-    const kits = await db.collection('kits')
-      .find(query, { projection: { images: 0, image: 0 } })
-      .toArray();
+    // Use aggregation to map heavy base64 strings to fast cached URLs without blowing up the payload
+    const kits = await db.collection('kits').aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          images: {
+            $map: {
+              input: {
+                $range: [
+                  0,
+                  {
+                    $cond: [
+                      { $and: [{ $isArray: '$images' }, { $gt: [{ $size: '$images' }, 0] }] },
+                      { $size: '$images' },
+                      { $cond: [{ $ifNull: ['$image', false] }, 1, 0] }
+                    ]
+                  }
+                ]
+              },
+              as: 'idx',
+              in: {
+                $let: {
+                  vars: {
+                    elem: {
+                      $cond: [
+                        { $isArray: '$images' },
+                        { $arrayElemAt: ['$images', '$$idx'] },
+                        '$image'
+                      ]
+                    }
+                  },
+                  in: {
+                    $cond: [
+                      {
+                        $or: [
+                          { $regexMatch: { input: { $ifNull: ['$$elem', ''] }, regex: '^https?://' } },
+                          { $regexMatch: { input: { $ifNull: ['$$elem', ''] }, regex: '^/uploads/' } }
+                        ]
+                      },
+                      '$$elem',
+                      { $concat: ['/api/kits/image?id=', '$id', '&idx=', { $toString: '$$idx' }] }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          image: 0
+        }
+      }
+    ]).toArray();
 
-    // Map image strings to fast cached image endpoint
+    // Map primary image string to first item of images array
     const optimizedKits = kits.map((kit: any) => ({
       ...kit,
-      image: `/api/kits/image?id=${kit.id}`,
+      image: Array.isArray(kit.images) && kit.images.length > 0 ? kit.images[0] : `/api/kits/image?id=${kit.id}&idx=0`,
     }));
 
     setCachedApiResponse(queryKey, optimizedKits, 120);
@@ -99,9 +150,32 @@ export async function PUT(request: Request) {
     const { db } = await connectToDatabase();
     const { id, _id, ...updateData } = body;
     
-    // If the image was unchanged (points to the /api/kits/image endpoint), don't overwrite the original in DB
+    // Resolve any endpoint URLs back to existing DB images so original image data is never overwritten
+    const existing = await db.collection('kits').findOne({ id: id });
+    if (Array.isArray(updateData.images) && existing) {
+      updateData.images = updateData.images.map((img: string) => {
+        if (typeof img === 'string' && img.includes('/api/kits/image')) {
+          const match = img.match(/idx=(\d+)/);
+          const idx = match ? parseInt(match[1], 10) : 0;
+          if (Array.isArray(existing.images) && existing.images[idx]) {
+            return existing.images[idx];
+          }
+          if (idx === 0 && existing.image) {
+            return existing.image;
+          }
+        }
+        return img;
+      });
+    }
+
     if (updateData.image && typeof updateData.image === 'string' && updateData.image.startsWith('/api/kits/image')) {
-      delete updateData.image;
+      if (Array.isArray(updateData.images) && updateData.images.length > 0) {
+        updateData.image = updateData.images[0];
+      } else if (existing?.image) {
+        updateData.image = existing.image;
+      } else {
+        delete updateData.image;
+      }
     }
 
     await db.collection('kits').updateOne(

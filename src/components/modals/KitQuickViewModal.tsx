@@ -53,6 +53,12 @@ export const KitQuickViewModal: React.FC = () => {
     };
   }, [activeQuickViewKit, setActiveQuickViewKit]);
 
+  // Reset active photo when kit changes
+  useEffect(() => {
+    setActivePhotoIdx(0);
+    setQty(1);
+  }, [activeQuickViewKit?.id]);
+
   if (!activeQuickViewKit) return null;
 
   const kit = activeQuickViewKit;
@@ -264,8 +270,51 @@ export const KitQuickViewModal: React.FC = () => {
               )}
             </div>
 
-            {/* Right Column: Outcomes & Guide Details */}
+            {/* Right Column: Features, Bill of Materials, and Outcomes */}
             <div className="space-y-4">
+              {/* Features / Highlights */}
+              {kit.features && kit.features.length > 0 && (
+                <div className="bg-slate-50 p-4 rounded-2xl border border-border space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-navy">
+                    <Bot className="w-4 h-4 text-primary" />
+                    <span>What&apos;s Included &amp; Key Highlights</span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-slate-700">
+                    {kit.features.map((feat, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                        <span className="leading-snug">{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Bill of Materials (BOM) Component List */}
+              {kit.bomList && kit.bomList.length > 0 && (
+                <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-2xs">
+                  <div className="bg-slate-50 px-4 py-2.5 border-b border-border flex items-center justify-between text-xs font-bold text-navy">
+                    <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                      <Layers className="w-3.5 h-3.5 text-primary" />
+                      Bill of Materials ({kit.bomList.length} Components)
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      Pre-Packed in Kit
+                    </span>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto divide-y divide-slate-100">
+                    {kit.bomList.map((bom, idx) => (
+                      <div key={idx} className="flex items-center justify-between px-4 py-2 text-xs hover:bg-slate-50/60 transition-colors">
+                        <span className="text-navy font-medium truncate max-w-[200px]">{bom.item}</span>
+                        <span className="font-mono font-bold text-primary shrink-0 bg-primary/5 px-2 py-0.5 rounded border border-primary/20 text-[11px]">
+                          x{bom.qty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Learning Outcomes */}
               {kit.learningOutcomes && kit.learningOutcomes.length > 0 && (
                 <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-2">
@@ -277,6 +326,21 @@ export const KitQuickViewModal: React.FC = () => {
                     {kit.learningOutcomes.map((outcome, idx) => (
                       <span key={idx} className="text-[11px] bg-white border border-blue-200 px-2.5 py-1 rounded-lg text-navy font-medium">
                         ✓ {outcome}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Supported Languages */}
+              {kit.codeLanguage && kit.codeLanguage.length > 0 && (
+                <div className="flex items-center gap-2 pt-1">
+                  <Code2 className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="text-[11px] text-slate-500 font-bold">Programming:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {kit.codeLanguage.map((lang, idx) => (
+                      <span key={idx} className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                        {lang}
                       </span>
                     ))}
                   </div>

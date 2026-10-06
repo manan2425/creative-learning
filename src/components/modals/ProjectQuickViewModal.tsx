@@ -51,6 +51,11 @@ export const ProjectQuickViewModal: React.FC = () => {
     };
   }, [activeQuickViewProject, setActiveQuickViewProject]);
 
+  // Reset active photo when project changes
+  useEffect(() => {
+    setActivePhotoIdx(0);
+  }, [activeQuickViewProject?.id]);
+
   if (!activeQuickViewProject) return null;
 
   const project = activeQuickViewProject;

@@ -197,6 +197,36 @@ export const KitsSection: React.FC = () => {
                       </p>
                     </div>
 
+                    {/* BOM Bill of Materials Pill Preview */}
+                    {kit.bomList && kit.bomList.length > 0 && (
+                      <div 
+                        onClick={() => setActiveQuickViewKit(kit)}
+                        className="bg-slate-50 p-3 rounded-xl border border-border space-y-1.5 cursor-pointer hover:border-primary/40 transition-colors"
+                        title="Click to view full Bill of Materials"
+                      >
+                        <div className="flex items-center justify-between text-[11px] text-secondary">
+                          <span className="font-bold text-navy flex items-center gap-1.5">
+                            <Layers className="w-3.5 h-3.5 text-primary" /> Bill of Materials ({kit.bomList.length} items)
+                          </span>
+                          <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            Pre-Packed
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {kit.bomList.slice(0, 4).map((b, idx) => (
+                            <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy font-medium">
+                              {b.item} (x{b.qty})
+                            </span>
+                          ))}
+                          {kit.bomList.length > 4 && (
+                            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
+                              +{kit.bomList.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 </div>
 

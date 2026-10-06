@@ -52,6 +52,12 @@ export const ProductQuickViewModal: React.FC = () => {
     };
   }, [activeQuickViewProduct, setActiveQuickViewProduct]);
 
+  // Reset active photo when product changes
+  useEffect(() => {
+    setActivePhotoIdx(0);
+    setQty(1);
+  }, [activeQuickViewProduct?.id]);
+
   if (!activeQuickViewProduct) return null;
 
   const product = activeQuickViewProduct;
