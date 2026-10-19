@@ -16,8 +16,10 @@ import {
   Code2,
   ListChecks,
   Eye,
-  FileText
+  FileText,
+  Camera
 } from 'lucide-react';
+import { ZoomableImage } from '@/components/common/ZoomableImage';
 
 export const PracticalDetailModal: React.FC = () => {
   const { 
@@ -31,9 +33,11 @@ export const PracticalDetailModal: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'wiring' | 'code' | 'troubleshooting'>('wiring');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number>(0);
 
   // Close on Escape and prevent body scrolling when modal is open
   React.useEffect(() => {
+    setSelectedPhotoIdx(0);
     if (!activePracticalModal) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -172,8 +176,58 @@ export const PracticalDetailModal: React.FC = () => {
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
           
+          {/* Circuit & Hardware Photo Showcase */}
+          {(() => {
+            const rawPhotos = (lab.images && lab.images.length > 0)
+              ? lab.images
+              : (lab.image ? [lab.image] : []);
+            const photos = rawPhotos.length > 0 
+              ? rawPhotos 
+              : ['https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80'];
+            const currentPhoto = photos[selectedPhotoIdx] || photos[0];
+
+            return (
+              <div className="bg-slate-900 rounded-2xl overflow-hidden border border-border shadow-sm">
+                <div className="relative aspect-video sm:h-72 w-full flex items-center justify-center bg-slate-950">
+                  <ZoomableImage
+                    src={currentPhoto}
+                    alt={lab.title}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                {/* Multiple Photos Thumbnails Strip */}
+                {photos.length > 1 && (
+                  <div className="p-2.5 bg-slate-900/95 border-t border-slate-800 flex items-center gap-2 overflow-x-auto">
+                    {photos.map((photoUrl, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSelectedPhotoIdx(idx)}
+                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                          selectedPhotoIdx === idx
+                            ? 'border-cyan ring-2 ring-cyan/40 scale-105'
+                            : 'border-slate-700 opacity-60 hover:opacity-100 hover:border-slate-500'
+                        }`}
+                      >
+                        <img
+                          src={photoUrl}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
           {/* Lab Objective */}
           <div className="bg-primary-light/50 border border-blue-100 rounded-xl p-4 text-xs text-navy space-y-1">
             <span className="font-extrabold uppercase tracking-wider text-primary text-[10px] block">

@@ -210,30 +210,44 @@ export const AdminPracticals: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-            {practicals.map((prac) => (
-              <div
-                key={prac.id}
-                className="bg-slate-50/70 rounded-2xl border border-border p-5 flex flex-col justify-between hover:border-primary/50 transition-all space-y-4"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 rounded bg-primary-light text-primary text-[10px] font-bold">
-                      {prac.level}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-primary" />
+            {practicals.map((prac) => {
+              const displayImg = prac.image || (prac.images && prac.images[0]) || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
+
+              return (
+                <div
+                  key={prac.id}
+                  className="bg-slate-50/70 rounded-2xl border border-border overflow-hidden flex flex-col justify-between hover:border-primary/50 transition-all shadow-2xs group"
+                >
+                  {/* Photo Thumbnail */}
+                  <div className="aspect-video w-full bg-slate-900 relative overflow-hidden">
+                    <img
+                      src={displayImg}
+                      alt={prac.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-navy/90 text-cyan text-[10px] font-bold border border-slate-700 shadow-xs">
+                        {prac.level}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-navy/85 text-white font-mono text-[10px] flex items-center gap-1 shadow-xs border border-white/20">
+                      <Clock className="w-3 h-3 text-cyan" />
                       {prac.durationMin} mins
-                    </span>
+                    </div>
                   </div>
 
-                  <h4 className="font-bold text-navy text-sm font-heading">{prac.title}</h4>
-                  <p className="text-xs text-secondary line-clamp-2">{prac.description}</p>
+                  <div className="p-5 space-y-3">
+                    <h4 className="font-bold text-navy text-sm font-heading">{prac.title}</h4>
+                    <p className="text-xs text-secondary line-clamp-2">{prac.description || prac.objective}</p>
 
-                  <div className="text-[11px] font-mono text-slate-600 bg-white p-2.5 rounded-xl border border-border space-y-1">
-                    <div>{prac.circuitWiring?.length || 0} Pin Connections</div>
-                    <div>{prac.requiredComponents?.length || 0} Required Hardware Parts</div>
+                    <div className="text-[11px] font-mono text-slate-600 bg-white p-2.5 rounded-xl border border-border space-y-1">
+                      <div>{prac.circuitWiring?.length || 0} Pin Connections</div>
+                      <div>{prac.requiredComponents?.length || 0} Required Hardware Parts</div>
+                    </div>
                   </div>
-                </div>
 
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
                   <button
@@ -252,8 +266,9 @@ export const AdminPracticals: React.FC = () => {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
         )}
       </div>
 

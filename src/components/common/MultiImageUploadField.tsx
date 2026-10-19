@@ -69,10 +69,9 @@ export const MultiImageUploadField: React.FC<MultiImageUploadFieldProps> = ({
           
           // 2. Upload to server
           const res = await uploadImage(file, compressedDataUrl);
-          if (res.success && res.url) {
-            newImageUrls.push(res.url);
-          } else {
-            newImageUrls.push(compressedDataUrl);
+          const finalUrl = res.base64 || compressedDataUrl || res.url;
+          if (finalUrl) {
+            newImageUrls.push(finalUrl);
           }
         } catch (err) {
           console.warn('Individual image processing error:', err);

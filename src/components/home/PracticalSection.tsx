@@ -79,60 +79,86 @@ export const PracticalSection: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredPracticals.map((prac) => (
-              <div
-                key={prac.id}
-                className="bg-white rounded-3xl border border-border p-6 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group"
-              >
-                <div className="space-y-4">
-                  
-                  {/* Top Badges */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
+            {filteredPracticals.map((prac) => {
+              const displayImg = prac.image || (prac.images && prac.images[0]) || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
+
+              return (
+                <div
+                  key={prac.id}
+                  className="bg-white rounded-3xl border border-border overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group"
+                >
+                  {/* Practical Cover Photo */}
+                  <div 
+                    onClick={() => setActivePracticalModal(prac)}
+                    className="aspect-video sm:h-52 w-full bg-slate-900 relative overflow-hidden cursor-pointer"
+                    style={{ aspectRatio: '16 / 9' }}
+                  >
+                    <img
+                      src={displayImg}
+                      alt={prac.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
+
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-black/30 pointer-events-none" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
                       <span className="px-2 py-0.5 text-[10px] uppercase font-extrabold tracking-wider rounded-md bg-gradient-to-r from-primary to-cyan text-white shadow-xs">
                         NEW
                       </span>
-                      <span className="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider rounded-lg bg-primary-light text-primary border border-blue-100">
+                      <span className="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider rounded-lg bg-navy/90 backdrop-blur-xs text-white border border-slate-700 shadow-xs">
                         {prac.level || 'Beginner'} Level
                       </span>
                     </div>
-                  </div>
 
-                  {/* Title */}
-                  <div>
-                    <h3 
-                      onClick={() => setActivePracticalModal(prac)}
-                      className="text-base sm:text-lg font-extrabold text-navy group-hover:text-primary transition-colors cursor-pointer leading-snug"
-                    >
-                      {prac.title}
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium mt-1">
-                      {prac.topic || 'STEM Practical'}
-                    </p>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs text-secondary leading-relaxed line-clamp-2">
-                    {prac.description}
-                  </p>
-
-                  {/* Component preview */}
-                  {prac.requiredComponents && prac.requiredComponents.length > 0 && (
-                    <div className="bg-slate-50 p-3 rounded-xl border border-border space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-secondary block">
-                        Required Lab Hardware:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {prac.requiredComponents.map((comp, idx) => (
-                          <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy">
-                            {comp?.name || 'Component'}
-                          </span>
-                        ))}
-                      </div>
+                    {/* Duration badge */}
+                    <div className="absolute bottom-3 right-3 bg-navy/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-white font-mono text-[11px] flex items-center gap-1 shadow-md border border-white/20">
+                      <Clock className="w-3.5 h-3.5 text-cyan" />
+                      <span>{prac.durationMin || 30} mins</span>
                     </div>
-                  )}
+                  </div>
 
-                </div>
+                  <div className="p-6 space-y-4">
+                    {/* Title */}
+                    <div>
+                      <h3 
+                        onClick={() => setActivePracticalModal(prac)}
+                        className="text-base sm:text-lg font-extrabold text-navy group-hover:text-primary transition-colors cursor-pointer leading-snug"
+                      >
+                        {prac.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium mt-1">
+                        {prac.topic || 'STEM Practical'}
+                      </p>
+                    </div>
+
+                    {/* Description */}
+                    {prac.description && (
+                      <p className="text-xs text-secondary leading-relaxed line-clamp-2">
+                        {prac.description}
+                      </p>
+                    )}
+
+                    {/* Component preview */}
+                    {prac.requiredComponents && prac.requiredComponents.length > 0 && (
+                      <div className="bg-slate-50 p-3 rounded-xl border border-border space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-secondary block">
+                          Required Lab Hardware:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {prac.requiredComponents.map((comp, idx) => (
+                            <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy">
+                              {comp?.name || 'Component'}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                 {/* Action Buttons */}
                 <div className="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -170,8 +196,9 @@ export const PracticalSection: React.FC = () => {
                 </div>
 
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
         )}
 
       </div>
