@@ -277,7 +277,7 @@ export const KitQuickViewModal: React.FC = () => {
                 <div className="bg-slate-50 p-4 rounded-2xl border border-border space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-navy">
                     <Bot className="w-4 h-4 text-primary" />
-                    <span>What&apos;s Included &amp; Key Highlights</span>
+                    <span>{kit.featuresTitle || "What's Included & Key Highlights"}</span>
                   </div>
                   <ul className="space-y-1.5 text-xs text-slate-700">
                     {kit.features.map((feat, i) => (

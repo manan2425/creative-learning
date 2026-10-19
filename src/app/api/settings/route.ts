@@ -33,6 +33,7 @@ export async function GET() {
         ...INITIAL_SETTINGS,
         ...settings,
         categories: settings.categories?.length ? settings.categories : INITIAL_SETTINGS.categories,
+        menuItems: Array.isArray(settings.menuItems) && settings.menuItems.length ? settings.menuItems : INITIAL_SETTINGS.menuItems,
         hero: { ...INITIAL_SETTINGS.hero, ...(settings.hero || {}) },
         whyUs: { ...INITIAL_SETTINGS.whyUs, ...(settings.whyUs || {}) },
         quotes: settings.quotes?.length ? settings.quotes : INITIAL_SETTINGS.quotes,

@@ -4,31 +4,38 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/context/StoreContext';
 import { 
-  Bot, 
-  Cpu, 
-  Layers, 
-  Compass, 
-  Wrench, 
   Search, 
   Menu, 
-  X
+  X,
+  ExternalLink
 } from 'lucide-react';
+import { INITIAL_MENU_ITEMS } from '@/data/initialData';
+import { getNavIcon } from '@/lib/navIcons';
 
 export const Navbar: React.FC = () => {
-  const { setIsSearchOpen, categories } = useStore();
+  const { setIsSearchOpen, categories, settings } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('products');
+
+  const menuItems = (settings?.menuItems && settings.menuItems.length > 0)
+    ? settings.menuItems
+    : INITIAL_MENU_ITEMS;
+
+  const activeNavLinks = menuItems.filter(item => item.isActive !== false);
 
   // Detect scroll state and active section
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 15);
 
-      const sections = ['products', 'kits', 'practical', 'projects', 'why-us'];
+      const sectionIds = activeNavLinks
+        .filter(l => l.href.startsWith('#'))
+        .map(l => l.href.replace('#', ''));
+
       const scrollPosition = window.scrollY + 120;
 
-      for (const section of sections) {
+      for (const section of sectionIds) {
         const el = document.getElementById(section);
         if (el) {
           const top = el.offsetTop;
@@ -43,7 +50,7 @@ export const Navbar: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [activeNavLinks]);
 
   // Keyboard shortcut listener for Search (Ctrl+K / Cmd+K)
   useEffect(() => {
@@ -56,14 +63,6 @@ export const Navbar: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setIsSearchOpen]);
-
-  const navLinks = [
-    { id: 'products', name: 'Products', href: '#products', icon: Cpu },
-    { id: 'kits', name: 'Starter Kits', href: '#kits', icon: Bot },
-    { id: 'practical', name: 'Guided Labs', href: '#practical', icon: Layers },
-    { id: 'projects', name: 'Blueprints', href: '#projects', icon: Compass },
-    { id: 'why-us', name: 'Diagnostics', href: '#why-us', icon: Wrench },
-  ];
 
   return (
     <header 
@@ -100,14 +99,18 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Navigation Links with Active State Indicator */}
           <nav className="hidden lg:flex items-center gap-1 bg-slate-50/90 p-1.5 rounded-2xl border border-border/80">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = activeSection === link.id;
+            {activeNavLinks.map((link) => {
+              const Icon = getNavIcon(link.icon);
+              const linkSectionId = link.href.startsWith('#') ? link.href.slice(1) : link.id;
+              const isActive = activeSection === linkSectionId;
+              const isExternal = link.isExternal || link.href.startsWith('http');
 
               return (
                 <a
                   key={link.id}
                   href={link.href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noopener noreferrer' : undefined}
                   className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs xl:text-sm font-bold transition-all font-heading ${
                     isActive
                       ? 'bg-white text-primary shadow-xs border border-border'
@@ -116,6 +119,7 @@ export const Navbar: React.FC = () => {
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                   <span>{link.name}</span>
+                  {isExternal && <ExternalLink className="w-2.5 h-2.5 opacity-60 ml-0.5" />}
                 </a>
               );
             })}
@@ -173,14 +177,18 @@ export const Navbar: React.FC = () => {
 
           {/* Navigation Items */}
           <div className="py-3 space-y-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = activeSection === link.id;
+            {activeNavLinks.map((link) => {
+              const Icon = getNavIcon(link.icon);
+              const linkSectionId = link.href.startsWith('#') ? link.href.slice(1) : link.id;
+              const isActive = activeSection === linkSectionId;
+              const isExternal = link.isExternal || link.href.startsWith('http');
 
               return (
                 <a
                   key={link.id}
                   href={link.href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noopener noreferrer' : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all font-heading ${
                     isActive
@@ -192,6 +200,7 @@ export const Navbar: React.FC = () => {
                     <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
                     <span>{link.name}</span>
                   </div>
+                  {isExternal && <ExternalLink className="w-3.5 h-3.5 text-slate-400" />}
                 </a>
               );
             })}

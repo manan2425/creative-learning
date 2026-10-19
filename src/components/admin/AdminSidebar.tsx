@@ -41,6 +41,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'products', label: 'Products & Inventory', icon: Cpu },
     { id: 'categories', label: 'Dynamic Categories', icon: Tag },
+    { id: 'menubar', label: 'Header Navigation Menu', icon: Menu },
     { id: 'kits', label: 'Robotics Starter Kits', icon: Bot },
     { id: 'practicals', label: 'Guided Labs & Experiments', icon: Layers },
     { id: 'projects', label: 'Engineering Blueprints', icon: Compass },

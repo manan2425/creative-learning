@@ -5,6 +5,7 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminOverview } from '@/components/admin/AdminOverview';
 import { AdminProducts } from '@/components/admin/AdminProducts';
 import { AdminCategories } from '@/components/admin/AdminCategories';
+import { AdminMenubar } from '@/components/admin/AdminMenubar';
 import { AdminKits } from '@/components/admin/AdminKits';
 import { AdminPracticals } from '@/components/admin/AdminPracticals';
 import { AdminProjects } from '@/components/admin/AdminProjects';
@@ -143,6 +144,8 @@ export default function AdminPage() {
           {currentTab === 'products' && <AdminProducts />}
 
           {currentTab === 'categories' && <AdminCategories />}
+
+          {currentTab === 'menubar' && <AdminMenubar />}
 
           {currentTab === 'kits' && <AdminKits />}
 

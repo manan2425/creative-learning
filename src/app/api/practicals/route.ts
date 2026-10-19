@@ -55,10 +55,15 @@ export async function POST(request: Request) {
       body.id = 'prac-' + Date.now();
     }
     
+    if ('_id' in body) {
+      delete body._id;
+    }
+    
     const result = await db.collection('practicals').insertOne(body);
     invalidateApiCache('practicals_list');
     return NextResponse.json({ success: true, data: { ...body, _id: result.insertedId } });
   } catch (error: any) {
+    console.error('Practicals POST error:', error);
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
   }
 }

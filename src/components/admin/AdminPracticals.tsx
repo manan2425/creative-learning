@@ -144,13 +144,16 @@ export const AdminPracticals: React.FC = () => {
       troubleshootingTips: parsedTips,
     };
 
+    let success = false;
     if (editingPractical) {
-      await updatePractical(practicalPayload);
+      success = await updatePractical(practicalPayload);
     } else {
-      await addPractical(practicalPayload);
+      success = await addPractical(practicalPayload);
     }
 
-    setIsModalOpen(false);
+    if (success) {
+      setIsModalOpen(false);
+    }
   };
 
   return (

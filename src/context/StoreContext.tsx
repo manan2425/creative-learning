@@ -863,36 +863,55 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(kit),
       });
       const d = await res.json();
-      if (d.success) {
+      if (res.ok && d.success) {
         const item = d.data || kit;
         setKits((prev) => [item, ...prev.filter(k => k.id !== item.id)]);
         broadcastSync('kits');
         showToast('Robotics Kit Added', `${kit.title} created.`, 'success');
         return true;
+      } else {
+        showToast('Error Adding Kit', d?.error || 'Server error', 'error');
+        return false;
       }
-    } catch (e) {}
-    setKits((prev) => [kit, ...prev.filter(k => k.id !== kit.id)]);
-    broadcastSync('kits');
-    return true;
+    } catch (e: any) {
+      showToast('Network Error', e?.message || 'Failed to add kit', 'error');
+      return false;
+    }
   };
 
   const updateKit = async (kit: RoboticsKit): Promise<boolean> => {
     try {
-      await fetch('/api/kits', {
+      const res = await fetch('/api/kits', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(kit),
       });
-    } catch (e) {}
-    setKits((prev) => prev.map((k) => (k.id === kit.id ? kit : k)));
-    broadcastSync('kits');
-    showToast('Kit Updated', `${kit.title} updated successfully.`, 'success');
-    return true;
+      const d = await res.json();
+      if (res.ok && d.success) {
+        setKits((prev) => prev.map((k) => (k.id === kit.id ? kit : k)));
+        broadcastSync('kits');
+        showToast('Kit Updated', `${kit.title} updated successfully.`, 'success');
+        return true;
+      } else {
+        showToast('Error Updating Kit', d?.error || 'Server error', 'error');
+        return false;
+      }
+    } catch (e: any) {
+      showToast('Network Error', e?.message || 'Failed to update kit', 'error');
+      return false;
+    }
   };
 
   const deleteKit = async (id: string): Promise<boolean> => {
     try {
-      await fetch(`/api/kits?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/kits?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (res.ok && d.success) {
+        setKits((prev) => prev.filter((k) => k.id !== id));
+        broadcastSync('kits');
+        showToast('Kit Deleted', 'Robotics kit removed from database.', 'info');
+        return true;
+      }
     } catch (e) {}
     setKits((prev) => prev.filter((k) => k.id !== id));
     broadcastSync('kits');
@@ -909,36 +928,55 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(practical),
       });
       const d = await res.json();
-      if (d.success) {
+      if (res.ok && d.success) {
         const item = d.data || practical;
         setPracticals((prev) => [item, ...prev.filter(p => p.id !== item.id)]);
         broadcastSync('practicals');
         showToast('Practical Lab Added', `${practical.title} created.`, 'success');
         return true;
+      } else {
+        showToast('Error Adding Practical', d?.error || 'Server error', 'error');
+        return false;
       }
-    } catch (e) {}
-    setPracticals((prev) => [practical, ...prev.filter(p => p.id !== practical.id)]);
-    broadcastSync('practicals');
-    return true;
+    } catch (e: any) {
+      showToast('Network Error', e?.message || 'Failed to add practical', 'error');
+      return false;
+    }
   };
 
   const updatePractical = async (practical: PracticalExperiment): Promise<boolean> => {
     try {
-      await fetch('/api/practicals', {
+      const res = await fetch('/api/practicals', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(practical),
       });
-    } catch (e) {}
-    setPracticals((prev) => prev.map((p) => (p.id === practical.id ? practical : p)));
-    broadcastSync('practicals');
-    showToast('Practical Updated', 'Lab experiment updated.', 'success');
-    return true;
+      const d = await res.json();
+      if (res.ok && d.success) {
+        setPracticals((prev) => prev.map((p) => (p.id === practical.id ? practical : p)));
+        broadcastSync('practicals');
+        showToast('Practical Updated', 'Lab experiment updated.', 'success');
+        return true;
+      } else {
+        showToast('Error Updating Practical', d?.error || 'Server error', 'error');
+        return false;
+      }
+    } catch (e: any) {
+      showToast('Network Error', e?.message || 'Failed to update practical', 'error');
+      return false;
+    }
   };
 
   const deletePractical = async (id: string): Promise<boolean> => {
     try {
-      await fetch(`/api/practicals?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/practicals?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (res.ok && d.success) {
+        setPracticals((prev) => prev.filter((p) => p.id !== id));
+        broadcastSync('practicals');
+        showToast('Practical Deleted', 'Lab removed from database.', 'info');
+        return true;
+      }
     } catch (e) {}
     setPracticals((prev) => prev.filter((p) => p.id !== id));
     broadcastSync('practicals');

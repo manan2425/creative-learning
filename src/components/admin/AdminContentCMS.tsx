@@ -19,13 +19,15 @@ import {
   RefreshCw,
   ExternalLink,
   Sliders,
-  Megaphone
+  Megaphone,
+  Menu as MenuIcon
 } from 'lucide-react';
+import { AdminMenubar } from '@/components/admin/AdminMenubar';
 
 export const AdminContentCMS: React.FC = () => {
   const { settings, updateCMSContent, showToast } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'whyUs' | 'quotes' | 'footer'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'whyUs' | 'quotes' | 'footer' | 'menubar'>('hero');
   const [isSaving, setIsSaving] = useState(false);
 
   // Hero State
@@ -276,6 +278,18 @@ export const AdminContentCMS: React.FC = () => {
         >
           <Sliders className="w-4 h-4" />
           <span>Footer &amp; Bio Info</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('menubar')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold font-heading rounded-t-xl transition-all cursor-pointer border-b-2 whitespace-nowrap ${
+            activeTab === 'menubar'
+              ? 'border-primary text-primary bg-blue-50/50'
+              : 'border-transparent text-secondary hover:text-navy'
+          }`}
+        >
+          <MenuIcon className="w-4 h-4" />
+          <span>Header Navigation Menu</span>
         </button>
       </div>
 
@@ -838,6 +852,13 @@ export const AdminContentCMS: React.FC = () => {
             </button>
           </div>
         </form>
+      )}
+
+      {/* 5. MENUBAR NAVIGATION MANAGEMENT */}
+      {activeTab === 'menubar' && (
+        <div className="pt-2">
+          <AdminMenubar />
+        </div>
       )}
 
     </div>

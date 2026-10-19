@@ -52,6 +52,7 @@ export const AdminKits: React.FC = () => {
     pdfUrl: '',
     pdfName: '',
     badge: 'Popular',
+    featuresTitle: "What's Included & Key Highlights",
   });
 
   const [featuresInput, setFeaturesInput] = useState('Plug & Play Jumper Wires\nStep-by-step PDF assembly guide\nPre-tested Microcontroller');
@@ -77,8 +78,9 @@ export const AdminKits: React.FC = () => {
       pdfUrl: '',
       pdfName: '',
       badge: 'New',
+      featuresTitle: "What's Included & Key Highlights",
     });
-    setFeaturesInput('Plug-and-play jumper cables\nZero-soldering assembly\nFull video guide');
+    setFeaturesInput('Plug-and-play jumper cables\nZero-soldering assembly\nStep-by-step PDF assembly guide\nPre-tested Microcontroller & Sensors');
     setBomInput('Arduino Uno R3: 1\nMotor Driver: 1\nChassis Pack: 1');
     setOutcomesInput('Robotics kinematics\nC++ coding');
     setIsModalOpen(true);
@@ -92,7 +94,8 @@ export const AdminKits: React.FC = () => {
       images: initialImages,
       pdfUrl: kit.pdfUrl || kit.manualUrl || '',
       pdfName: kit.pdfName || '',
-      hidePrice: Boolean(kit.hidePrice)
+      hidePrice: Boolean(kit.hidePrice),
+      featuresTitle: kit.featuresTitle || "What's Included & Key Highlights",
     });
     setFeaturesInput(kit.features ? kit.features.join('\n') : '');
     setBomInput(kit.bomList ? kit.bomList.map((b) => `${b.item}: ${b.qty}`).join('\n') : '');
@@ -139,19 +142,23 @@ export const AdminKits: React.FC = () => {
       pdfUrl: formData.pdfUrl || '',
       pdfName: formData.pdfName || '',
       manualUrl: formData.pdfUrl || '',
+      featuresTitle: formData.featuresTitle?.trim() || "What's Included & Key Highlights",
       features: parsedFeatures,
       learningOutcomes: parsedOutcomes,
       bomList: parsedBom,
       codeLanguage: ['Arduino C++', 'Block Coding'],
     };
 
+    let success = false;
     if (editingKit) {
-      await updateKit(kitPayload);
+      success = await updateKit(kitPayload);
     } else {
-      await addKit(kitPayload);
+      success = await addKit(kitPayload);
     }
 
-    setIsModalOpen(false);
+    if (success) {
+      setIsModalOpen(false);
+    }
   };
 
   return (
@@ -497,6 +504,48 @@ export const AdminKits: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, reviewsCount: parseInt(e.target.value) || 0 })}
                     className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy"
                   />
+                </div>
+
+                {/* What's Included & Key Highlights (Title + Bullet Points) */}
+                <div className="sm:col-span-2 space-y-2 bg-slate-50/90 p-4 rounded-2xl border border-border">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-border/80 pb-2">
+                    <label className="text-xs font-extrabold text-navy flex items-center gap-1.5 uppercase tracking-wide">
+                      <Bot className="w-4 h-4 text-primary" />
+                      <span>Highlights Section Title &amp; Features</span>
+                    </label>
+                    <span className="text-[11px] text-slate-400">
+                      Displays in the kit quick-view popup modal
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 mb-1 block">
+                      Section Header Text
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.featuresTitle ?? "What's Included & Key Highlights"}
+                      onChange={(e) => setFormData({ ...formData, featuresTitle: e.target.value })}
+                      placeholder="e.g. What's Included & Key Highlights"
+                      className="w-full px-3.5 py-2 bg-white border border-border rounded-xl text-xs font-bold text-navy focus:outline-hidden focus:border-primary"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 mb-1 block">
+                      Included Items &amp; Highlights (1 item per line)
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={featuresInput}
+                      onChange={(e) => setFeaturesInput(e.target.value)}
+                      placeholder="Plug &amp; Play Jumper Wires&#10;Step-by-step PDF assembly guide&#10;Pre-tested Microcontroller &amp; Sensors&#10;Zero-soldering friendly"
+                      className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-navy leading-relaxed focus:outline-hidden focus:border-primary font-sans"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      💡 Each line renders as a highlighted bullet point with a green checkmark icon.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="sm:col-span-2 space-y-1">

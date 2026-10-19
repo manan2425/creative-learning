@@ -1,4 +1,4 @@
-import { Product, RoboticsKit, PracticalExperiment, EngineeringProject, StoreSettings, QuoteItem } from '@/types';
+import { Product, RoboticsKit, PracticalExperiment, EngineeringProject, StoreSettings, QuoteItem, NavMenuItem } from '@/types';
 
 // Zero dummy items - database starts 100% clean
 export const INITIAL_PRODUCTS: Product[] = [];
@@ -20,6 +20,14 @@ export const INITIAL_CATEGORIES: string[] = [
   'Tools & Accessories'
 ];
 
+export const INITIAL_MENU_ITEMS: NavMenuItem[] = [
+  { id: 'products', name: 'Products', href: '#products', icon: 'Cpu', isActive: true },
+  { id: 'kits', name: 'Starter Kits', href: '#kits', icon: 'Bot', isActive: true },
+  { id: 'practical', name: 'Guided Labs', href: '#practical', icon: 'Layers', isActive: true },
+  { id: 'projects', name: 'Blueprints', href: '#projects', icon: 'Compass', isActive: true },
+  { id: 'why-us', name: 'Diagnostics', href: '#why-us', icon: 'Wrench', isActive: true },
+];
+
 export const INITIAL_SETTINGS: StoreSettings = {
   whatsappNumber: '+919714045096',
   storeName: 'Creative Learning - Robotics & Electronics',
@@ -32,6 +40,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   currencySymbol: '₹',
   upiId: '9714045096@upi',
   categories: INITIAL_CATEGORIES,
+  menuItems: INITIAL_MENU_ITEMS,
   hero: {
     badgeText: 'GENUINE STEM HARDWARE & ROBOTICS LABS',
     headlinePrefix: 'Build The Future With',

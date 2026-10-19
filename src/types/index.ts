@@ -42,6 +42,7 @@ export interface RoboticsKit {
   pdfUrl?: string;
   pdfName?: string;
   badge?: string;
+  featuresTitle?: string;
   features: string[];
   bomList: {
     item: string;
@@ -213,6 +214,15 @@ export interface SectionQuotesConfig {
   projectsQuoteAuthor?: string;
 }
 
+export interface NavMenuItem {
+  id: string;
+  name: string;
+  href: string;
+  icon?: string;
+  isActive?: boolean;
+  isExternal?: boolean;
+}
+
 export interface StoreSettings {
   _id?: string;
   whatsappNumber: string;
@@ -226,6 +236,7 @@ export interface StoreSettings {
   currencySymbol: string;
   upiId: string;
   categories: string[];
+  menuItems?: NavMenuItem[];
   hero?: CMSHeroContent;
   whyUs?: CMSWhyUsContent;
   heroQuoteText?: string;

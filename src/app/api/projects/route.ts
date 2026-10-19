@@ -43,10 +43,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { db } = await connectToDatabase();
     if (!body.id) body.id = 'proj-' + Date.now();
+    if ('_id' in body) delete body._id;
     const result = await db.collection('projects').insertOne(body);
     invalidateApiCache('projects_list');
     return NextResponse.json({ success: true, data: { ...body, _id: result.insertedId } });
   } catch (error: any) {
+    console.error('Projects POST error:', error);
     return NextResponse.json({ success: false, error: error?.message }, { status: 500 });
   }
 }
