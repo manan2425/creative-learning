@@ -94,7 +94,7 @@ export const AdminProjects: React.FC = () => {
       rating: proj.rating || 4.9,
       reviewsCount: proj.reviewsCount || 0
     });
-    setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}`).join('\n') : '');
+    setBomInput(proj.bom ? proj.bom.map((b) => (b.unitPrice && b.unitPrice > 0 ? `${b.name}: ${b.qty}: ${b.unitPrice}` : `${b.name}: ${b.qty}`)).join('\n') : '');
     setHighlightsInput(proj.highlights ? proj.highlights.join('\n') : '');
     setIsModalOpen(true);
   };
@@ -112,10 +112,11 @@ export const AdminProjects: React.FC = () => {
       .filter((l) => l.length > 0)
       .map((l) => {
         const parts = l.split(':');
+        const priceVal = parts.length > 2 ? Number(parts[2].trim()) : undefined;
         return {
           name: parts[0]?.trim() || 'Part',
           qty: parts.length > 1 ? Number(parts[1].trim()) || 1 : 1,
-          unitPrice: parts.length > 2 ? Number(parts[2].trim()) || 0 : 0,
+          unitPrice: priceVal && !isNaN(priceVal) && priceVal > 0 ? priceVal : undefined,
         };
       });
 

@@ -75,6 +75,7 @@ export interface PracticalExperiment {
     name: string;
     qty: number;
     productId?: string;
+    unitPrice?: number;
   }[];
   circuitWiring: {
     pinFrom: string;

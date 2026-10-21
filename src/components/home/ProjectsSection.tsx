@@ -211,7 +211,9 @@ export const ProjectsSection: React.FC = () => {
                           {project.bom.slice(0, 3).map((item, idx) => (
                             <div key={idx} className="flex justify-between px-3 py-1.5 bg-white">
                               <span className="text-secondary truncate max-w-[180px]">{item.name}</span>
-                              <span className="font-bold text-navy font-mono">x{item.qty}</span>
+                              <span className="font-bold text-navy font-mono">
+                                x{item.qty}{item.unitPrice && item.unitPrice > 0 ? ` (₹${item.unitPrice})` : ''}
+                              </span>
                             </div>
                           ))}
                         </div>

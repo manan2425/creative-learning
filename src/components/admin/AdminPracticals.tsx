@@ -141,7 +141,11 @@ export const AdminPracticals: React.FC = () => {
       pdfUrl: prac.pdfUrl || '',
       pdfName: prac.pdfName || '',
     });
-    setComponentsInput(prac.requiredComponents ? prac.requiredComponents.map((c) => `${c.name}: ${c.qty}`).join('\n') : '');
+    setComponentsInput(
+      prac.requiredComponents
+        ? prac.requiredComponents.map((c) => (c.unitPrice && c.unitPrice > 0 ? `${c.name}: ${c.qty}: ${c.unitPrice}` : `${c.name}: ${c.qty}`)).join('\n')
+        : ''
+    );
     setWiringInput(prac.circuitWiring ? prac.circuitWiring.map((w) => `${w.pinFrom} -> ${w.pinTo} (${w.note || 'Signal'})`).join('\n') : '');
     setCodeSnippet(prac.codeSnippets?.[0]?.code || '');
     setTipsInput(prac.troubleshootingTips ? prac.troubleshootingTips.join('\n') : '');
@@ -157,9 +161,11 @@ export const AdminPracticals: React.FC = () => {
 
     const parsedComponents = componentsInput.split('\n').map((l) => l.trim()).filter((l) => l.length > 0).map((l) => {
       const parts = l.split(':');
+      const priceVal = parts.length > 2 ? Number(parts[2].trim()) : undefined;
       return {
         name: parts[0].trim(),
         qty: parts.length > 1 ? Number(parts[1].trim()) || 1 : 1,
+        unitPrice: priceVal && !isNaN(priceVal) && priceVal > 0 ? priceVal : undefined,
       };
     });
 
@@ -638,19 +644,19 @@ export const AdminPracticals: React.FC = () => {
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-xs font-bold text-navy flex items-center gap-1.5">
                       <Cpu className="w-3.5 h-3.5 text-primary" />
-                      <span>Required Components Bill of Materials (Component Name: Quantity per line)</span>
+                      <span>Required Components &amp; BOM (Component: Quantity or Component: Quantity: Price)</span>
                     </label>
-                    <span className="text-[10px] text-slate-400 font-mono">1 per line</span>
+                    <span className="text-[10px] text-slate-400 font-mono">Price is optional</span>
                   </div>
                   <textarea
                     rows={3}
                     value={componentsInput}
                     onChange={(e) => setComponentsInput(e.target.value)}
-                    placeholder="Arduino Uno: 1&#10;HC-SR04 Ultrasonic Sensor: 1&#10;0.96 OLED Display: 1&#10;Jumper Wires: 8"
+                    placeholder="Arduino Uno: 1: 450&#10;HC-SR04 Sensor: 1&#10;Jumper Wires: 8: 40"
                     className="w-full px-3.5 py-2 bg-white border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                   <p className="text-[10px] text-slate-500">
-                    💡 Students can click &quot;Add All Components to Cart&quot; directly from the practical guide modal.
+                    💡 If component prices are added, they will be displayed in the lab BOM table.
                   </p>
                 </div>
 

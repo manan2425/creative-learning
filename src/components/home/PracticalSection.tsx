@@ -29,12 +29,17 @@ export const PracticalSection: React.FC = () => {
       let total = 0;
       let matchedAny = false;
       for (const comp of prac.requiredComponents) {
-        const matched = products.find(
-          (p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase())
-        );
-        if (matched && matched.price && !matched.hidePrice) {
-          total += matched.price * (comp.qty || 1);
+        if (comp.unitPrice && comp.unitPrice > 0) {
+          total += comp.unitPrice * (comp.qty || 1);
           matchedAny = true;
+        } else {
+          const matched = products.find(
+            (p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase())
+          );
+          if (matched && matched.price && !matched.hidePrice) {
+            total += matched.price * (comp.qty || 1);
+            matchedAny = true;
+          }
         }
       }
       if (matchedAny && total > 0) {
@@ -198,8 +203,11 @@ export const PracticalSection: React.FC = () => {
                         </span>
                         <div className="flex flex-wrap gap-1.5">
                           {prac.requiredComponents.map((comp, idx) => (
-                            <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy">
-                              {comp?.name || 'Component'}
+                            <span key={idx} className="text-[10px] bg-white border border-border px-2 py-0.5 rounded text-navy flex items-center gap-1">
+                              <span>{comp?.name || 'Component'}</span>
+                              {comp.unitPrice && comp.unitPrice > 0 ? (
+                                <span className="font-bold text-primary font-mono">₹{comp.unitPrice}</span>
+                              ) : null}
                             </span>
                           ))}
                         </div>

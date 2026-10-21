@@ -76,12 +76,17 @@ export const PracticalDetailModal: React.FC = () => {
       let total = 0;
       let matchedAny = false;
       for (const comp of experiment.requiredComponents) {
-        const matched = products.find(
-          (p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase())
-        );
-        if (matched && matched.price && !matched.hidePrice) {
-          total += matched.price * (comp.qty || 1);
+        if (comp.unitPrice && comp.unitPrice > 0) {
+          total += comp.unitPrice * (comp.qty || 1);
           matchedAny = true;
+        } else {
+          const matched = products.find(
+            (p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase())
+          );
+          if (matched && matched.price && !matched.hidePrice) {
+            total += matched.price * (comp.qty || 1);
+            matchedAny = true;
+          }
         }
       }
       if (matchedAny && total > 0) {
@@ -323,9 +328,16 @@ export const PracticalDetailModal: React.FC = () => {
                         </span>
                         <span className="font-semibold">{comp.name}</span>
                       </div>
-                      <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-border text-secondary">
-                        Qty: {comp.qty}
-                      </span>
+                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                        <span className="font-bold bg-white px-2 py-0.5 rounded border border-border text-secondary">
+                          Qty: {comp.qty}
+                        </span>
+                        {comp.unitPrice && comp.unitPrice > 0 ? (
+                          <span className="font-bold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                            ₹{comp.unitPrice}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -123,7 +123,7 @@ export function exportProjectsToCSV(projects: EngineeringProject[]) {
     escapeCsvCell(proj.image || ''),
     escapeCsvCell(proj.description || ''),
     escapeCsvCell(proj.highlights ? proj.highlights.join('; ') : ''),
-    escapeCsvCell(proj.bom ? proj.bom.map(b => `${b.name}: ${b.qty}`).join('; ') : ''),
+    escapeCsvCell(proj.bom ? proj.bom.map(b => b.unitPrice && b.unitPrice > 0 ? `${b.name}: ${b.qty} (₹${b.unitPrice})` : `${b.name}: ${b.qty}`).join('; ') : ''),
     escapeCsvCell(proj.cadModelAvailable ? 'true' : 'false'),
     escapeCsvCell(proj.gerberAvailable ? 'true' : 'false'),
     escapeCsvCell(proj.circuitTopology || ''),
@@ -150,7 +150,7 @@ export function exportPracticalsToCSV(practicals: PracticalExperiment[]) {
     escapeCsvCell(p.durationMin || 30),
     escapeCsvCell(p.description || ''),
     escapeCsvCell(p.objective || ''),
-    escapeCsvCell(p.requiredComponents ? p.requiredComponents.map(c => `${c.name}: ${c.qty}`).join('; ') : ''),
+    escapeCsvCell(p.requiredComponents ? p.requiredComponents.map(c => c.unitPrice && c.unitPrice > 0 ? `${c.name}: ${c.qty} (₹${c.unitPrice})` : `${c.name}: ${c.qty}`).join('; ') : ''),
     escapeCsvCell(p.troubleshootingTips ? p.troubleshootingTips.join('; ') : ''),
     escapeCsvCell(p.pdfUrl || ''),
     escapeCsvCell(p.createdAt || new Date().toISOString())
