@@ -16,7 +16,8 @@ import {
   Box, 
   FileCode2, 
   Cpu, 
-  Check
+  Check,
+  AlertCircle
 } from 'lucide-react';
 import { ZoomableImage } from '@/components/common/ZoomableImage';
 
@@ -66,35 +67,26 @@ export const ProjectQuickViewModal: React.FC = () => {
 
   const currentPhoto = allPhotos[activePhotoIdx] || allPhotos[0];
 
-  const handleAddAllBOMToCart = () => {
+  const handleAddWholeProjectToCart = () => {
     const isQuoteItem = Boolean(project.hidePrice || !project.estimatedCost);
 
-    if (project.bom && project.bom.length > 0) {
-      project.bom.forEach((item, index) => {
-        addToCart({
-          id: `${project.id}-bom-${index}`,
-          type: 'bom_bundle',
-          name: `${item.name} (${project.title} BOM)`,
-          price: isQuoteItem ? 0 : (item.unitPrice || 0),
-          hidePrice: isQuoteItem,
-          image: currentPhoto,
-          sku: `BOM-${project.id.slice(0, 8).toUpperCase()}-${index + 1}`
-        }, item.qty || 1);
-      });
-      showToast('BOM Parts Added', `All ${project.bom.length} components for ${project.title} added to cart.`, 'success');
-    } else {
-      addToCart({
-        id: project.id,
-        type: 'project',
-        name: `${project.title} (Blueprint & Hardware Kit)`,
-        price: isQuoteItem ? 0 : (project.estimatedCost || 0),
-        hidePrice: isQuoteItem,
-        image: currentPhoto,
-        sku: `PROJ-${project.difficulty.toUpperCase()}`
-      }, 1);
-      showToast('Project Added', `${project.title} added to your project cart.`, 'success');
-    }
+    addToCart({
+      id: `project-${project.id}`,
+      type: 'project',
+      name: `${project.title} (Complete Project)`,
+      price: isQuoteItem ? 0 : (project.estimatedCost || 0),
+      hidePrice: isQuoteItem,
+      image: currentPhoto,
+      sku: `PRJ-${project.id.slice(0, 8).toUpperCase()}`,
+      meta: {
+        category: project.category,
+        difficulty: project.difficulty,
+        bomCount: project.bom?.length || 0,
+        note: 'Programming charge will be extra'
+      }
+    }, 1);
 
+    showToast('Project Added 🚀', `${project.title} added to your cart as a complete project.`, 'success');
     setActiveQuickViewProject(null);
   };
 
@@ -176,8 +168,8 @@ export const ProjectQuickViewModal: React.FC = () => {
               </p>
             )}
 
-            {/* Estimated BOM Cost Display */}
-            <div className="flex items-center gap-3 pt-2">
+            {/* Estimated BOM Cost Display & Programming Charge Note */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
               {project.hidePrice || !project.estimatedCost ? (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
                   <MessageCircle className="w-4 h-4 text-emerald-600" />
@@ -185,12 +177,17 @@ export const ProjectQuickViewModal: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-xs font-medium text-secondary">Estimated BOM Hardware Cost:</span>
+                  <span className="text-xs font-medium text-secondary">Estimated Hardware Cost:</span>
                   <span className="text-2xl sm:text-3xl font-extrabold text-navy font-mono">
                     ₹{project.estimatedCost}
                   </span>
                 </div>
               )}
+
+              <div className="flex items-center gap-1.5 text-xs text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Note: Programming charge will be extra</span>
+              </div>
             </div>
           </div>
 
@@ -359,14 +356,14 @@ export const ProjectQuickViewModal: React.FC = () => {
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <button
               type="button"
-              onClick={handleAddAllBOMToCart}
+              onClick={handleAddWholeProjectToCart}
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold font-heading shadow-md shadow-primary/20 transition-all cursor-pointer"
             >
               <ShoppingCart className="w-4 h-4" />
               <span>
                 {project.hidePrice || !project.estimatedCost
-                  ? 'Add All BOM to Cart (Quote Request)'
-                  : `Add All BOM to Cart (₹${project.estimatedCost})`}
+                  ? 'Add Complete Project to Cart (Quote Request)'
+                  : `Add Complete Project to Cart (₹${project.estimatedCost})`}
               </span>
             </button>
 

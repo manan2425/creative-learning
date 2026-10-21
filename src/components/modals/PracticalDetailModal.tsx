@@ -17,7 +17,8 @@ import {
   ListChecks,
   Eye,
   FileText,
-  Camera
+  Camera,
+  AlertCircle
 } from 'lucide-react';
 import { ZoomableImage } from '@/components/common/ZoomableImage';
 
@@ -67,28 +68,49 @@ export const PracticalDetailModal: React.FC = () => {
     setTimeout(() => setCopiedIndex(null), 2500);
   };
 
-  const handleAddAllComponentsToCart = () => {
-    let addedCount = 0;
-    lab.requiredComponents?.forEach((comp) => {
-      const matchedProd = products.find((p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase()));
-      if (matchedProd) {
-        addToCart({
-          id: matchedProd.id,
-          type: 'product',
-          name: matchedProd.name,
-          price: matchedProd.price,
-          image: matchedProd.image,
-          sku: matchedProd.sku,
-        }, comp.qty || 1);
-        addedCount++;
-      }
-    });
-
-    if (addedCount > 0) {
-      showToast('Lab Components Added! 🛒', `Added ${addedCount} components for ${lab.title} to your cart.`, 'success');
-    } else {
-      showToast('Custom Components', 'Please check individual component stocks in the Hardware Store.', 'info');
+  const getPracticalPrice = (experiment: typeof lab) => {
+    if (experiment.estimatedCost && experiment.estimatedCost > 0) {
+      return { price: experiment.estimatedCost, isQuote: Boolean(experiment.hidePrice) };
     }
+    if (experiment.requiredComponents && experiment.requiredComponents.length > 0) {
+      let total = 0;
+      let matchedAny = false;
+      for (const comp of experiment.requiredComponents) {
+        const matched = products.find(
+          (p) => p.id === comp.productId || p.name.toLowerCase().includes((comp.name || '').toLowerCase())
+        );
+        if (matched && matched.price && !matched.hidePrice) {
+          total += matched.price * (comp.qty || 1);
+          matchedAny = true;
+        }
+      }
+      if (matchedAny && total > 0) {
+        return { price: total, isQuote: false };
+      }
+    }
+    return { price: 0, isQuote: true };
+  };
+
+  const { price, isQuote } = getPracticalPrice(lab);
+
+  const handleAddWholePracticalToCart = () => {
+    addToCart({
+      id: `practical-${lab.id}`,
+      type: 'practical',
+      name: `${lab.title} (Complete Lab Kit)`,
+      price: isQuote ? 0 : price,
+      hidePrice: isQuote,
+      image: (lab.images && lab.images[0]) || lab.image || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
+      sku: `PRAC-${lab.id.slice(0, 8).toUpperCase()}`,
+      meta: {
+        topic: lab.topic,
+        level: lab.level,
+        componentsCount: lab.requiredComponents?.length || 0,
+        note: 'Programming charge will be extra'
+      }
+    }, 1);
+
+    showToast('Lab Practical Added 🔬', `${lab.title} added to your cart as a complete lab kit.`, 'success');
   };
 
   return (
@@ -269,18 +291,24 @@ export const PracticalDetailModal: React.FC = () => {
             <div className="space-y-6">
               {/* Components List */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                   <h4 className="font-extrabold text-sm text-navy flex items-center gap-2">
                     <ListChecks className="w-4 h-4 text-primary" />
                     Bill of Materials Required for this Lab
                   </h4>
                   <button
-                    onClick={handleAddAllComponentsToCart}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors shadow-2xs cursor-pointer"
+                    onClick={handleAddWholePracticalToCart}
+                    className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-2xs cursor-pointer"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" />
-                    <span>Add All Components to Cart</span>
+                    <span>{isQuote ? 'Add Whole Lab Kit to Cart' : `Add Whole Lab Kit (₹${price})`}</span>
                   </button>
+                </div>
+
+                {/* Programming Charge Note */}
+                <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-semibold">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Note: Programming charge will be extra</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -422,14 +450,25 @@ export const PracticalDetailModal: React.FC = () => {
             <span>Cancel &amp; Close</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => openWhatsAppInquiry(`Practical Kit Inquiry: ${lab.title}`)}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
-          >
-            <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Order Lab Hardware on WhatsApp</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAddWholePracticalToCart}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>{isQuote ? 'Add Whole Lab Kit' : `Add Whole Kit (₹${price})`}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openWhatsAppInquiry(`Practical Kit Inquiry: ${lab.title}`)}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <MessageCircle className="w-4 h-4 fill-white" />
+              <span>WhatsApp Inquiry</span>
+            </button>
+          </div>
         </div>
 
       </div>

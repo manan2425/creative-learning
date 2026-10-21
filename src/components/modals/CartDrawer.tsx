@@ -46,6 +46,7 @@ export const CartDrawer: React.FC = () => {
   const deliveryFee = 0; // Zero courier charges on all orders
   const totalAmount = Math.max(0, subtotal - discountAmount);
   const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+  const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,12 +181,29 @@ export const CartDrawer: React.FC = () => {
                               Robotics Kit
                             </span>
                           )}
+                          {item.type === 'project' && (
+                            <span className="text-[9px] px-1.5 py-0.2 font-bold bg-purple-100 text-purple-800 rounded font-mono">
+                              Complete Project
+                            </span>
+                          )}
+                          {item.type === 'practical' && (
+                            <span className="text-[9px] px-1.5 py-0.2 font-bold bg-emerald-100 text-emerald-800 rounded font-mono">
+                              Complete Lab Kit
+                            </span>
+                          )}
                           {item.type === 'bom_bundle' && (
                             <span className="text-[9px] px-1.5 py-0.2 font-bold bg-primary-light text-primary rounded font-mono">
                               BOM Part
                             </span>
                           )}
                         </div>
+
+                        {(item.type === 'project' || item.type === 'practical') && (
+                          <div className="mt-1 flex items-center gap-1 text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded w-fit">
+                            <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
+                            <span>Programming charge will be extra</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Price & Quantity Controls */}
@@ -313,6 +331,13 @@ export const CartDrawer: React.FC = () => {
                   <div className="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-2 font-medium leading-tight flex items-start gap-1.5">
                     <MessageCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                     <span>Your order contains Price-on-Request item(s). Our team will provide the exact item quotation directly in your WhatsApp checkout chat.</span>
+                  </div>
+                )}
+
+                {hasProjectOrPractical && (
+                  <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 mt-2 font-medium leading-tight flex items-start gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                    <span><strong>Notice:</strong> Programming charge will be extra for project and practical hardware kits.</span>
                   </div>
                 )}
               </div>

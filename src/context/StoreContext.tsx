@@ -599,6 +599,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const grandTotal = Math.max(0, subtotal - discountAmount);
 
     const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+    const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
     let message = `⚡ *NEW ORDER / INQUIRY - CREATIVE LEARNING STORE*\n`;
     message += `===================================\n\n`;
@@ -619,6 +620,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         message += `   Qty: ${item.quantity} × ₹${item.price} = ₹${item.price * item.quantity}\n`;
       }
       if (item.sku) message += `   SKU: \`${item.sku}\`\n`;
+      if (item.type === 'project' || item.type === 'practical') {
+        message += `   ⚡ *Note: Programming charge will be extra*\n`;
+      }
       if (item.meta) {
         if (item.meta.chassis) message += `   Config: ${item.meta.chassis} + ${item.meta.brain}\n`;
       }
@@ -632,6 +636,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
     if (hasQuoteItems) {
       message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+    }
+    if (hasProjectOrPractical) {
+      message += `\n⚠️ *Important Notice:* Programming charge will be extra for project and practical hardware kits.\n`;
     }
     message += `===================================\n`;
     message += `🚀 *Please confirm order dispatch & quotation.*`;
@@ -719,6 +726,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const grandTotal = Math.max(0, subtotal - discountAmount);
     const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && i.price > 0);
     const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+    const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
     const orderId = 'CL-' + Date.now().toString().slice(-6);
 
@@ -736,6 +744,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         message += `   Qty: ${item.quantity} × ₹${item.price} = ₹${item.price * item.quantity}\n`;
       }
       if (item.sku) message += `   SKU: \`${item.sku}\`\n`;
+      if (item.type === 'project' || item.type === 'practical') {
+        message += `   ⚡ *Note: Programming charge will be extra*\n`;
+      }
       if (item.meta) {
         if (item.meta.chassis) message += `   Config: ${item.meta.chassis} + ${item.meta.brain}\n`;
       }
@@ -754,6 +765,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     if (hasQuoteItems) {
       message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+    }
+    if (hasProjectOrPractical) {
+      message += `\n⚠️ *Important Notice:* Programming charge will be extra for project and practical hardware kits.\n`;
     }
     message += `===================================\n`;
     message += `🚀 *Please confirm order dispatch, pricing & delivery address.*`;

@@ -63,6 +63,8 @@ export interface PracticalExperiment {
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   topic: string;
   durationMin: number;
+  estimatedCost?: number;
+  hidePrice?: boolean;
   image: string;
   images?: string[];
   pdfUrl?: string;
@@ -118,7 +120,7 @@ export interface EngineeringProject {
 
 export interface CartItem {
   id: string;
-  type: 'product' | 'kit' | 'custom_bot' | 'bom_bundle' | 'project';
+  type: 'product' | 'kit' | 'custom_bot' | 'bom_bundle' | 'project' | 'practical';
   name: string;
   price: number;
   hidePrice?: boolean;

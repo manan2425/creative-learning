@@ -14,45 +14,33 @@ import {
   Download,
   Share2,
   Eye,
-  Star
+  Star,
+  AlertCircle
 } from 'lucide-react';
 
 export const ProjectsSection: React.FC = () => {
   const { projects, addToCart, openWhatsAppInquiry, showToast, setActiveQuickViewProject } = useStore();
 
-  const handleAddProjectBOMToCart = (project: any) => {
-    let totalAdded = 0;
+  const handleAddProjectToCart = (project: any) => {
     const isQuoteProject = Boolean(project.hidePrice || !project.estimatedCost);
 
-    if (project.bom && project.bom.length > 0) {
-      project.bom.forEach((item: any, idx: number) => {
-        addToCart({
-          id: `bom-${project.id}-${idx}`,
-          type: 'bom_bundle',
-          name: `${item.name} (${project.title})`,
-          price: isQuoteProject ? 0 : (item.unitPrice || 0),
-          hidePrice: isQuoteProject || !item.unitPrice,
-          image: project.image,
-          sku: `BOM-${project.id.toUpperCase()}-${idx}`,
-        }, item.qty || 1);
-        totalAdded += (item.qty || 1);
-      });
-    } else {
-      addToCart({
-        id: `project-${project.id}`,
-        type: 'project',
-        name: `Blueprint: ${project.title}`,
-        price: isQuoteProject ? 0 : (project.estimatedCost || 0),
-        hidePrice: isQuoteProject,
-        image: project.image,
-        sku: `PRJ-${project.id.toUpperCase()}`,
-      }, 1);
-      totalAdded = 1;
-    }
+    addToCart({
+      id: `project-${project.id}`,
+      type: 'project',
+      name: `${project.title} (Complete Project)`,
+      price: isQuoteProject ? 0 : (project.estimatedCost || 0),
+      hidePrice: isQuoteProject,
+      image: (project.images && project.images[0]) || project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80',
+      sku: `PRJ-${project.id.toUpperCase().slice(0, 8)}`,
+      meta: {
+        category: project.category,
+        difficulty: project.difficulty,
+        bomCount: project.bom?.length || 0,
+        note: 'Programming charge will be extra'
+      }
+    }, 1);
 
-    if (totalAdded > 0) {
-      showToast('BOM Added to Cart 📦', `Added ${totalAdded} item(s) for ${project.title} to your cart.`, 'success');
-    }
+    showToast('Project Added 🚀', `${project.title} added to your cart as a complete project.`, 'success');
   };
 
   return (
@@ -233,17 +221,22 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="p-6 pt-0 space-y-2">
+                {/* Programming Charge Notice & Action Buttons */}
+                <div className="p-6 pt-0 space-y-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] text-amber-700 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Note: Programming charge will be extra</span>
+                  </div>
+
                   <button
-                    onClick={() => handleAddProjectBOMToCart(project)}
+                    onClick={() => handleAddProjectToCart(project)}
                     className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     <span>
                       {project.hidePrice || !project.estimatedCost
-                        ? 'Add All BOM Parts to Cart (Quote Request)'
-                        : `Add All BOM Parts to Cart (₹${project.estimatedCost})`}
+                        ? 'Add Complete Project to Cart (Quote Request)'
+                        : `Add Complete Project to Cart (₹${project.estimatedCost})`}
                     </span>
                   </button>
 
