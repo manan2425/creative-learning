@@ -149,7 +149,7 @@ export const ProjectsSection: React.FC = () => {
                           Custom Quotation
                         </span>
                       ) : (
-                        <>Est. BOM Cost: <span className="text-primary font-extrabold">₹{project.estimatedCost}</span></>
+                        <>Est. Project Cost: <span className="text-primary font-extrabold">₹{project.estimatedCost}</span></>
                       )}
                     </div>
                   </div>
@@ -211,7 +211,7 @@ export const ProjectsSection: React.FC = () => {
                           {project.bom.slice(0, 3).map((item, idx) => (
                             <div key={idx} className="flex justify-between px-3 py-1.5 bg-white">
                               <span className="text-secondary truncate max-w-[180px]">{item.name}</span>
-                              <span className="font-bold text-navy font-mono">x{item.qty} {item.unitPrice ? `(₹${item.unitPrice})` : ''}</span>
+                              <span className="font-bold text-navy font-mono">x{item.qty}</span>
                             </div>
                           ))}
                         </div>

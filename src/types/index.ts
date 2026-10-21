@@ -109,7 +109,7 @@ export interface EngineeringProject {
   bom: {
     name: string;
     qty: number;
-    unitPrice: number;
+    unitPrice?: number;
     productId?: string;
   }[];
   cadModelAvailable: boolean;

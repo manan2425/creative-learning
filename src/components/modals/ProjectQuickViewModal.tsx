@@ -323,17 +323,14 @@ export const ProjectQuickViewModal: React.FC = () => {
                     <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
                       <Layers className="w-3.5 h-3.5 text-primary" /> Bill of Materials ({project.bom.length} parts)
                     </span>
-                    <span className="text-[10px] text-secondary font-mono">Qty &amp; Unit Price</span>
+                    <span className="text-[10px] text-secondary font-mono">Qty</span>
                   </div>
                   <div className="max-h-48 overflow-y-auto divide-y divide-slate-100">
                     {project.bom.map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between px-4 py-2 text-xs">
-                        <span className="text-navy font-medium truncate max-w-[190px]">{item.name}</span>
+                        <span className="text-navy font-medium truncate max-w-[240px]">{item.name}</span>
                         <div className="flex items-center gap-2 shrink-0 font-mono text-[11px]">
-                          <span className="text-slate-500">x{item.qty}</span>
-                          {item.unitPrice ? (
-                            <span className="font-bold text-primary">₹{item.unitPrice}</span>
-                          ) : null}
+                          <span className="text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded border border-border">x{item.qty}</span>
                         </div>
                       </div>
                     ))}

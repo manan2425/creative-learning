@@ -123,7 +123,7 @@ export function exportProjectsToCSV(projects: EngineeringProject[]) {
     escapeCsvCell(proj.image || ''),
     escapeCsvCell(proj.description || ''),
     escapeCsvCell(proj.highlights ? proj.highlights.join('; ') : ''),
-    escapeCsvCell(proj.bom ? proj.bom.map(b => `${b.name}: ${b.qty} (₹${b.unitPrice || 0})`).join('; ') : ''),
+    escapeCsvCell(proj.bom ? proj.bom.map(b => `${b.name}: ${b.qty}`).join('; ') : ''),
     escapeCsvCell(proj.cadModelAvailable ? 'true' : 'false'),
     escapeCsvCell(proj.gerberAvailable ? 'true' : 'false'),
     escapeCsvCell(proj.circuitTopology || ''),

@@ -54,7 +54,7 @@ export const AdminProjects: React.FC = () => {
     circuitTopology: 'Transmitter -> MCU -> Receiver -> Motor Driver',
   });
 
-  const [bomInput, setBomInput] = useState('Arduino Nano: 2: 280\nMPU6050 Gyro: 1: 135\nNRF24L01 Module: 2: 95');
+  const [bomInput, setBomInput] = useState('Arduino Nano: 2\nMPU6050 Gyro: 1\nNRF24L01 Module: 2');
   const [highlightsInput, setHighlightsInput] = useState('2.4GHz wireless telemetry\nKalman filter orientation');
 
   const handleOpenAdd = () => {
@@ -77,7 +77,7 @@ export const AdminProjects: React.FC = () => {
       gerberAvailable: true,
       circuitTopology: 'Input Sensor -> Brain MCU -> Output Actuators',
     });
-    setBomInput('Microcontroller: 1: 350\nSensor: 1: 150\nDriver: 1: 130');
+    setBomInput('Microcontroller: 1\nSensor: 1\nDriver: 1');
     setHighlightsInput('Full open-source code\nSchematic included');
     setIsModalOpen(true);
   };
@@ -94,7 +94,7 @@ export const AdminProjects: React.FC = () => {
       rating: proj.rating || 4.9,
       reviewsCount: proj.reviewsCount || 0
     });
-    setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}: ${b.unitPrice}`).join('\n') : '');
+    setBomInput(proj.bom ? proj.bom.map((b) => `${b.name}: ${b.qty}`).join('\n') : '');
     setHighlightsInput(proj.highlights ? proj.highlights.join('\n') : '');
     setIsModalOpen(true);
   };
@@ -115,7 +115,7 @@ export const AdminProjects: React.FC = () => {
         return {
           name: parts[0]?.trim() || 'Part',
           qty: parts.length > 1 ? Number(parts[1].trim()) || 1 : 1,
-          unitPrice: parts.length > 2 ? Number(parts[2].trim()) || 100 : 100,
+          unitPrice: parts.length > 2 ? Number(parts[2].trim()) || 0 : 0,
         };
       });
 
@@ -466,12 +466,12 @@ export const AdminProjects: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-2 space-y-1">
-                  <label className="text-xs font-bold text-navy">Bill of Materials (Part Name: Quantity: Unit Price per line)</label>
+                  <label className="text-xs font-bold text-navy">Bill of Materials (Part Name: Quantity per line)</label>
                   <textarea
                     rows={3}
                     value={bomInput}
                     onChange={(e) => setBomInput(e.target.value)}
-                    placeholder="Arduino Nano: 1: 280&#10;MPU-6050 IMU: 1: 135&#10;L298N Motor Driver: 1: 130"
+                    placeholder="Arduino Nano: 1&#10;MPU-6050 IMU: 1&#10;L298N Motor Driver: 1"
                     className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy leading-relaxed"
                   />
                 </div>
