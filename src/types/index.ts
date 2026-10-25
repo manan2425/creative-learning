@@ -63,6 +63,8 @@ export interface PracticalExperiment {
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   topic: string;
   durationMin: number;
+  price?: number;
+  originalPrice?: number;
   estimatedCost?: number;
   hidePrice?: boolean;
   image: string;
@@ -97,6 +99,8 @@ export interface EngineeringProject {
   title: string;
   category: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  price?: number;
+  originalPrice?: number;
   estimatedCost: number;
   hidePrice?: boolean;
   rating?: number;

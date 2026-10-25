@@ -106,7 +106,7 @@ export function exportKitsToCSV(kits: RoboticsKit[]) {
 // 3. Export Engineering Projects to CSV
 export function exportProjectsToCSV(projects: EngineeringProject[]) {
   const headers = [
-    'id', 'title', 'category', 'difficulty', 'estimatedCost', 'hidePrice', 
+    'id', 'title', 'category', 'difficulty', 'price', 'originalPrice', 'estimatedCost', 'hidePrice', 
     'rating', 'reviewsCount', 'image', 'description', 'highlights', 'bom', 
     'cadModelAvailable', 'gerberAvailable', 'circuitTopology', 'pdfUrl', 'createdAt'
   ];
@@ -116,6 +116,8 @@ export function exportProjectsToCSV(projects: EngineeringProject[]) {
     escapeCsvCell(proj.title),
     escapeCsvCell(proj.category || 'Robotics & Automation'),
     escapeCsvCell(proj.difficulty || 'Intermediate'),
+    escapeCsvCell(proj.price ?? proj.estimatedCost ?? 0),
+    escapeCsvCell(proj.originalPrice || ''),
     escapeCsvCell(proj.estimatedCost || 0),
     escapeCsvCell(proj.hidePrice ? 'true' : 'false'),
     escapeCsvCell(proj.rating || 4.9),
@@ -138,7 +140,7 @@ export function exportProjectsToCSV(projects: EngineeringProject[]) {
 // 4. Export Practicals to CSV
 export function exportPracticalsToCSV(practicals: PracticalExperiment[]) {
   const headers = [
-    'id', 'title', 'level', 'topic', 'durationMin', 'description', 'objective', 
+    'id', 'title', 'level', 'topic', 'price', 'originalPrice', 'estimatedCost', 'hidePrice', 'durationMin', 'description', 'objective', 
     'requiredComponents', 'troubleshootingTips', 'pdfUrl', 'createdAt'
   ];
 
@@ -147,6 +149,10 @@ export function exportPracticalsToCSV(practicals: PracticalExperiment[]) {
     escapeCsvCell(p.title),
     escapeCsvCell(p.level || 'Beginner'),
     escapeCsvCell(p.topic || ''),
+    escapeCsvCell(p.price ?? p.estimatedCost ?? 0),
+    escapeCsvCell(p.originalPrice || ''),
+    escapeCsvCell(p.estimatedCost || 0),
+    escapeCsvCell(p.hidePrice ? 'true' : 'false'),
     escapeCsvCell(p.durationMin || 30),
     escapeCsvCell(p.description || ''),
     escapeCsvCell(p.objective || ''),

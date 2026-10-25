@@ -40,6 +40,8 @@ export const AdminProjects: React.FC = () => {
     title: '',
     category: 'Robotics & Automation',
     difficulty: 'Intermediate',
+    price: 1950,
+    originalPrice: 2450,
     estimatedCost: 1950,
     hidePrice: false,
     rating: 4.9,
@@ -64,6 +66,8 @@ export const AdminProjects: React.FC = () => {
       title: '',
       category: 'Robotics & Automation',
       difficulty: 'Intermediate',
+      price: 0,
+      originalPrice: 0,
       estimatedCost: 0,
       hidePrice: false,
       rating: 4.9,
@@ -85,8 +89,12 @@ export const AdminProjects: React.FC = () => {
   const handleOpenEdit = (proj: EngineeringProject) => {
     setEditingProject(proj);
     const initialImages = proj.images && proj.images.length > 0 ? proj.images : (proj.image ? [proj.image] : []);
+    const projPrice = proj.price ?? proj.estimatedCost ?? 0;
     setFormData({ 
       ...proj,
+      price: projPrice,
+      originalPrice: proj.originalPrice ?? 0,
+      estimatedCost: projPrice,
       images: initialImages,
       pdfUrl: proj.pdfUrl || '',
       pdfName: proj.pdfName || '',
@@ -125,10 +133,15 @@ export const AdminProjects: React.FC = () => {
     const allImgs = formData.images && formData.images.length > 0 ? formData.images : (formData.image ? [formData.image] : []);
     const primaryImg = allImgs[0] || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80';
 
+    const projectPrice = formData.hidePrice ? 0 : Number(formData.price ?? formData.estimatedCost ?? 0);
+    const parsedOriginalPrice = formData.originalPrice ? Number(formData.originalPrice) : undefined;
+
     const projectPayload: EngineeringProject = {
       ...(formData as EngineeringProject),
       id: editingProject ? editingProject.id : (formData.id || 'proj-' + Date.now()),
-      estimatedCost: formData.hidePrice ? 0 : Number(formData.estimatedCost || 0),
+      price: projectPrice,
+      originalPrice: parsedOriginalPrice,
+      estimatedCost: projectPrice,
       hidePrice: Boolean(formData.hidePrice),
       rating: Number(formData.rating || 4.9),
       reviewsCount: Number(formData.reviewsCount || 0),
@@ -224,12 +237,17 @@ export const AdminProjects: React.FC = () => {
 
                   <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      {proj.hidePrice || !proj.estimatedCost ? (
+                      {proj.hidePrice || !(proj.price || proj.estimatedCost) ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
                           <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp for Quote
                         </span>
                       ) : (
-                        <span className="font-bold text-navy">Est. ₹{proj.estimatedCost}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-navy">₹{proj.price || proj.estimatedCost}</span>
+                          {proj.originalPrice && proj.originalPrice > (proj.price || proj.estimatedCost || 0) && (
+                            <span className="text-[10px] text-slate-400 line-through">₹{proj.originalPrice}</span>
+                          )}
+                        </div>
                       )}
                       <span className="text-primary font-semibold">{proj.category}</span>
                     </div>
@@ -398,15 +416,34 @@ export const AdminProjects: React.FC = () => {
                 </div>
 
                 {!formData.hidePrice ? (
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-navy">Estimated Total BOM Cost (₹)</label>
-                    <input
-                      type="number"
-                      value={formData.estimatedCost || 1500}
-                      onChange={(e) => setFormData({ ...formData, estimatedCost: Number(e.target.value) })}
-                      className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy"
-                    />
-                  </div>
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Selling Price (₹) *</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.price ?? formData.estimatedCost ?? 0}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setFormData({ ...formData, price: val, estimatedCost: val });
+                        }}
+                        placeholder="e.g. 1950"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs sm:text-sm font-mono font-bold text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Original MRP / Estimated BOM Cost (₹) <span className="text-slate-400 font-normal">(Optional)</span></label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.originalPrice || ''}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) || undefined })}
+                        placeholder="e.g. 2450"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs sm:text-sm font-mono text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                      />
+                    </div>
+                  </>
                 ) : (
                   <div className="sm:col-span-2 p-3 bg-slate-50 border border-dashed border-emerald-300 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />

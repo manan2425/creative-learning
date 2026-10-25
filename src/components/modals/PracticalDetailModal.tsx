@@ -69,8 +69,9 @@ export const PracticalDetailModal: React.FC = () => {
   };
 
   const getPracticalPrice = (experiment: typeof lab) => {
-    if (experiment.estimatedCost && experiment.estimatedCost > 0) {
-      return { price: experiment.estimatedCost, isQuote: Boolean(experiment.hidePrice) };
+    const directPrice = experiment.price ?? experiment.estimatedCost;
+    if (directPrice !== undefined && directPrice > 0) {
+      return { price: directPrice, isQuote: Boolean(experiment.hidePrice) };
     }
     if (experiment.requiredComponents && experiment.requiredComponents.length > 0) {
       let total = 0;
@@ -90,7 +91,7 @@ export const PracticalDetailModal: React.FC = () => {
         }
       }
       if (matchedAny && total > 0) {
-        return { price: total, isQuote: false };
+        return { price: total, isQuote: Boolean(experiment.hidePrice) };
       }
     }
     return { price: 0, isQuote: true };

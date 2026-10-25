@@ -22,13 +22,14 @@ export const ProjectsSection: React.FC = () => {
   const { projects, addToCart, openWhatsAppInquiry, showToast, setActiveQuickViewProject } = useStore();
 
   const handleAddProjectToCart = (project: any) => {
-    const isQuoteProject = Boolean(project.hidePrice || !project.estimatedCost);
+    const projectCost = project.price ?? project.estimatedCost ?? 0;
+    const isQuoteProject = Boolean(project.hidePrice || !projectCost);
 
     addToCart({
       id: `project-${project.id}`,
       type: 'project',
       name: `${project.title} (Complete Project)`,
-      price: isQuoteProject ? 0 : (project.estimatedCost || 0),
+      price: isQuoteProject ? 0 : projectCost,
       hidePrice: isQuoteProject,
       image: (project.images && project.images[0]) || project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80',
       sku: `PRJ-${project.id.toUpperCase().slice(0, 8)}`,
@@ -143,13 +144,19 @@ export const ProjectsSection: React.FC = () => {
                     </button>
 
                     <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold font-mono text-navy border border-border shadow-md">
-                      {project.hidePrice || !project.estimatedCost ? (
+                      {project.hidePrice || !(project.price || project.estimatedCost) ? (
                         <span className="text-emerald-800 font-extrabold flex items-center gap-1.5 font-heading">
                           <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                           Custom Quotation
                         </span>
                       ) : (
-                        <>Est. Project Cost: <span className="text-primary font-extrabold">₹{project.estimatedCost}</span></>
+                        <span className="flex items-center gap-1.5">
+                          <span>Est. Project Cost:</span>
+                          <span className="text-primary font-extrabold">₹{project.price || project.estimatedCost}</span>
+                          {project.originalPrice && project.originalPrice > (project.price || project.estimatedCost || 0) && (
+                            <span className="text-slate-400 font-normal line-through text-[11px]">₹{project.originalPrice}</span>
+                          )}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -236,16 +243,16 @@ export const ProjectsSection: React.FC = () => {
                   >
                     <ShoppingCart className="w-4 h-4" />
                     <span>
-                      {project.hidePrice || !project.estimatedCost
+                      {project.hidePrice || !(project.price || project.estimatedCost)
                         ? 'Add Complete Project to Cart (Quote Request)'
-                        : `Add Complete Project to Cart (₹${project.estimatedCost})`}
+                        : `Add Complete Project to Cart (₹${project.price || project.estimatedCost})`}
                     </span>
                   </button>
 
                   <button
                     onClick={() => openWhatsAppInquiry(
                       `Blueprint & BOM Inquiry: ${project.title}`,
-                      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${project.estimatedCost}`}`,
+                      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${project.price || project.estimatedCost}`}`,
                       project.id
                     )}
                     className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"

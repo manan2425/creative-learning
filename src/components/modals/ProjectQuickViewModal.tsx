@@ -66,15 +66,15 @@ export const ProjectQuickViewModal: React.FC = () => {
     : [project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80'];
 
   const currentPhoto = allPhotos[activePhotoIdx] || allPhotos[0];
+  const effectivePrice = project.price ?? project.estimatedCost ?? 0;
+  const isQuoteItem = Boolean(project.hidePrice || !effectivePrice);
 
   const handleAddWholeProjectToCart = () => {
-    const isQuoteItem = Boolean(project.hidePrice || !project.estimatedCost);
-
     addToCart({
       id: `project-${project.id}`,
       type: 'project',
       name: `${project.title} (Complete Project)`,
-      price: isQuoteItem ? 0 : (project.estimatedCost || 0),
+      price: isQuoteItem ? 0 : effectivePrice,
       hidePrice: isQuoteItem,
       image: currentPhoto,
       sku: `PRJ-${project.id.slice(0, 8).toUpperCase()}`,
@@ -93,7 +93,7 @@ export const ProjectQuickViewModal: React.FC = () => {
   const handleWhatsAppInquiry = () => {
     openWhatsAppInquiry(
       `Blueprint & BOM Inquiry: ${project.title}`,
-      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${project.estimatedCost}`}, Level: ${project.difficulty}`,
+      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${effectivePrice}`}, Level: ${project.difficulty}`,
       project.id
     );
   };
@@ -170,7 +170,7 @@ export const ProjectQuickViewModal: React.FC = () => {
 
             {/* Estimated BOM Cost Display & Programming Charge Note */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-              {project.hidePrice || !project.estimatedCost ? (
+              {isQuoteItem ? (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
                   <MessageCircle className="w-4 h-4 text-emerald-600" />
                   <span className="text-xs font-extrabold font-heading">Custom Quotation (Contact on WhatsApp)</span>
@@ -179,8 +179,13 @@ export const ProjectQuickViewModal: React.FC = () => {
                 <div className="flex items-baseline gap-2">
                   <span className="text-xs font-medium text-secondary">Estimated Hardware Cost:</span>
                   <span className="text-2xl sm:text-3xl font-extrabold text-navy font-mono">
-                    ₹{project.estimatedCost}
+                    ₹{effectivePrice}
                   </span>
+                  {project.originalPrice && project.originalPrice > effectivePrice && (
+                    <span className="text-sm text-slate-400 font-mono line-through">
+                      ₹{project.originalPrice}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -363,9 +368,9 @@ export const ProjectQuickViewModal: React.FC = () => {
             >
               <ShoppingCart className="w-4 h-4" />
               <span>
-                {project.hidePrice || !project.estimatedCost
+                {isQuoteItem
                   ? 'Add Complete Project to Cart (Quote Request)'
-                  : `Add Complete Project to Cart (₹${project.estimatedCost})`}
+                  : `Add Complete Project to Cart (₹${effectivePrice})`}
               </span>
             </button>
 

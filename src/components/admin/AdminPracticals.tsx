@@ -19,7 +19,8 @@ import {
   Cpu, 
   BookOpen,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  MessageCircle
 } from 'lucide-react';
 import { MultiImageUploadField } from '@/components/common/MultiImageUploadField';
 import { PdfUploadField } from '@/components/common/PdfUploadField';
@@ -66,6 +67,10 @@ export const AdminPracticals: React.FC = () => {
     topic: 'Microcontroller Fundamentals',
     level: 'Beginner',
     durationMin: 30,
+    price: 0,
+    originalPrice: 0,
+    estimatedCost: 0,
+    hidePrice: false,
     image: '',
     images: [],
     pdfUrl: '',
@@ -118,6 +123,10 @@ export const AdminPracticals: React.FC = () => {
       topic: 'Microcontroller Fundamentals',
       level: 'Beginner',
       durationMin: 30,
+      price: 0,
+      originalPrice: 0,
+      estimatedCost: 0,
+      hidePrice: false,
       image: '',
       images: [],
       pdfUrl: '',
@@ -135,8 +144,13 @@ export const AdminPracticals: React.FC = () => {
   const handleOpenEdit = (prac: PracticalExperiment) => {
     setEditingPractical(prac);
     const initialImages = prac.images && prac.images.length > 0 ? prac.images : (prac.image ? [prac.image] : []);
+    const pracPrice = prac.price ?? prac.estimatedCost ?? 0;
     setFormData({ 
       ...prac,
+      price: pracPrice,
+      originalPrice: prac.originalPrice ?? 0,
+      estimatedCost: pracPrice,
+      hidePrice: Boolean(prac.hidePrice),
       images: initialImages,
       pdfUrl: prac.pdfUrl || '',
       pdfName: prac.pdfName || '',
@@ -190,9 +204,16 @@ export const AdminPracticals: React.FC = () => {
     const allImgs = formData.images && formData.images.length > 0 ? formData.images : (formData.image ? [formData.image] : []);
     const primaryImg = allImgs[0] || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80';
 
+    const practicalPrice = formData.hidePrice ? 0 : Number(formData.price ?? formData.estimatedCost ?? 0);
+    const practicalOriginalPrice = formData.originalPrice ? Number(formData.originalPrice) : undefined;
+
     const practicalPayload: PracticalExperiment = {
       ...(formData as PracticalExperiment),
       id: editingPractical ? editingPractical.id : (formData.id || 'prac-' + Date.now()),
+      price: practicalPrice,
+      originalPrice: practicalOriginalPrice,
+      estimatedCost: practicalPrice,
+      hidePrice: Boolean(formData.hidePrice),
       image: primaryImg,
       images: allImgs,
       pdfUrl: formData.pdfUrl || '',
@@ -355,6 +376,7 @@ export const AdminPracticals: React.FC = () => {
                   <th className="p-4">Practical Experiment</th>
                   <th className="p-4 hidden sm:table-cell">Topic / Domain</th>
                   <th className="p-4">Level</th>
+                  <th className="p-4">Price</th>
                   <th className="p-4 hidden md:table-cell">Duration</th>
                   <th className="p-4 hidden lg:table-cell">Components</th>
                   <th className="p-4 hidden xl:table-cell">Wiring Pins</th>
@@ -432,6 +454,24 @@ export const AdminPracticals: React.FC = () => {
                         }`}>
                           {prac.level || 'Beginner'}
                         </span>
+                      </td>
+
+                      {/* Price */}
+                      <td className="p-4 font-mono text-xs">
+                        {prac.hidePrice ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
+                            <MessageCircle className="w-3 h-3 text-emerald-600" /> WhatsApp
+                          </span>
+                        ) : (prac.price || prac.estimatedCost) ? (
+                          <div className="flex flex-col">
+                            <span className="font-bold text-navy text-xs">₹{prac.price || prac.estimatedCost}</span>
+                            {prac.originalPrice && prac.originalPrice > (prac.price || prac.estimatedCost || 0) && (
+                              <span className="text-[10px] text-slate-400 line-through">₹{prac.originalPrice}</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 text-[11px] italic">Not set</span>
+                        )}
                       </td>
 
                       {/* Duration */}
@@ -614,6 +654,64 @@ export const AdminPracticals: React.FC = () => {
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold text-navy focus:outline-hidden focus:border-primary focus:bg-white"
                   />
                 </div>
+
+                {/* Hide Price / WhatsApp for Price Toggle Card */}
+                <div className="sm:col-span-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                      <MessageCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Hide Price &amp; Show &quot;Contact on WhatsApp for Price&quot;</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Enable this for custom laboratory pricing. Students will see a direct WhatsApp inquiry button instead of the price.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.hidePrice)}
+                      onChange={(e) => setFormData({ ...formData, hidePrice: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
+                </div>
+
+                {!formData.hidePrice ? (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Lab Kit Selling Price (₹)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.price ?? formData.estimatedCost ?? 0}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setFormData({ ...formData, price: val, estimatedCost: val });
+                        }}
+                        placeholder="e.g. 799"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs sm:text-sm font-mono font-bold text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-navy">Original MRP Price (₹) <span className="text-slate-400 font-normal">(Optional)</span></label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.originalPrice || ''}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) || undefined })}
+                        placeholder="e.g. 999"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs sm:text-sm font-mono text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="sm:col-span-2 p-3 bg-slate-50 border border-dashed border-emerald-300 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Price will be hidden. Customers will click <strong>&quot;Contact on WhatsApp for Price&quot;</strong> to get a quote.</span>
+                  </div>
+                )}
 
                 {/* Short Description */}
                 <div className="space-y-1">

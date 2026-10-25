@@ -22,8 +22,9 @@ export const PracticalSection: React.FC = () => {
   const [activeTopicFilter, setActiveTopicFilter] = useState('All');
 
   const getPracticalPrice = (prac: PracticalExperiment) => {
-    if (prac.estimatedCost && prac.estimatedCost > 0) {
-      return { price: prac.estimatedCost, isQuote: Boolean(prac.hidePrice) };
+    const directPrice = prac.price ?? prac.estimatedCost;
+    if (directPrice !== undefined && directPrice > 0) {
+      return { price: directPrice, isQuote: Boolean(prac.hidePrice) };
     }
     if (prac.requiredComponents && prac.requiredComponents.length > 0) {
       let total = 0;
@@ -43,7 +44,7 @@ export const PracticalSection: React.FC = () => {
         }
       }
       if (matchedAny && total > 0) {
-        return { price: total, isQuote: false };
+        return { price: total, isQuote: Boolean(prac.hidePrice) };
       }
     }
     return { price: 0, isQuote: true };
@@ -223,9 +224,16 @@ export const PracticalSection: React.FC = () => {
                             Price on Request
                           </span>
                         ) : (
-                          <span className="font-extrabold text-navy font-mono text-sm">
-                            ₹{price}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-extrabold text-navy font-mono text-sm">
+                              ₹{price}
+                            </span>
+                            {prac.originalPrice && prac.originalPrice > price && (
+                              <span className="text-xs text-slate-400 font-mono line-through">
+                                ₹{prac.originalPrice}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
 
