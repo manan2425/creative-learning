@@ -7,16 +7,19 @@ import {
   Search, 
   Menu, 
   X,
-  ExternalLink
+  ExternalLink,
+  ShoppingCart
 } from 'lucide-react';
 import { INITIAL_MENU_ITEMS } from '@/data/initialData';
 import { getNavIcon } from '@/lib/navIcons';
 
 export const Navbar: React.FC = () => {
-  const { setIsSearchOpen, categories, settings } = useStore();
+  const { setIsSearchOpen, categories, settings, cart, setIsCartOpen } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('products');
+
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const menuItems = (settings?.menuItems && settings.menuItems.length > 0)
     ? settings.menuItems
@@ -139,6 +142,22 @@ export const Navbar: React.FC = () => {
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[9px] bg-white text-slate-400 font-mono px-1.5 py-0.5 rounded border border-border shadow-2xs">
                 ⌘K
               </kbd>
+            </button>
+
+            {/* Navbar Cart Button */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold text-navy bg-white hover:bg-slate-50 border border-border rounded-xl transition-all cursor-pointer shadow-2xs group"
+              title={`View Cart (${cartCount} items)`}
+              aria-label={`Open Cart with ${cartCount} items`}
+            >
+              <ShoppingCart className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline font-heading text-xs">Cart</span>
+              <span className={`inline-flex items-center justify-center font-extrabold text-[10px] px-1.5 py-0.5 rounded-full font-mono min-w-[18px] text-center ${
+                cartCount > 0 ? 'bg-primary text-white shadow-xs' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {cartCount}
+              </span>
             </button>
 
             {/* Mobile Menu Toggle Button */}

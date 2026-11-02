@@ -43,6 +43,7 @@ export interface RoboticsKit {
   pdfUrl?: string;
   pdfName?: string;
   badge?: string;
+  sku?: string;
   note?: string;
   featuresTitle?: string;
   features: string[];
@@ -131,13 +132,16 @@ export interface CartItem {
   id: string;
   type: 'product' | 'kit' | 'custom_bot' | 'bom_bundle' | 'project' | 'practical';
   name: string;
+  title?: string;
   price: number;
   hidePrice?: boolean;
-  image: string;
+  image?: string;
   quantity: number;
-  sku: string;
+  sku?: string;
   variant?: string;
   meta?: Record<string, any>;
+  note?: string;
+  targetId?: string;
 }
 
 export interface WhatsAppOrder {

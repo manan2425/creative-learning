@@ -13,7 +13,8 @@ import {
   Zap, 
   RefreshCw,
   ArrowRight,
-  Plus
+  Plus,
+  ShoppingCart
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,7 +27,7 @@ interface OptionItem {
 }
 
 export const BotBuilderSection: React.FC = () => {
-  const { products, openWhatsAppInquiry, showToast } = useStore();
+  const { products, openWhatsAppInquiry, addToCart, setIsCartOpen, showToast } = useStore();
 
   // Dynamically derive chassis, brain MCUs, drivers, and sensors from products added by admin
   const chassisOptions: OptionItem[] = useMemo(() => {
@@ -136,6 +137,27 @@ export const BotBuilderSection: React.FC = () => {
     const details = `Custom Robot Spec:\n• Chassis: ${selectedChassis?.name || 'N/A'} (₹${selectedChassis?.price || 0})\n• Brain MCU: ${selectedBrain?.name || 'N/A'} (₹${selectedBrain?.price || 0})\n• Motor Driver: ${selectedDriver?.name || 'N/A'} (₹${selectedDriver?.price || 0})\n• Sensors: ${selectedSensors.map((s) => s.name).join(', ') || 'None'}\n• Total Bundle: ₹${total}`;
     
     openWhatsAppInquiry('Custom RoboBuilder Order', details);
+  };
+
+  const handleAddToCart = () => {
+    const total = calculateTotalPrice();
+    addToCart({
+      id: `bot-custom-${Date.now()}`,
+      targetId: 'custom-bot',
+      name: `Custom Robot: ${selectedChassis?.name || 'Chassis'} + ${selectedBrain?.name || 'Brain MCU'}`,
+      title: `Custom Robot: ${selectedChassis?.name || 'Chassis'} + ${selectedBrain?.name || 'Brain MCU'}`,
+      price: total,
+      sku: 'CUSTOM-BOT',
+      type: 'kit',
+      meta: {
+        chassis: selectedChassis?.name,
+        brain: selectedBrain?.name,
+        driver: selectedDriver?.name,
+        sensors: selectedSensors.map((s) => s.name).join(', '),
+      },
+      note: 'Custom Modular Robotics Lab Assembly',
+    }, 1);
+    setIsCartOpen(true);
   };
 
   const hasConfigurableParts = chassisOptions.length > 0 || brainOptions.length > 0 || driverOptions.length > 0 || sensorOptions.length > 0;
@@ -399,14 +421,22 @@ export const BotBuilderSection: React.FC = () => {
                   <span className="text-2xl font-extrabold font-mono text-cyan">₹{calculateTotalPrice()}</span>
                 </div>
 
-                {/* CTA */}
-                <div className="pt-2">
+                {/* CTA Buttons */}
+                <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full py-3.5 bg-cyan/20 hover:bg-cyan/30 text-cyan border border-cyan/40 hover:border-cyan active:scale-98 font-extrabold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan/10"
+                  >
+                    <ShoppingCart className="w-4 h-4 text-cyan" />
+                    <span>Add Bot to Cart</span>
+                  </button>
+
                   <button
                     onClick={handleWhatsAppOrder}
                     className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/25"
                   >
                     <MessageCircle className="w-4 h-4 fill-white" />
-                    <span>Order Custom Bot on WhatsApp</span>
+                    <span>WhatsApp Order</span>
                   </button>
                 </div>
 

@@ -28,6 +28,8 @@ export const KitQuickViewModal: React.FC = () => {
     activeQuickViewKit, 
     setActiveQuickViewKit, 
     openWhatsAppInquiry,
+    addToCart,
+    setIsCartOpen,
     settings 
   } = useStore();
 
@@ -76,6 +78,22 @@ export const KitQuickViewModal: React.FC = () => {
       `Price: ${kit.hidePrice ? 'Price on Request' : `₹${kit.price}`}, Level: ${kit.difficulty}`,
       kit.id
     );
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: `kit-${kit.id}`,
+      targetId: kit.id,
+      name: kit.title,
+      title: kit.title,
+      price: kit.price || 0,
+      sku: kit.sku,
+      image: kit.image,
+      type: 'kit',
+      note: kit.note || settings.sectionNotes?.kitsNote,
+    }, qty);
+    setIsCartOpen(true);
+    setActiveQuickViewKit(null);
   };
 
   return (
@@ -381,22 +399,31 @@ export const KitQuickViewModal: React.FC = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setActiveQuickViewKit(null)}
-              className="px-4 py-3 rounded-xl bg-slate-200/80 hover:bg-slate-300 active:bg-slate-400 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 active:bg-slate-400 text-slate-700 text-xs font-bold transition-all cursor-pointer"
             >
-              Cancel &amp; Close
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-navy hover:bg-slate-800 active:bg-slate-900 text-white text-xs font-bold font-heading shadow-md shadow-navy/20 transition-all cursor-pointer active:scale-95"
+            >
+              <ShoppingCart className="w-4 h-4 text-cyan" />
+              <span>Add Kit to Cart</span>
             </button>
 
             <button
               type="button"
               onClick={handleWhatsAppInquiry}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Order via WhatsApp ({kit.hidePrice || !kit.price ? 'Price on Request' : `₹${kit.price}`})</span>
+              <span>WhatsApp ({kit.hidePrice || !kit.price ? 'Quote' : `₹${kit.price}`})</span>
             </button>
           </div>
         </div>

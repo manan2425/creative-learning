@@ -10,7 +10,8 @@ import {
   Layers, 
   Compass, 
   ArrowRight,
-  MessageCircle
+  MessageCircle,
+  ShoppingCart
 } from 'lucide-react';
 
 export const SearchModal: React.FC = () => {
@@ -23,7 +24,10 @@ export const SearchModal: React.FC = () => {
     projects,
     setActiveQuickViewProduct,
     setActivePracticalModal,
-    openWhatsAppInquiry
+    openWhatsAppInquiry,
+    addToCart,
+    setIsCartOpen,
+    settings
   } = useStore();
 
   const [query, setQuery] = useState('');
@@ -139,14 +143,38 @@ export const SearchModal: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {prod.hidePrice || !prod.price ? (
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
                           <MessageCircle className="w-3 h-3 text-emerald-600" /> Price on Request
                         </span>
                       ) : (
-                        <span className="text-xs font-bold font-mono text-navy">₹{prod.price}</span>
+                        <span className="text-xs font-bold font-mono text-navy mr-1">₹{prod.price}</span>
                       )}
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: `prod-${prod.id}`,
+                            targetId: prod.id,
+                            name: prod.name,
+                            title: prod.name,
+                            price: prod.price || 0,
+                            sku: prod.sku,
+                            image: prod.image,
+                            type: 'product',
+                            note: prod.note || settings.sectionNotes?.productsNote,
+                          }, 1);
+                          setIsCartOpen(true);
+                          setIsSearchOpen(false);
+                        }}
+                        className="p-1.5 bg-navy/10 hover:bg-navy text-navy hover:text-white rounded-lg transition-colors cursor-pointer"
+                        title="Add to Cart"
+                      >
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                      </button>
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -176,10 +204,13 @@ export const SearchModal: React.FC = () => {
               </span>
               <div className="space-y-1.5">
                 {matchedKits.map((kit) => (
-                  <a
+                  <div
                     key={kit.id}
-                    href="#kits"
-                    onClick={() => setIsSearchOpen(false)}
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      const el = document.getElementById('kits');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
                     className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group border border-transparent hover:border-border"
                   >
                     <div className="flex items-center gap-3">
@@ -197,14 +228,40 @@ export const SearchModal: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {kit.hidePrice || !kit.price ? (
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        WhatsApp for Price
-                      </span>
-                    ) : (
-                      <span className="text-xs font-bold font-mono text-navy">₹{kit.price}</span>
-                    )}
-                  </a>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {kit.hidePrice || !kit.price ? (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          WhatsApp for Price
+                        </span>
+                      ) : (
+                        <span className="text-xs font-bold font-mono text-navy mr-1">₹{kit.price}</span>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: `kit-${kit.id}`,
+                            targetId: kit.id,
+                            name: kit.title,
+                            title: kit.title,
+                            price: kit.price || 0,
+                            sku: kit.sku,
+                            image: kit.image,
+                            type: 'kit',
+                            note: kit.note || settings.sectionNotes?.kitsNote,
+                          }, 1);
+                          setIsCartOpen(true);
+                          setIsSearchOpen(false);
+                        }}
+                        className="p-1.5 bg-navy/10 hover:bg-navy text-navy hover:text-white rounded-lg transition-colors cursor-pointer"
+                        title="Add Kit to Cart"
+                      >
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

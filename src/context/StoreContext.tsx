@@ -501,17 +501,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addToCart = (item: Omit<CartItem, 'quantity'>, quantity: number = 1) => {
+    const itemName = item.name || item.title || 'Component';
+    const normalizedItem = {
+      ...item,
+      name: itemName,
+      image: item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
+    };
+
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      const existing = prev.find((i) => i.id === normalizedItem.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.id === normalizedItem.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-      return [...prev, { ...item, quantity }];
+      return [...prev, { ...normalizedItem, quantity }];
     });
 
-    showToast('Added to Cart 🚀', `${item.name.slice(0, 32)}... added to your kit bag.`, 'success');
+    showToast('Added to Cart 🚀', `${itemName.slice(0, 32)}... added to your kit bag.`, 'success');
   };
 
   const removeFromCart = (id: string) => {

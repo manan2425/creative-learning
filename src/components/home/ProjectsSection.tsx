@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const ProjectsSection: React.FC = () => {
-  const { projects, openWhatsAppInquiry, showToast, setActiveQuickViewProject, settings } = useStore();
+  const { projects, openWhatsAppInquiry, addToCart, setIsCartOpen, showToast, setActiveQuickViewProject, settings } = useStore();
 
   return (
     <section id="projects" className="py-16 lg:py-24 bg-white border-b border-border relative overflow-hidden">
@@ -218,17 +218,41 @@ export const ProjectsSection: React.FC = () => {
                     <span>Note: {project.note || settings.sectionNotes?.projectsNote || 'Programming charge will be extra'}</span>
                   </div>
 
-                  <button
-                    onClick={() => openWhatsAppInquiry(
-                      `Blueprint & Hardware Order: ${project.title}`,
-                      `Estimated Cost: ${project.hidePrice ? 'Price on Request' : `₹${project.price || project.estimatedCost}`}, Category: ${project.category}`,
-                      project.id
-                    )}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4 fill-white" />
-                    <span>{project.hidePrice || !(project.price || project.estimatedCost) ? 'Enquire Blueprint on WhatsApp' : `Order Blueprint & Kit (₹${project.price || project.estimatedCost})`}</span>
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        const price = project.price || project.estimatedCost || 0;
+                        addToCart({
+                          id: `proj-${project.id}`,
+                          targetId: project.id,
+                          name: project.title,
+                          title: `Project Kit: ${project.title}`,
+                          price,
+                          sku: `PROJ-${project.id.toUpperCase()}`,
+                          image: project.image,
+                          type: 'project',
+                          note: project.note || settings.sectionNotes?.projectsNote || 'Programming charge will be extra',
+                        }, 1);
+                        setIsCartOpen(true);
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-3 px-3 bg-navy hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-navy/20 active:scale-95"
+                    >
+                      <ShoppingCart className="w-4 h-4 text-cyan" />
+                      <span>Add to Cart</span>
+                    </button>
+
+                    <button
+                      onClick={() => openWhatsAppInquiry(
+                        `Blueprint & Hardware Order: ${project.title}`,
+                        `Estimated Cost: ${project.hidePrice ? 'Price on Request' : `₹${project.price || project.estimatedCost}`}, Category: ${project.category}`,
+                        project.id
+                      )}
+                      className="flex items-center justify-center gap-1.5 py-3 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white" />
+                      <span>{project.hidePrice || !(project.price || project.estimatedCost) ? 'Enquire' : `WhatsApp`}</span>
+                    </button>
+                  </div>
                 </div>
 
               </div>

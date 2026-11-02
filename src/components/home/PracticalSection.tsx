@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const PracticalSection: React.FC = () => {
-  const { practicals, setActivePracticalModal, products, openWhatsAppInquiry, showToast, settings } = useStore();
+  const { practicals, setActivePracticalModal, products, openWhatsAppInquiry, addToCart, setIsCartOpen, showToast, settings } = useStore();
   const [activeTopicFilter, setActiveTopicFilter] = useState('All');
 
   const getPracticalPrice = (prac: PracticalExperiment) => {
@@ -245,14 +245,36 @@ export const PracticalSection: React.FC = () => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="p-6 pt-0 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                  <div className="p-6 pt-0 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                     <button
                       onClick={() => setActivePracticalModal(prac)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-3 bg-navy hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-navy hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
                     >
                       <Terminal className="w-4 h-4 text-cyan" />
-                      <span>Lab Guide &amp; Code</span>
+                      <span>Lab Guide</span>
                       <ArrowRight className="w-3.5 h-3.5 text-cyan" />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        addToCart({
+                          id: `prac-${prac.id}`,
+                          targetId: prac.id,
+                          name: prac.title,
+                          title: `Lab Kit: ${prac.title}`,
+                          price: price || 0,
+                          sku: `PRAC-${prac.id.toUpperCase()}`,
+                          image: prac.image,
+                          type: 'practical',
+                          note: prac.note || settings.sectionNotes?.practicalsNote || 'Programming charge will be extra',
+                        }, 1);
+                        setIsCartOpen(true);
+                      }}
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95"
+                      title="Add Whole Lab Kit to Cart"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>Add Kit</span>
                     </button>
 
                     <button
@@ -261,11 +283,11 @@ export const PracticalSection: React.FC = () => {
                         `Level: ${prac.level}, Estimated Cost: ${isQuote ? 'Price on Request' : `₹${price}`}`,
                         prac.id
                       )}
-                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 cursor-pointer active:scale-95"
                       title="Order Practical Hardware Kit via WhatsApp"
                     >
                       <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>{isQuote ? 'Enquire on WhatsApp' : `Order on WhatsApp (₹${price})`}</span>
+                      <span>{isQuote ? 'Enquire' : `WhatsApp`}</span>
                     </button>
                   </div>
 

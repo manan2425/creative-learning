@@ -24,6 +24,7 @@ export const ProductsSection: React.FC = () => {
     categories,
     setActiveQuickViewProduct, 
     openWhatsAppInquiry,
+    addToCart,
     settings 
   } = useStore();
 
@@ -179,6 +180,15 @@ export const ProductsSection: React.FC = () => {
                 product={product}
                 sectionNote={settings.sectionNotes?.productsNote}
                 onQuickView={() => setActiveQuickViewProduct(product)}
+                onAddToCart={() => addToCart({
+                  id: product.id,
+                  type: 'product',
+                  name: product.name,
+                  price: product.hidePrice ? 0 : product.price,
+                  hidePrice: Boolean(product.hidePrice || !product.price),
+                  image: product.image,
+                  sku: product.sku,
+                }, 1)}
                 onWhatsApp={() => openWhatsAppInquiry(
                   `Product Inquiry: ${product.name}`,
                   `Price: ${product.hidePrice ? 'Price on Request' : `₹${product.price}`}, SKU: ${product.sku}`,
@@ -197,6 +207,7 @@ export const ProductsSection: React.FC = () => {
 interface ProductCardProps {
   product: Product;
   sectionNote?: string;
+  onAddToCart: () => void;
   onQuickView: () => void;
   onWhatsApp: () => void;
 }
@@ -204,6 +215,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   sectionNote,
+  onAddToCart,
   onQuickView,
   onWhatsApp
 }) => {
@@ -334,15 +346,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Direct Order on WhatsApp Button */}
-        <div>
+        {/* Buttons Grid */}
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+          <button
+            onClick={onAddToCart}
+            className="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 sm:px-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-heading shadow-2xs transition-colors cursor-pointer"
+            title="Add to Cart"
+          >
+            <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="sm:hidden font-semibold">Add</span>
+            <span className="hidden sm:inline">Add to Cart</span>
+          </button>
+
           <button
             onClick={onWhatsApp}
-            className="w-full flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-heading shadow-sm transition-all cursor-pointer"
-            title="Order directly on WhatsApp"
+            className="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-1 sm:px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-heading transition-colors cursor-pointer"
+            title="Ask on WhatsApp"
           >
-            <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white shrink-0" />
-            <span>Order on WhatsApp</span>
+            <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 fill-emerald-600/20 shrink-0" />
+            <span className="sm:hidden font-semibold">Chat</span>
+            <span className="hidden sm:inline">WhatsApp</span>
           </button>
         </div>
       </div>

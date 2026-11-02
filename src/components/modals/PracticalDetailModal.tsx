@@ -28,6 +28,8 @@ export const PracticalDetailModal: React.FC = () => {
     setActivePracticalModal, 
     products, 
     openWhatsAppInquiry, 
+    addToCart,
+    setIsCartOpen,
     showToast,
     settings 
   } = useStore();
@@ -479,20 +481,43 @@ export const PracticalDetailModal: React.FC = () => {
             className="px-4 py-2.5 bg-slate-200/80 hover:bg-slate-300 active:bg-slate-400 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
           >
             <X className="w-4 h-4 text-slate-500" />
-            <span>Cancel &amp; Close</span>
+            <span>Cancel</span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                addToCart({
+                  id: `prac-${lab.id}`,
+                  targetId: lab.id,
+                  name: lab.title,
+                  title: `Lab Kit: ${lab.title}`,
+                  price: price || 0,
+                  sku: `PRAC-${lab.id.toUpperCase()}`,
+                  image: lab.image,
+                  type: 'practical',
+                  note: lab.note || settings.sectionNotes?.practicalsNote || 'Programming charge will be extra',
+                }, 1);
+                setIsCartOpen(true);
+                setActivePracticalModal(null);
+              }}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-navy hover:bg-slate-800 active:bg-slate-900 text-white rounded-xl text-xs font-bold font-heading shadow-md shadow-navy/20 transition-all cursor-pointer active:scale-95"
+            >
+              <ShoppingCart className="w-4 h-4 text-cyan" />
+              <span>Add Lab Kit to Cart</span>
+            </button>
+
             <button
               type="button"
               onClick={() => openWhatsAppInquiry(
                 `STEM Practical Lab Kit Order: ${lab.title}`,
                 `Level: ${lab.level}, Estimated Cost: ${isQuote ? 'Price on Request' : `₹${price}`}`
               )}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Order Lab Kit via WhatsApp ({isQuote ? 'Custom Quote' : `₹${price}`})</span>
+              <span>WhatsApp ({isQuote ? 'Quote' : `₹${price}`})</span>
             </button>
           </div>
         </div>

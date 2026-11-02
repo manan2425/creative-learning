@@ -26,6 +26,8 @@ export const ProductQuickViewModal: React.FC = () => {
     activeQuickViewProduct, 
     setActiveQuickViewProduct, 
     openWhatsAppInquiry, 
+    addToCart,
+    setIsCartOpen,
     settings 
   } = useStore();
 
@@ -74,6 +76,22 @@ export const ProductQuickViewModal: React.FC = () => {
       `Price: ${product.hidePrice ? 'Price on Request' : `₹${product.price}`}, Voltage: ${product.voltage || 'N/A'}`,
       product.id
     );
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: `prod-${product.id}`,
+      targetId: product.id,
+      name: product.name,
+      title: product.name,
+      price: product.price || 0,
+      sku: product.sku,
+      image: product.image,
+      type: 'product',
+      note: product.note || settings.sectionNotes?.productsNote,
+    }, qty);
+    setIsCartOpen(true);
+    setActiveQuickViewProduct(null);
   };
 
   return (
@@ -374,15 +392,24 @@ export const ProductQuickViewModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Direct WhatsApp Order Button */}
-              <div className="pt-1">
+              {/* Action Buttons: Add to Cart + WhatsApp Order */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-navy hover:bg-slate-800 active:bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md shadow-navy/20 transition-all cursor-pointer font-heading active:scale-95"
+                >
+                  <ShoppingCart className="w-4 h-4 text-cyan" />
+                  <span>Add to Cart</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={handleWhatsAppInquiry}
                   className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer font-heading active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>Order via WhatsApp ({product.hidePrice || !product.price ? 'Custom Quote' : `₹${product.price}`})</span>
+                  <span>WhatsApp ({product.hidePrice || !product.price ? 'Quote' : `₹${product.price}`})</span>
                 </button>
               </div>
 
@@ -407,18 +434,26 @@ export const ProductQuickViewModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveQuickViewProduct(null)}
-            className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 shadow-2xs active:scale-95"
+            className="p-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center border border-slate-200 shadow-2xs active:scale-95 shrink-0"
+            title="Cancel"
           >
             <X className="w-4 h-4 text-slate-500" />
-            <span>Cancel</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="flex-1 py-2.5 bg-navy hover:bg-slate-800 active:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md active:scale-95"
+          >
+            <ShoppingCart className="w-4 h-4 text-cyan" />
+            <span>Add to Cart</span>
           </button>
           <button
             type="button"
             onClick={handleWhatsAppInquiry}
-            className="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95"
+            className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95"
           >
             <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Order on WhatsApp</span>
+            <span>WhatsApp</span>
           </button>
         </div>
 
