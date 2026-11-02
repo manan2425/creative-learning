@@ -14,7 +14,8 @@ import {
   ArrowRight,
   PackageCheck,
   Zap,
-  Sparkles
+  Sparkles,
+  Truck
 } from 'lucide-react';
 
 export const WhatsAppCheckoutModal: React.FC = () => {
@@ -71,10 +72,11 @@ export const WhatsAppCheckoutModal: React.FC = () => {
 
   if (!isCheckoutOpen) return null;
 
-  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((total, item) => total + ((item.price && Number(item.price) > 0 && !item.hidePrice) ? Number(item.price) * item.quantity : 0), 0);
   const discountAmount = Math.round(subtotal * couponDiscount);
-  const deliveryFee = 0; // Zero courier charges on all orders
   const totalAmount = Math.max(0, subtotal - discountAmount);
+  const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && Number(i.price) > 0);
+  const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || Number(i.price) <= 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +99,7 @@ export const WhatsAppCheckoutModal: React.FC = () => {
         items: cart,
         subtotal,
         discount: discountAmount,
-        deliveryFee,
+        deliveryFee: 0,
         totalAmount,
       });
 
@@ -185,8 +187,10 @@ export const WhatsAppCheckoutModal: React.FC = () => {
                 <span className="text-navy truncate max-w-[200px]">{formData.address}, {formData.city}</span>
               </div>
               <div className="flex justify-between text-secondary border-t border-border pt-2">
-                <span>Total Amount:</span>
-                <span className="text-primary font-bold text-sm">₹{totalAmount}</span>
+                <span>Items Total:</span>
+                <span className="text-primary font-bold text-sm">
+                  {hasPricedItems ? `₹${totalAmount} (+ applicable delivery)` : 'Price on Request (+ applicable delivery)'}
+                </span>
               </div>
             </div>
 
@@ -217,10 +221,24 @@ export const WhatsAppCheckoutModal: React.FC = () => {
                 <PackageCheck className="w-5 h-5 text-primary shrink-0" />
                 <span>Ordering <strong>{cart.length} unique components/kits</strong> ({cart.reduce((s, i) => s + i.quantity, 0)} total items)</span>
               </div>
-              <div className="font-mono text-sm font-extrabold text-primary">
-                Total: ₹{totalAmount}
-                {cart.some(i => i.hidePrice || !i.price || i.price === 0) && (
-                  <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Custom Quote)</span>
+              <div className="font-mono text-sm font-extrabold text-primary text-right">
+                {hasPricedItems ? (
+                  <div>
+                    <span>Total: ₹{totalAmount}</span>
+                    {hasQuoteItems && (
+                      <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Custom Quote)</span>
+                    )}
+                    <span className="block text-[10px] text-slate-500 font-normal font-sans">
+                      + Delivery charges applicable
+                    </span>
+                  </div>
+                ) : (
+                  <div>
+                    <span className="text-xs font-bold text-emerald-700 font-sans">Price on Request</span>
+                    <span className="block text-[10px] text-slate-500 font-normal font-sans">
+                      + Delivery charges applicable
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -342,29 +360,36 @@ export const WhatsAppCheckoutModal: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                Opens WhatsApp immediately with order code
+            <div className="space-y-3 pt-3 border-t border-border">
+              <div className="text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
+                <Truck className="w-4 h-4 text-primary shrink-0" />
+                <span>Standard delivery charges are applicable as per destination pin-code &amp; weight (confirmed before dispatch).</span>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="px-4 py-2.5 text-xs font-bold text-secondary hover:text-navy hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm shadow-md shadow-emerald-600/30 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>{isSubmitting ? 'Opening WhatsApp...' : 'Confirm Order on WhatsApp'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-xs text-slate-500 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  Opens WhatsApp immediately with order code
+                </div>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="px-4 py-2.5 text-xs font-bold text-secondary hover:text-navy hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm shadow-md shadow-emerald-600/30 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    <span>{isSubmitting ? 'Opening WhatsApp...' : 'Confirm Order on WhatsApp'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 

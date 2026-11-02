@@ -167,7 +167,7 @@ export const KitQuickViewModal: React.FC = () => {
 
             {/* Price Display */}
             <div className="flex items-center gap-3 pt-2">
-              {kit.hidePrice || !kit.price ? (
+              {kit.hidePrice || !kit.price || Number(kit.price) <= 0 ? (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
                   <MessageCircle className="w-4 h-4 text-emerald-600" />
                   <span className="text-xs font-extrabold font-heading">Price on Request (Contact on WhatsApp)</span>
@@ -367,7 +367,7 @@ export const KitQuickViewModal: React.FC = () => {
         {/* Footer Actions (Sticky Bottom) */}
         <div className="p-4 sm:p-5 bg-slate-50 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           {/* Quantity Selector */}
-          {!kit.hidePrice && kit.price > 0 ? (
+          {!kit.hidePrice && kit.price && Number(kit.price) > 0 ? (
             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
               <span className="text-xs font-bold text-navy font-sans">Quantity:</span>
               <div className="flex items-center border border-border bg-white rounded-xl overflow-hidden shadow-2xs">
@@ -423,7 +423,7 @@ export const KitQuickViewModal: React.FC = () => {
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>WhatsApp ({kit.hidePrice || !kit.price ? 'Quote' : `₹${kit.price}`})</span>
+              <span>WhatsApp ({kit.hidePrice || !kit.price || Number(kit.price) <= 0 ? 'Quote' : `₹${kit.price}`})</span>
             </button>
           </div>
         </div>

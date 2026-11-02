@@ -41,11 +41,11 @@ export const CartDrawer: React.FC = () => {
   if (!isCartOpen) return null;
 
   const totalItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((total, item) => total + ((item.price && Number(item.price) > 0 && !item.hidePrice) ? Number(item.price) * item.quantity : 0), 0);
   const discountAmount = Math.round(subtotal * couponDiscount);
-  const deliveryFee = 0; // Zero courier charges on all orders
   const totalAmount = Math.max(0, subtotal - discountAmount);
-  const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+  const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && Number(i.price) > 0);
+  const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || Number(i.price) <= 0);
   const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -104,12 +104,12 @@ export const CartDrawer: React.FC = () => {
             </button>
           </div>
 
-          {/* Zero Courier Charge Indicator */}
+          {/* Delivery & Dispatch Notice Banner */}
           {cart.length > 0 && (
-            <div className="bg-emerald-50 px-4 sm:px-5 py-2.5 border-b border-emerald-100 text-xs shrink-0">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold">
-                <Truck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>🎉 Zero Courier Charge • Free Pan-India Delivery on Every Order!</span>
+            <div className="bg-slate-50 px-4 sm:px-5 py-2.5 border-b border-slate-200 text-xs shrink-0">
+              <div className="flex items-center gap-2 text-slate-700 font-medium">
+                <Truck className="w-4 h-4 text-primary shrink-0" />
+                <span>Standard Dispatch: Delivery charges applicable based on location &amp; order weight</span>
               </div>
             </div>
           )}
@@ -140,7 +140,7 @@ export const CartDrawer: React.FC = () => {
               </div>
             ) : (
               cart.map((item) => {
-                const isQuoteItem = item.hidePrice || !item.price || item.price === 0;
+                const isQuoteItem = item.hidePrice || !item.price || Number(item.price) <= 0;
 
                 return (
                   <div 
@@ -209,9 +209,12 @@ export const CartDrawer: React.FC = () => {
                       {/* Price & Quantity Controls */}
                       <div className="flex items-center justify-between pt-2 mt-1 border-t border-slate-100">
                         {isQuoteItem ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 font-heading">
-                            <MessageCircle className="w-3 h-3 text-emerald-600" /> Price on Request
-                          </span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 font-heading w-fit">
+                              <MessageCircle className="w-3 h-3 text-emerald-600" /> Price on Request
+                            </span>
+                            <span className="text-[10px] text-slate-400">Quotation confirmed on WhatsApp</span>
+                          </div>
                         ) : (
                           <div className="text-sm sm:text-base font-extrabold text-navy font-mono">
                             ₹{item.price * item.quantity}
@@ -292,13 +295,13 @@ export const CartDrawer: React.FC = () => {
               )}
 
               {/* Price Breakdown */}
-              <div className="space-y-1.5 text-xs text-secondary bg-white p-3.5 rounded-2xl border border-border">
-                <div className="flex justify-between">
+              <div className="space-y-2 text-xs text-secondary bg-white p-3.5 rounded-2xl border border-border">
+                <div className="flex justify-between items-center">
                   <span>Items Subtotal</span>
                   <span className="font-mono font-bold text-navy">
-                    ₹{subtotal}
-                    {hasQuoteItems && (
-                      <span className="text-[10px] text-emerald-700 ml-1 font-sans font-semibold">+ Custom Quote</span>
+                    {hasPricedItems ? `₹${subtotal}` : 'Price on Request'}
+                    {hasPricedItems && hasQuoteItems && (
+                      <span className="text-[10px] text-emerald-700 ml-1 font-sans font-semibold">(+ Quote Items)</span>
                     )}
                   </span>
                 </div>
@@ -310,32 +313,56 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex justify-between">
-                  <span>Courier &amp; Delivery</span>
-                  <span className="font-mono font-bold text-success">
-                    FREE (₹0)
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-secondary">Shipping &amp; Delivery</span>
+                  <span className="font-semibold text-slate-700 font-sans text-right">
+                    Applicable (as per location)
                   </span>
                 </div>
 
-                <div className="flex justify-between text-sm font-extrabold text-navy pt-2 border-t border-slate-100">
-                  <span>Total Amount Payable</span>
-                  <span className="text-base font-mono text-primary font-extrabold">
-                    ₹{totalAmount}
-                    {hasQuoteItems && (
-                      <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Custom Quote)</span>
+                <div className="flex justify-between items-baseline text-sm font-extrabold text-navy pt-2 border-t border-slate-100">
+                  <span>Estimated Total</span>
+                  <div className="text-right">
+                    {hasPricedItems ? (
+                      <div>
+                        <span className="text-base font-mono text-primary font-extrabold">
+                          ₹{totalAmount}
+                        </span>
+                        {hasQuoteItems && (
+                          <span className="text-xs text-emerald-700 ml-1 font-sans font-semibold">(+ Quote Items)</span>
+                        )}
+                        <span className="block text-[10px] text-slate-400 font-normal font-sans">
+                          + delivery charges as applicable
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-xs font-bold text-emerald-700 font-sans">
+                          Price on Request
+                        </span>
+                        <span className="block text-[10px] text-slate-400 font-normal font-sans">
+                          + delivery charges as applicable
+                        </span>
+                      </div>
                     )}
-                  </span>
+                  </div>
+                </div>
+
+                {/* Proper Delivery Notice Message */}
+                <div className="text-[11px] text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 mt-2 font-medium leading-relaxed flex items-start gap-2">
+                  <Truck className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                  <span>Standard delivery charges are applicable based on your destination address and package weight, and will be confirmed along with dispatch details on WhatsApp.</span>
                 </div>
 
                 {hasQuoteItems && (
-                  <div className="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-2 font-medium leading-tight flex items-start gap-1.5">
+                  <div className="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-1 font-medium leading-tight flex items-start gap-1.5">
                     <MessageCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Your order contains Price-on-Request item(s). Our team will provide the exact item quotation directly in your WhatsApp checkout chat.</span>
+                    <span>Your order contains custom / Price-on-Request item(s). Our team will provide the exact item quotation directly in your WhatsApp checkout chat.</span>
                   </div>
                 )}
 
                 {hasProjectOrPractical && (
-                  <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 mt-2 font-medium leading-tight flex items-start gap-1.5">
+                  <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 mt-1 font-medium leading-tight flex items-start gap-1.5">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                     <span><strong>Notice:</strong> Programming charge will be extra for project and practical hardware kits.</span>
                   </div>

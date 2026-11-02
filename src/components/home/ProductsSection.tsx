@@ -219,7 +219,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onQuickView,
   onWhatsApp
 }) => {
-  const isQuoteItem = product.hidePrice || !product.price;
+  const isQuoteItem = product.hidePrice || !product.price || Number(product.price) <= 0;
 
   return (
     <div className="bg-card rounded-xl sm:rounded-2xl border border-border overflow-hidden shadow-2xs hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between group h-full">

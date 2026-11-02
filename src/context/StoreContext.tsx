@@ -594,7 +594,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const rawNumber = settings.whatsappNumber || '+919714045096';
     const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = cart.reduce(
+      (sum, item) =>
+        sum +
+        (item.price && Number(item.price) > 0 && !item.hidePrice
+          ? Number(item.price) * item.quantity
+          : 0),
+      0
+    );
     let discountAmount = 0;
     if (appliedCoupon === 'ROBO10') {
       discountAmount = Math.round((subtotal * 10) / 100);
@@ -602,10 +609,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       discountAmount = 50;
     }
 
-    const shippingFee = 0; // Courier charges removed (FREE Delivery on all orders)
     const grandTotal = Math.max(0, subtotal - discountAmount);
 
-    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+    const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && Number(i.price) > 0);
+    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || Number(i.price) <= 0);
     const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
     let message = `⚡ *NEW ORDER / INQUIRY - CREATIVE LEARNING STORE*\n`;
@@ -619,7 +626,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     message += `\n📦 *ORDER ITEMS (${cart.length})*\n`;
 
     cart.forEach((item, idx) => {
-      const isQuoteItem = item.hidePrice || !item.price || item.price === 0;
+      const isQuoteItem = item.hidePrice || !item.price || Number(item.price) <= 0;
       message += `${idx + 1}. *${item.name}*\n`;
       if (isQuoteItem) {
         message += `   Qty: ${item.quantity} × [Price on Request / Quotation Needed]\n`;
@@ -637,17 +644,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     message += `\n-----------------------------------\n`;
     message += `💰 *FINANCIAL SUMMARY*\n`;
-    message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Price-on-Request Items)' : ''}\n`;
-    if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
-    message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
+    if (hasPricedItems) {
+      message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Price-on-Request Items)' : ''}\n`;
+      if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
+      message += `• *Estimated Items Total:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
+    } else {
+      message += `• Pricing: *Custom Quotation / Price on Request*\n`;
+    }
+    message += `• *Delivery & Packaging:* Applicable as per delivery location & order weight (to be confirmed)\n`;
+
     if (hasQuoteItems) {
-      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Final pricing will be confirmed directly in this chat.\n`;
     }
     if (hasProjectOrPractical) {
       message += `\n⚠️ *Important Notice:* Programming charge will be extra for project and practical hardware kits.\n`;
     }
     message += `===================================\n`;
-    message += `🚀 *Please confirm order dispatch & quotation.*`;
+    message += `🚀 *Please confirm total payable including delivery charges & dispatch.*`;
 
     return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
   };
@@ -720,7 +733,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const rawNumber = settings.whatsappNumber || '+919714045096';
     const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = cart.reduce(
+      (sum, item) =>
+        sum +
+        (item.price && Number(item.price) > 0 && !item.hidePrice
+          ? Number(item.price) * item.quantity
+          : 0),
+      0
+    );
     let discountAmount = 0;
     if (appliedCoupon === 'ROBO10') {
       discountAmount = Math.round((subtotal * 10) / 100);
@@ -728,10 +748,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       discountAmount = 50;
     }
 
-    const shippingFee = 0; // Courier charges removed (FREE Delivery)
     const grandTotal = Math.max(0, subtotal - discountAmount);
-    const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && i.price > 0);
-    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || i.price === 0);
+    const hasPricedItems = cart.some((i) => !i.hidePrice && i.price && Number(i.price) > 0);
+    const hasQuoteItems = cart.some((i) => i.hidePrice || !i.price || Number(i.price) <= 0);
     const hasProjectOrPractical = cart.some((i) => i.type === 'project' || i.type === 'practical');
 
     const orderId = 'CL-' + Date.now().toString().slice(-6);
@@ -742,7 +761,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     message += `📦 *ORDER ITEMS (${cart.length} item${cart.length > 1 ? 's' : ''})*\n`;
 
     cart.forEach((item, idx) => {
-      const isQuoteItem = item.hidePrice || !item.price || item.price === 0;
+      const isQuoteItem = item.hidePrice || !item.price || Number(item.price) <= 0;
       message += `${idx + 1}. *${item.name}*\n`;
       if (isQuoteItem) {
         message += `   Qty: ${item.quantity} × [Price on Request / Quotation Needed]\n`;
@@ -763,19 +782,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (hasPricedItems) {
       message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Custom Quote Items)' : ''}\n`;
       if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
-      message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
+      message += `• *Estimated Items Total:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
     } else {
       message += `• Pricing: *Custom Quotation / Price on Request*\n`;
     }
+    message += `• *Delivery & Packaging:* Applicable as per delivery location & order weight (to be confirmed)\n`;
 
     if (hasQuoteItems) {
-      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
+      message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Final pricing will be confirmed directly in this chat.\n`;
     }
     if (hasProjectOrPractical) {
       message += `\n⚠️ *Important Notice:* Programming charge will be extra for project and practical hardware kits.\n`;
     }
     message += `===================================\n`;
-    message += `🚀 *Please confirm order dispatch, pricing & delivery address.*`;
+    message += `🚀 *Please confirm order dispatch, delivery charges & address.*`;
 
     const waUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
 
@@ -794,7 +814,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           items: cart,
           subtotal,
           discount: discountAmount,
-          deliveryFee: shippingFee,
+          deliveryFee: 0,
           totalAmount: grandTotal,
           status: 'New',
           createdAt: new Date().toISOString(),

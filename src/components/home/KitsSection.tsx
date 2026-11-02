@@ -153,7 +153,7 @@ export const KitsSection: React.FC = () => {
 
                     {/* Price Tag Overlay */}
                     <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-border shadow-lg flex items-baseline gap-2">
-                      {kit.hidePrice || !kit.price ? (
+                      {kit.hidePrice || !kit.price || Number(kit.price) <= 0 ? (
                         <span className="text-xs font-extrabold font-heading text-emerald-800 flex items-center gap-1.5">
                           <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                           Price on Request
@@ -246,8 +246,8 @@ export const KitsSection: React.FC = () => {
                         id: kit.id,
                         type: 'kit',
                         name: kit.title,
-                        price: kit.hidePrice ? 0 : kit.price,
-                        hidePrice: Boolean(kit.hidePrice || !kit.price),
+                        price: (kit.hidePrice || !kit.price || Number(kit.price) <= 0) ? 0 : kit.price,
+                        hidePrice: Boolean(kit.hidePrice || !kit.price || Number(kit.price) <= 0),
                         image: kit.image,
                         sku: `KIT-${(kit.difficulty || 'DIY').toUpperCase()}`,
                       })}

@@ -152,7 +152,7 @@ export const ProductQuickViewModal: React.FC = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
               {/* Price Display */}
               <div className="flex items-center gap-3">
-                {product.hidePrice || !product.price ? (
+                {product.hidePrice || !product.price || Number(product.price) <= 0 ? (
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                     <span className="text-xs font-extrabold font-heading">Price on Request (Contact on WhatsApp)</span>
@@ -387,7 +387,7 @@ export const ProductQuickViewModal: React.FC = () => {
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
                   <span className="text-secondary font-medium">Subtotal:</span>
                   <strong className="font-mono text-base font-extrabold text-navy">
-                    {product.hidePrice || !product.price ? 'Price on Request' : `₹${product.price * qty}`}
+                    {product.hidePrice || !product.price || Number(product.price) <= 0 ? 'Price on Request' : `₹${product.price * qty}`}
                   </strong>
                 </div>
               </div>
@@ -409,7 +409,7 @@ export const ProductQuickViewModal: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer font-heading active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>WhatsApp ({product.hidePrice || !product.price ? 'Quote' : `₹${product.price}`})</span>
+                  <span>WhatsApp ({product.hidePrice || !product.price || Number(product.price) <= 0 ? 'Quote' : `₹${product.price}`})</span>
                 </button>
               </div>
 
