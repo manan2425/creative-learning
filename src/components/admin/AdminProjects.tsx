@@ -80,6 +80,7 @@ export const AdminProjects: React.FC = () => {
       cadModelAvailable: true,
       gerberAvailable: true,
       circuitTopology: 'Input Sensor -> Brain MCU -> Output Actuators',
+      note: '',
     });
     setBomInput('Microcontroller: 1\nSensor: 1\nDriver: 1');
     setHighlightsInput('Full open-source code\nSchematic included');
@@ -100,7 +101,8 @@ export const AdminProjects: React.FC = () => {
       pdfName: proj.pdfName || '',
       hidePrice: Boolean(proj.hidePrice),
       rating: proj.rating || 4.9,
-      reviewsCount: proj.reviewsCount || 0
+      reviewsCount: proj.reviewsCount || 0,
+      note: proj.note || '',
     });
     setBomInput(proj.bom ? proj.bom.map((b) => (b.unitPrice && b.unitPrice > 0 ? `${b.name}: ${b.qty}: ${b.unitPrice}` : `${b.name}: ${b.qty}`)).join('\n') : '');
     setHighlightsInput(proj.highlights ? proj.highlights.join('\n') : '');
@@ -500,6 +502,20 @@ export const AdminProjects: React.FC = () => {
                     value={formData.description || ''}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs text-navy"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="text-xs font-bold text-navy flex items-center justify-between">
+                    <span>Project Notice / Note</span>
+                    <span className="text-[11px] text-slate-400">e.g. &quot;Note: Programming charge will be extra&quot;</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Note: Programming charge will be extra (leave blank to use section default)"
+                    value={formData.note || ''}
+                    onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs text-navy font-medium"
                   />
                 </div>
 

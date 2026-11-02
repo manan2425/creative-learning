@@ -26,10 +26,10 @@ export const PracticalDetailModal: React.FC = () => {
   const { 
     activePracticalModal, 
     setActivePracticalModal, 
-    addToCart, 
     products, 
     openWhatsAppInquiry, 
-    showToast 
+    showToast,
+    settings 
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'wiring' | 'code' | 'troubleshooting'>('wiring');
@@ -98,26 +98,6 @@ export const PracticalDetailModal: React.FC = () => {
   };
 
   const { price, isQuote } = getPracticalPrice(lab);
-
-  const handleAddWholePracticalToCart = () => {
-    addToCart({
-      id: `practical-${lab.id}`,
-      type: 'practical',
-      name: `${lab.title} (Complete Lab Kit)`,
-      price: isQuote ? 0 : price,
-      hidePrice: isQuote,
-      image: (lab.images && lab.images[0]) || lab.image || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
-      sku: `PRAC-${lab.id.slice(0, 8).toUpperCase()}`,
-      meta: {
-        topic: lab.topic,
-        level: lab.level,
-        componentsCount: lab.requiredComponents?.length || 0,
-        note: 'Programming charge will be extra'
-      }
-    }, 1);
-
-    showToast('Lab Practical Added 🔬', `${lab.title} added to your cart as a complete lab kit.`, 'success');
-  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 animate-fade-in touch-manipulation">
@@ -256,6 +236,42 @@ export const PracticalDetailModal: React.FC = () => {
             );
           })()}
 
+          {/* Price & Kit Summary - Matching Kits */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 border border-border p-3.5 sm:p-4 rounded-2xl">
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold text-secondary uppercase tracking-wider block">
+                Complete Lab Kit Price
+              </span>
+              {isQuote ? (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-extrabold font-heading">Price on Request (Contact on WhatsApp)</span>
+                </div>
+              ) : (
+                <div className="flex items-baseline gap-2.5">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-navy font-mono">
+                    ₹{price}
+                  </span>
+                  {lab.originalPrice && lab.originalPrice > price ? (
+                    <span className="text-sm text-slate-400 line-through font-mono">
+                      ₹{lab.originalPrice}
+                    </span>
+                  ) : null}
+                  {lab.originalPrice && lab.originalPrice > price && (
+                    <span className="text-xs font-bold text-success bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                      Save {Math.round(((lab.originalPrice - price) / lab.originalPrice) * 100)}%
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 text-xs text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>Note: {lab.note || settings.sectionNotes?.practicalsNote || 'Programming charge will be extra'}</span>
+            </div>
+          </div>
+
           {/* Lab Objective */}
           <div className="bg-primary-light/50 border border-blue-100 rounded-xl p-4 text-xs text-navy space-y-1">
             <span className="font-extrabold uppercase tracking-wider text-primary text-[10px] block">
@@ -303,18 +319,21 @@ export const PracticalDetailModal: React.FC = () => {
                     Bill of Materials Required for this Lab
                   </h4>
                   <button
-                    onClick={handleAddWholePracticalToCart}
-                    className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-2xs cursor-pointer"
+                    onClick={() => openWhatsAppInquiry(
+                      `STEM Practical Hardware Kit Order: ${lab.title}`,
+                      `Estimated Kit Cost: ${isQuote ? 'Price on Request' : `₹${price}`}`
+                    )}
+                    className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-500 transition-colors shadow-2xs cursor-pointer"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    <span>{isQuote ? 'Add Whole Lab Kit to Cart' : `Add Whole Lab Kit (₹${price})`}</span>
+                    <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                    <span>{isQuote ? 'Enquire Lab Kit on WhatsApp' : `Order Lab Kit (₹${price})`}</span>
                   </button>
                 </div>
 
                 {/* Programming Charge Note */}
                 <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-semibold">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Note: Programming charge will be extra</span>
+                  <span>Note: {lab.note || settings.sectionNotes?.practicalsNote || 'Programming charge will be extra'}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -466,20 +485,14 @@ export const PracticalDetailModal: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleAddWholePracticalToCart}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>{isQuote ? 'Add Whole Lab Kit' : `Add Whole Kit (₹${price})`}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => openWhatsAppInquiry(`Practical Kit Inquiry: ${lab.title}`)}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+              onClick={() => openWhatsAppInquiry(
+                `STEM Practical Lab Kit Order: ${lab.title}`,
+                `Level: ${lab.level}, Estimated Cost: ${isQuote ? 'Price on Request' : `₹${price}`}`
+              )}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>WhatsApp Inquiry</span>
+              <span>Order Lab Kit via WhatsApp ({isQuote ? 'Custom Quote' : `₹${price}`})</span>
             </button>
           </div>
         </div>

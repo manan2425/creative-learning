@@ -3,29 +3,23 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
-import { MessageCircle, X, Sparkles, Send, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { MessageCircle, X, Sparkles, Send, ShieldCheck } from 'lucide-react';
 
 export const WhatsAppFloatingBtn: React.FC = () => {
   const { 
     openWhatsAppInquiry, 
     settings, 
-    isCartOpen, 
-    isCheckoutOpen, 
     isSearchOpen,
     activePracticalModal,
     activeQuickViewProduct,
     activeQuickViewKit,
-    activeQuickViewProject,
-    cart,
-    setIsCartOpen
+    activeQuickViewProject
   } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
 
-  const cartTotalCount = cart.reduce((total, item) => total + item.quantity, 0);
-
-  // Automatically hide floating button if cart, checkout, search, or details modal is open
-  if (isCartOpen || isCheckoutOpen || isSearchOpen || activePracticalModal || activeQuickViewProduct || activeQuickViewKit || activeQuickViewProject) {
+  // Automatically hide floating button if search or details modal is open
+  if (isSearchOpen || activePracticalModal || activeQuickViewProduct || activeQuickViewKit || activeQuickViewProject) {
     return null;
   }
 
@@ -155,28 +149,6 @@ export const WhatsAppFloatingBtn: React.FC = () => {
             </span>
             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
           </div>
-
-          {/* Floating Cart Button with Cart Logo and Number of Items Badge */}
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="group relative flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-navy via-slate-900 to-navy hover:from-primary hover:to-primary-hover text-white rounded-full shadow-xl shadow-navy/30 hover:shadow-primary/40 border border-slate-700/80 hover:border-primary/50 transition-all duration-200 cursor-pointer active:scale-95"
-            aria-label={`Open Cart (${cartTotalCount} items)`}
-            title={`Open Cart (${cartTotalCount} items)`}
-          >
-            <div className="relative flex items-center justify-center">
-              <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan group-hover:text-white transition-colors" />
-            </div>
-            <span className="text-xs font-bold font-heading tracking-wide">
-              Cart
-            </span>
-            <span className={`inline-flex items-center justify-center font-extrabold text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.2 sm:py-0.5 rounded-full font-mono transition-all ${
-              cartTotalCount > 0
-                ? 'bg-cyan text-navy shadow-xs animate-pulse'
-                : 'bg-slate-700 text-slate-300'
-            }`}>
-              {cartTotalCount}
-            </span>
-          </button>
         </div>
       )}
 

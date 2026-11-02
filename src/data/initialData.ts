@@ -29,7 +29,7 @@ export const INITIAL_MENU_ITEMS: NavMenuItem[] = [
 ];
 
 export const INITIAL_SETTINGS: StoreSettings = {
-  whatsappNumber: '+919714045096',
+  whatsappNumber: '+916359874332',
   storeName: 'Creative Learning - Robotics & Electronics',
   logoUrl: '/logo-emblem.png',
   supportEmail: 'creativelearning13@gmail.com',
@@ -38,7 +38,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   freeShippingThreshold: 999,
   defaultDeliveryFee: 60,
   currencySymbol: '₹',
-  upiId: '9714045096@upi',
+  upiId: '6359874332@upi',
   categories: INITIAL_CATEGORIES,
   menuItems: INITIAL_MENU_ITEMS,
   hero: {
@@ -104,6 +104,12 @@ export const INITIAL_SETTINGS: StoreSettings = {
     practicalsQuoteAuthor: 'Creative Learning Practical Division',
     projectsQuoteText: 'When hardware blueprints and firmware are shared openly, human innovation accelerates for every student across the nation.',
     projectsQuoteAuthor: 'Creative Learning Open-Source Community',
+  },
+  sectionNotes: {
+    kitsNote: 'Custom hardware bundle & curriculum consultation available on WhatsApp.',
+    practicalsNote: 'Programming charge will be extra',
+    projectsNote: 'Programming charge will be extra',
+    productsNote: '100% pre-tested before dispatch',
   },
   quotes: [],
   footerBio: 'Creative Learning is your premier robotics and electronics supplier, empowering students, makers, and universities with precision STEM kits and embedded components.',

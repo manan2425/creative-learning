@@ -40,6 +40,7 @@ export async function GET() {
         heroQuoteText: settings.heroQuoteText || INITIAL_SETTINGS.heroQuoteText,
         heroQuoteAuthor: settings.heroQuoteAuthor || INITIAL_SETTINGS.heroQuoteAuthor,
         sectionQuotes: { ...INITIAL_SETTINGS.sectionQuotes, ...(settings.sectionQuotes || {}) },
+        sectionNotes: { ...INITIAL_SETTINGS.sectionNotes, ...(settings.sectionNotes || {}) },
       };
     }
 

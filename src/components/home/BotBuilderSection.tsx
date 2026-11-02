@@ -8,7 +8,6 @@ import {
   Layers, 
   Sparkles, 
   Check, 
-  ShoppingCart, 
   MessageCircle, 
   Activity, 
   Zap, 
@@ -27,7 +26,7 @@ interface OptionItem {
 }
 
 export const BotBuilderSection: React.FC = () => {
-  const { products, addToCart, openWhatsAppInquiry, showToast } = useStore();
+  const { products, openWhatsAppInquiry, showToast } = useStore();
 
   // Dynamically derive chassis, brain MCUs, drivers, and sensors from products added by admin
   const chassisOptions: OptionItem[] = useMemo(() => {
@@ -130,33 +129,6 @@ export const BotBuilderSection: React.FC = () => {
     const driverPrice = selectedDriver?.price || 0;
     const sensorTotal = selectedSensors.reduce((sum, s) => sum + s.price, 0);
     return chassisPrice + brainPrice + driverPrice + sensorTotal;
-  };
-
-  const handleAddToCart = () => {
-    const total = calculateTotalPrice();
-    if (total === 0) {
-      showToast('Configurator Notice', 'Please select components for your custom robot.', 'info');
-      return;
-    }
-
-    const botName = `Custom Robot: ${(selectedChassis?.name || 'Custom Chassis').split(' ')[0]} + ${(selectedBrain?.name || 'MCU').split(' ')[0]}`;
-    
-    addToCart({
-      id: `custom-bot-${Date.now()}`,
-      type: 'custom_bot',
-      name: botName,
-      price: total,
-      image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=400&q=80',
-      sku: `BOT-CUSTOM-${Date.now().toString().slice(-4)}`,
-      meta: {
-        chassis: selectedChassis?.name || 'N/A',
-        brain: selectedBrain?.name || 'N/A',
-        driver: selectedDriver?.name || 'N/A',
-        sensors: selectedSensors.map((s) => s.name),
-      },
-    });
-
-    showToast('Custom Bot Added! 🤖', 'Your custom robot configuration is ready in the cart.', 'success');
   };
 
   const handleWhatsAppOrder = () => {
@@ -427,21 +399,13 @@ export const BotBuilderSection: React.FC = () => {
                   <span className="text-2xl font-extrabold font-mono text-cyan">₹{calculateTotalPrice()}</span>
                 </div>
 
-                {/* CTAs */}
-                <div className="space-y-3">
-                  <button
-                    onClick={handleAddToCart}
-                    className="w-full py-3.5 bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>Add Custom Bot to Cart</span>
-                  </button>
-
+                {/* CTA */}
+                <div className="pt-2">
                   <button
                     onClick={handleWhatsAppOrder}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/25"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4 fill-white" />
                     <span>Order Custom Bot on WhatsApp</span>
                   </button>
                 </div>

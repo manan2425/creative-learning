@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useStore } from '@/context/StoreContext';
-import { Settings, Save, ShieldAlert, Phone, Mail, Megaphone, Truck, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { Settings, Save, ShieldAlert, Phone, Mail, Megaphone, Truck, RefreshCw, Image as ImageIcon, FileText } from 'lucide-react';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 
 export const AdminSettings: React.FC = () => {
@@ -18,6 +18,12 @@ export const AdminSettings: React.FC = () => {
     freeShippingThreshold: settings.freeShippingThreshold || 999,
     defaultDeliveryFee: settings.defaultDeliveryFee || 60,
     upiId: settings.upiId || '9714045096@upi',
+    sectionNotes: {
+      kitsNote: settings.sectionNotes?.kitsNote || 'Note: Programming charge will be extra',
+      practicalsNote: settings.sectionNotes?.practicalsNote || 'Note: Programming charge will be extra',
+      projectsNote: settings.sectionNotes?.projectsNote || 'Note: Programming charge will be extra',
+      productsNote: settings.sectionNotes?.productsNote || 'Note: Programming charge will be extra',
+    },
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -48,7 +54,7 @@ export const AdminSettings: React.FC = () => {
 
   return (
     <div className="max-w-4xl space-y-8">
-      
+
       {/* Header */}
       <div>
         <h2 className="text-2xl font-extrabold text-navy">Store &amp; WhatsApp Configuration</h2>
@@ -58,7 +64,7 @@ export const AdminSettings: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-border p-6 shadow-2xs space-y-6">
-        
+
         {/* WhatsApp & Contact Section */}
         <div className="space-y-4">
           <h3 className="font-extrabold text-sm text-navy uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
@@ -180,6 +186,75 @@ export const AdminSettings: React.FC = () => {
                 value={formData.defaultDeliveryFee}
                 onChange={(e) => setFormData({ ...formData, defaultDeliveryFee: Number(e.target.value) })}
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-mono text-navy focus:outline-hidden focus:border-primary"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section Notes & Notices Configuration */}
+        <div className="space-y-4 pt-4 border-t border-border">
+          <h3 className="font-extrabold text-sm text-navy uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+            <FileText className="w-4 h-4 text-primary" />
+            Section Notices &amp; Programming Charge Notes
+          </h3>
+          <p className="text-xs text-secondary">
+            Set default notices shown on storefront cards and modals. Can also be overridden per item in each section&apos;s editor.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-navy">Robotics Starter Kits Section Notice</label>
+              <input
+                type="text"
+                value={formData.sectionNotes.kitsNote}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  sectionNotes: { ...formData.sectionNotes, kitsNote: e.target.value }
+                })}
+                placeholder="e.g. Note: Programming charge will be extra"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-navy focus:outline-hidden focus:border-primary font-medium"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-navy">Guided Practicals &amp; Labs Notice</label>
+              <input
+                type="text"
+                value={formData.sectionNotes.practicalsNote}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  sectionNotes: { ...formData.sectionNotes, practicalsNote: e.target.value }
+                })}
+                placeholder="e.g. Note: Programming charge will be extra"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-navy focus:outline-hidden focus:border-primary font-medium"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-navy">Engineering Blueprints Section Notice</label>
+              <input
+                type="text"
+                value={formData.sectionNotes.projectsNote}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  sectionNotes: { ...formData.sectionNotes, projectsNote: e.target.value }
+                })}
+                placeholder="e.g. Note: Programming charge will be extra"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-navy focus:outline-hidden focus:border-primary font-medium"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-navy">Products &amp; Components Notice</label>
+              <input
+                type="text"
+                value={formData.sectionNotes.productsNote}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  sectionNotes: { ...formData.sectionNotes, productsNote: e.target.value }
+                })}
+                placeholder="e.g. Note: Programming charge will be extra"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs text-navy focus:outline-hidden focus:border-primary font-medium"
               />
             </div>
           </div>

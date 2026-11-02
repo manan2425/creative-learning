@@ -38,8 +38,8 @@ export function triggerFileDownload(content: string, fileName: string, mimeType:
 // 1. Export Products to CSV
 export function exportProductsToCSV(products: Product[]) {
   const headers = [
-    'id', 'sku', 'name', 'category', 'price', 'originalPrice', 'hidePrice', 
-    'rating', 'reviewsCount', 'inStock', 'stockQuantity', 'voltage', 'image', 
+    'id', 'sku', 'name', 'category', 'price', 'originalPrice', 'hidePrice',
+    'rating', 'reviewsCount', 'inStock', 'stockQuantity', 'voltage', 'image',
     'shortDescription', 'description', 'specs', 'pinout', 'datasheetUrl', 'createdAt'
   ];
 
@@ -72,8 +72,8 @@ export function exportProductsToCSV(products: Product[]) {
 // 2. Export Robotics Starter Kits to CSV
 export function exportKitsToCSV(kits: RoboticsKit[]) {
   const headers = [
-    'id', 'title', 'subtitle', 'difficulty', 'ageRange', 'price', 'originalPrice', 
-    'hidePrice', 'rating', 'reviewsCount', 'image', 'badge', 'features', 'bomList', 
+    'id', 'title', 'subtitle', 'difficulty', 'ageRange', 'price', 'originalPrice',
+    'hidePrice', 'rating', 'reviewsCount', 'image', 'badge', 'features', 'bomList',
     'learningOutcomes', 'buildTimeHours', 'codeLanguage', 'manualUrl', 'createdAt'
   ];
 
@@ -106,8 +106,8 @@ export function exportKitsToCSV(kits: RoboticsKit[]) {
 // 3. Export Engineering Projects to CSV
 export function exportProjectsToCSV(projects: EngineeringProject[]) {
   const headers = [
-    'id', 'title', 'category', 'difficulty', 'price', 'originalPrice', 'estimatedCost', 'hidePrice', 
-    'rating', 'reviewsCount', 'image', 'description', 'highlights', 'bom', 
+    'id', 'title', 'category', 'difficulty', 'price', 'originalPrice', 'estimatedCost', 'hidePrice',
+    'rating', 'reviewsCount', 'image', 'description', 'highlights', 'bom',
     'cadModelAvailable', 'gerberAvailable', 'circuitTopology', 'pdfUrl', 'createdAt'
   ];
 
@@ -140,7 +140,7 @@ export function exportProjectsToCSV(projects: EngineeringProject[]) {
 // 4. Export Practicals to CSV
 export function exportPracticalsToCSV(practicals: PracticalExperiment[]) {
   const headers = [
-    'id', 'title', 'level', 'topic', 'price', 'originalPrice', 'estimatedCost', 'hidePrice', 'durationMin', 'description', 'objective', 
+    'id', 'title', 'level', 'topic', 'price', 'originalPrice', 'estimatedCost', 'hidePrice', 'durationMin', 'description', 'objective',
     'requiredComponents', 'troubleshootingTips', 'pdfUrl', 'createdAt'
   ];
 
@@ -169,8 +169,8 @@ export function exportPracticalsToCSV(practicals: PracticalExperiment[]) {
 // 5. Export Orders to CSV
 export function exportOrdersToCSV(orders: any[]) {
   const headers = [
-    'orderId', 'createdAt', 'status', 'totalAmount', 'paymentMethod', 
-    'customerName', 'customerPhone', 'customerCity', 'customerAddress', 
+    'orderId', 'createdAt', 'status', 'totalAmount', 'paymentMethod',
+    'customerName', 'customerPhone', 'customerCity', 'customerAddress',
     'customerPincode', 'itemsCount', 'orderItemsSummary', 'customerNotes'
   ];
 
@@ -233,8 +233,8 @@ export function exportAllDataJSON(data: {
 
   const jsonString = JSON.stringify(masterPayload, null, 2);
   triggerFileDownload(
-    jsonString, 
-    `creative_learning_master_backup_${new Date().toISOString().slice(0, 10)}.json`, 
+    jsonString,
+    `creative_learning_master_backup_${new Date().toISOString().slice(0, 10)}.json`,
     'application/json;charset=utf-8;'
   );
 }

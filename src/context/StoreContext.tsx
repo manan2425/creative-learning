@@ -1,23 +1,23 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  Product, 
-  RoboticsKit, 
-  PracticalExperiment, 
-  EngineeringProject, 
-  CartItem, 
-  StoreSettings, 
+import {
+  Product,
+  RoboticsKit,
+  PracticalExperiment,
+  EngineeringProject,
+  CartItem,
+  StoreSettings,
   WhatsAppOrder,
   CMSHeroContent,
   CMSWhyUsContent,
   QuoteItem
 } from '@/types';
-import { 
-  INITIAL_PRODUCTS, 
-  INITIAL_KITS, 
-  INITIAL_PRACTICALS, 
-  INITIAL_PROJECTS, 
+import {
+  INITIAL_PRODUCTS,
+  INITIAL_KITS,
+  INITIAL_PRACTICALS,
+  INITIAL_PROJECTS,
   INITIAL_SETTINGS,
   INITIAL_CATEGORIES
 } from '@/data/initialData';
@@ -59,7 +59,7 @@ interface StoreContextType {
   setActiveQuickViewKit: (kit: RoboticsKit | null) => void;
   setActiveQuickViewProject: (project: EngineeringProject | null) => void;
   setActivePracticalModal: (practical: PracticalExperiment | null) => void;
-  
+
   // Cart & Wishlist
   addToCart: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
   removeFromCart: (id: string) => void;
@@ -71,7 +71,7 @@ interface StoreContextType {
 
   showToast: (title: string, message: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
   removeToast: (id: string) => void;
-  
+
   // WhatsApp Helpers
   generateWhatsAppOrderUrl: (customer: {
     name: string;
@@ -338,14 +338,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
-    } catch (e) {}
+    } catch (e) { }
   }, [cart]);
 
   // Save wishlist
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_WISHLIST_KEY, JSON.stringify(wishlist));
-    } catch (e) {}
+    } catch (e) { }
   }, [wishlist]);
 
   const showToast = (title: string, message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
@@ -632,7 +632,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     message += `💰 *FINANCIAL SUMMARY*\n`;
     message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Price-on-Request Items)' : ''}\n`;
     if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
-    message += `• Shipping / Delivery: ${shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}\n`;
     message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
     if (hasQuoteItems) {
       message += `\n📌 *Special Note:* This order includes custom / Price-on-Request components. Please confirm quotation and availability.\n`;
@@ -665,7 +664,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         message: details,
         timestamp: new Date().toISOString()
       }),
-    }).catch(() => {});
+    }).catch(() => { });
 
     window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -757,7 +756,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (hasPricedItems) {
       message += `• Items Subtotal: ₹${subtotal}${hasQuoteItems ? ' (+ Custom Quote Items)' : ''}\n`;
       if (discountAmount > 0) message += `• Coupon (${appliedCoupon}): -₹${discountAmount}\n`;
-      message += `• Shipping / Delivery: ${shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}\n`;
       message += `• *Grand Total Payable:* *₹${grandTotal}*${hasQuoteItems ? ' (+ Custom Quote)' : ''}\n`;
     } else {
       message += `• Pricing: *Custom Quotation / Price on Request*\n`;
@@ -838,7 +836,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('Product Added', `${product.name} saved to MongoDB.`, 'success');
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
     setProducts((prev) => [product, ...prev.filter(p => p.id !== product.id)]);
     broadcastSync('products');
     return true;
@@ -851,7 +849,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product),
       });
-    } catch (e) {}
+    } catch (e) { }
     setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)));
     broadcastSync('products');
     showToast('Product Updated', `${product.name} updated successfully.`, 'success');
@@ -861,7 +859,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteProduct = async (id: string): Promise<boolean> => {
     try {
       await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
-    } catch (e) {}
+    } catch (e) { }
     setProducts((prev) => prev.filter((p) => p.id !== id));
     broadcastSync('products');
     showToast('Product Deleted', 'Item removed from database.', 'info');
@@ -926,7 +924,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('Kit Deleted', 'Robotics kit removed from database.', 'info');
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
     setKits((prev) => prev.filter((k) => k.id !== id));
     broadcastSync('kits');
     showToast('Kit Deleted', 'Robotics kit removed from database.', 'info');
@@ -991,7 +989,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('Practical Deleted', 'Lab removed from database.', 'info');
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
     setPracticals((prev) => prev.filter((p) => p.id !== id));
     broadcastSync('practicals');
     showToast('Practical Deleted', 'Lab removed from database.', 'info');
@@ -1014,7 +1012,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('Blueprint Added', `${project.title} added.`, 'success');
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
     setProjects((prev) => [project, ...prev.filter(p => p.id !== project.id)]);
     broadcastSync('projects');
     return true;
@@ -1027,7 +1025,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(project),
       });
-    } catch (e) {}
+    } catch (e) { }
     setProjects((prev) => prev.map((p) => (p.id === project.id ? project : p)));
     broadcastSync('projects');
     showToast('Blueprint Updated', 'Project updated successfully.', 'success');
@@ -1037,7 +1035,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteProject = async (id: string): Promise<boolean> => {
     try {
       await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
-    } catch (e) {}
+    } catch (e) { }
     setProjects((prev) => prev.filter((p) => p.id !== id));
     broadcastSync('projects');
     showToast('Blueprint Deleted', 'Project removed from database.', 'info');

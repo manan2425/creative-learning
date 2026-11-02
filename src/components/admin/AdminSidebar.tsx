@@ -23,7 +23,7 @@ import {
 interface AdminSidebarProps {
   currentTab: string;
   setCurrentTab: (tab: string) => void;
-  orderCount: number;
+  orderCount?: number;
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
   onLogout?: () => void;
@@ -32,12 +32,12 @@ interface AdminSidebarProps {
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ 
   currentTab, 
   setCurrentTab, 
-  orderCount,
+  orderCount = 0,
   isMobileOpen = false,
   setIsMobileOpen,
   onLogout
 }) => {
-  const menuItems = [
+  const menuItems: Array<{ id: string; label: string; icon: any; badge?: string | number }> = [
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'products', label: 'Products & Inventory', icon: Cpu },
     { id: 'categories', label: 'Dynamic Categories', icon: Tag },
@@ -45,8 +45,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'kits', label: 'Robotics Starter Kits', icon: Bot },
     { id: 'practicals', label: 'Guided Labs & Experiments', icon: Layers },
     { id: 'projects', label: 'Engineering Blueprints', icon: Compass },
-    { id: 'cms', label: 'Website CMS & Text', icon: FileEdit },
-    { id: 'orders', label: 'Orders & Inquiries', icon: MessageSquare, badge: orderCount > 0 ? orderCount : undefined },
+    { id: 'cms', label: 'Website CMS & Section Notes', icon: FileEdit },
+    { id: 'settings', label: 'Store & WhatsApp Settings', icon: Settings },
   ];
 
   const handleSelectTab = (id: string) => {

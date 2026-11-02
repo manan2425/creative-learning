@@ -10,7 +10,7 @@ import { AdminKits } from '@/components/admin/AdminKits';
 import { AdminPracticals } from '@/components/admin/AdminPracticals';
 import { AdminProjects } from '@/components/admin/AdminProjects';
 import { AdminContentCMS } from '@/components/admin/AdminContentCMS';
-import { AdminOrders } from '@/components/admin/AdminOrders';
+import { AdminSettings } from '@/components/admin/AdminSettings';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { ToastContainer } from '@/components/common/ToastContainer';
 import { useStore } from '@/context/StoreContext';
@@ -21,7 +21,6 @@ import Link from 'next/link';
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [currentTab, setCurrentTab] = useState('overview');
-  const [orders, setOrders] = useState<any[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { settings } = useStore();
 
@@ -43,24 +42,6 @@ export default function AdminPage() {
     sessionStorage.removeItem('cl_admin_token');
     setIsAuthenticated(false);
   };
-
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch('/api/orders');
-      if (res.ok) {
-        const d = await res.json();
-        if (d.data) setOrders(d.data);
-      }
-    } catch (e) {
-      console.warn('Orders fetch error:', e);
-    }
-  };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchOrders();
-    }
-  }, [isAuthenticated]);
 
   // Loading state while checking token
   if (isAuthenticated === null) {
@@ -128,7 +109,6 @@ export default function AdminPage() {
       <AdminSidebar
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
-        orderCount={orders.length}
         isMobileOpen={isMobileMenuOpen}
         setIsMobileOpen={setIsMobileMenuOpen}
         onLogout={handleLogout}
@@ -138,7 +118,7 @@ export default function AdminPage() {
       <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(100vh-60px)] md:max-h-screen w-full max-w-full overflow-x-hidden">
         <div className="max-w-6xl mx-auto w-full">
           {currentTab === 'overview' && (
-            <AdminOverview setCurrentTab={setCurrentTab} orders={orders} />
+            <AdminOverview setCurrentTab={setCurrentTab} />
           )}
 
           {currentTab === 'products' && <AdminProducts />}
@@ -154,10 +134,7 @@ export default function AdminPage() {
           {currentTab === 'projects' && <AdminProjects />}
 
           {currentTab === 'cms' && <AdminContentCMS />}
-
-          {currentTab === 'orders' && (
-            <AdminOrders orders={orders} refreshOrders={fetchOrders} />
-          )}
+          {currentTab === 'settings' && <AdminSettings />}
         </div>
       </main>
     </div>

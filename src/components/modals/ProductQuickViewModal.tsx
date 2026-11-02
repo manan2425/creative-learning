@@ -16,7 +16,8 @@ import {
   Eye, 
   ChevronLeft, 
   ChevronRight, 
-  ExternalLink 
+  ExternalLink,
+  AlertCircle
 } from 'lucide-react';
 import { ZoomableImage } from '@/components/common/ZoomableImage';
 
@@ -24,7 +25,6 @@ export const ProductQuickViewModal: React.FC = () => {
   const { 
     activeQuickViewProduct, 
     setActiveQuickViewProduct, 
-    addToCart, 
     openWhatsAppInquiry, 
     settings 
   } = useStore();
@@ -67,19 +67,6 @@ export const ProductQuickViewModal: React.FC = () => {
     : [product.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'];
 
   const currentPhoto = allPhotos[activePhotoIdx] || allPhotos[0];
-
-  const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      type: 'product',
-      name: product.name,
-      price: product.hidePrice ? 0 : product.price,
-      hidePrice: Boolean(product.hidePrice || !product.price),
-      image: currentPhoto,
-      sku: product.sku,
-    }, qty);
-    setActiveQuickViewProduct(null);
-  };
 
   const handleWhatsAppInquiry = () => {
     openWhatsAppInquiry(
@@ -184,6 +171,14 @@ export const ProductQuickViewModal: React.FC = () => {
               <p className="text-xs sm:text-sm text-secondary leading-relaxed font-sans pt-1">
                 {product.description || product.shortDescription}
               </p>
+            )}
+
+            {/* Note if configured */}
+            {(product.note || settings.sectionNotes?.productsNote) && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl mt-2">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Note: {product.note || settings.sectionNotes?.productsNote}</span>
+              </div>
             )}
           </div>
 
@@ -379,26 +374,15 @@ export const ProductQuickViewModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* 5. Add to Cart & WhatsApp Inquiry Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl font-bold text-xs shadow-md shadow-primary/20 transition-all cursor-pointer font-heading active:scale-95"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  <span>
-                    {product.hidePrice || !product.price ? 'Add to Cart (Quote Request)' : 'Add to Cart'}
-                  </span>
-                </button>
-
+              {/* Direct WhatsApp Order Button */}
+              <div className="pt-1">
                 <button
                   type="button"
                   onClick={handleWhatsAppInquiry}
-                  className="flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer font-heading active:scale-95"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer font-heading active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>WhatsApp Inquiry</span>
+                  <span>Order via WhatsApp ({product.hidePrice || !product.price ? 'Custom Quote' : `₹${product.price}`})</span>
                 </button>
               </div>
 
@@ -418,7 +402,7 @@ export const ProductQuickViewModal: React.FC = () => {
 
         </div>
 
-        {/* Sticky Mobile Bottom Bar (Always accessible on small mobile screens) */}
+        {/* Sticky Mobile Bottom Bar */}
         <div className="sm:hidden sticky bottom-0 bg-white/95 backdrop-blur-md p-3 border-t border-border shadow-lg flex items-center gap-2 z-20 shrink-0">
           <button
             type="button"
@@ -430,11 +414,11 @@ export const ProductQuickViewModal: React.FC = () => {
           </button>
           <button
             type="button"
-            onClick={handleAddToCart}
-            className="flex-[2] py-2.5 bg-primary hover:bg-primary-hover active:bg-primary text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 active:scale-95"
+            onClick={handleWhatsAppInquiry}
+            className="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95"
           >
-            <ShoppingCart className="w-4 h-4" />
-            <span>{product.hidePrice || !product.price ? 'Quote' : 'Add to Cart'}</span>
+            <MessageCircle className="w-4 h-4 fill-white" />
+            <span>Order on WhatsApp</span>
           </button>
         </div>
 

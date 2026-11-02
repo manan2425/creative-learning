@@ -3,8 +3,6 @@ import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
 import { ToastContainer } from "@/components/common/ToastContainer";
-import { CartDrawer } from "@/components/modals/CartDrawer";
-import { WhatsAppCheckoutModal } from "@/components/modals/WhatsAppCheckoutModal";
 import { ProductQuickViewModal } from "@/components/modals/ProductQuickViewModal";
 import { KitQuickViewModal } from "@/components/modals/KitQuickViewModal";
 import { ProjectQuickViewModal } from "@/components/modals/ProjectQuickViewModal";
@@ -64,8 +62,6 @@ export default function RootLayout({
           <div className="relative z-10 min-h-screen">
             {children}
           </div>
-          <CartDrawer />
-          <WhatsAppCheckoutModal />
           <ProductQuickViewModal />
           <KitQuickViewModal />
           <ProjectQuickViewModal />

@@ -14,11 +14,12 @@ import {
   Sparkles,
   Terminal,
   Check,
-  AlertCircle
+  AlertCircle,
+  MessageCircle
 } from 'lucide-react';
 
 export const PracticalSection: React.FC = () => {
-  const { practicals, setActivePracticalModal, addToCart, products, openWhatsAppInquiry, showToast } = useStore();
+  const { practicals, setActivePracticalModal, products, openWhatsAppInquiry, showToast, settings } = useStore();
   const [activeTopicFilter, setActiveTopicFilter] = useState('All');
 
   const getPracticalPrice = (prac: PracticalExperiment) => {
@@ -48,28 +49,6 @@ export const PracticalSection: React.FC = () => {
       }
     }
     return { price: 0, isQuote: true };
-  };
-
-  const handleAddPracticalToCart = (prac: PracticalExperiment) => {
-    const { price, isQuote } = getPracticalPrice(prac);
-
-    addToCart({
-      id: `practical-${prac.id}`,
-      type: 'practical',
-      name: `${prac.title} (Complete Lab Kit)`,
-      price: isQuote ? 0 : price,
-      hidePrice: isQuote,
-      image: (prac.images && prac.images[0]) || prac.image || 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
-      sku: `PRAC-${prac.id.slice(0, 8).toUpperCase()}`,
-      meta: {
-        topic: prac.topic,
-        level: prac.level,
-        componentsCount: prac.requiredComponents?.length || 0,
-        note: 'Programming charge will be extra'
-      }
-    }, 1);
-
-    showToast('Lab Practical Added 🔬', `${prac.title} added to your cart as a complete practical kit.`, 'success');
   };
 
   const topics = ['All', 'Microcontroller Fundamentals', 'Robotic Vision & Distance Ranging', 'Motors, Actuators & Power Electronics', 'Wireless, IoT & WebSockets'];
@@ -173,6 +152,27 @@ export const PracticalSection: React.FC = () => {
                       <Clock className="w-3.5 h-3.5 text-cyan" />
                       <span>{prac.durationMin || 30} mins</span>
                     </div>
+
+                    {/* Price Tag Overlay - Matching Kits */}
+                    <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-border shadow-lg flex items-baseline gap-2 z-10">
+                      {isQuote ? (
+                        <span className="text-xs font-extrabold font-heading text-emerald-800 flex items-center gap-1.5">
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          Price on Request
+                        </span>
+                      ) : (
+                        <>
+                          <span className="text-xl font-extrabold font-mono text-navy">
+                            ₹{price}
+                          </span>
+                          {prac.originalPrice && prac.originalPrice > price ? (
+                            <span className="text-xs text-slate-400 line-through font-mono">
+                              ₹{prac.originalPrice}
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <div className="p-6 space-y-4">
@@ -220,12 +220,12 @@ export const PracticalSection: React.FC = () => {
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-secondary">Complete Lab Kit:</span>
                         {isQuote ? (
-                          <span className="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                          <span className="font-extrabold text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
                             Price on Request
                           </span>
                         ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-extrabold text-navy font-mono text-sm">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="font-extrabold text-navy font-mono text-base sm:text-lg">
                               ₹{price}
                             </span>
                             {prac.originalPrice && prac.originalPrice > price && (
@@ -239,7 +239,7 @@ export const PracticalSection: React.FC = () => {
 
                       <div className="flex items-center gap-1.5 text-[11px] text-amber-700 font-semibold bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-xl">
                         <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                        <span>Note: Programming charge will be extra</span>
+                        <span>Note: {prac.note || settings.sectionNotes?.practicalsNote || 'Programming charge will be extra'}</span>
                       </div>
                     </div>
                   </div>
@@ -256,12 +256,16 @@ export const PracticalSection: React.FC = () => {
                     </button>
 
                     <button
-                      onClick={() => handleAddPracticalToCart(prac)}
-                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-                      title="Add Whole Lab Kit to Cart"
+                      onClick={() => openWhatsAppInquiry(
+                        `STEM Practical Kit Order: ${prac.title}`,
+                        `Level: ${prac.level}, Estimated Cost: ${isQuote ? 'Price on Request' : `₹${price}`}`,
+                        prac.id
+                      )}
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                      title="Order Practical Hardware Kit via WhatsApp"
                     >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>{isQuote ? 'Add Whole Kit' : `Add Kit (₹${price})`}</span>
+                      <MessageCircle className="w-4 h-4 fill-white" />
+                      <span>{isQuote ? 'Enquire on WhatsApp' : `Order on WhatsApp (₹${price})`}</span>
                     </button>
                   </div>
 

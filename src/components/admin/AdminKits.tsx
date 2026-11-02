@@ -79,6 +79,7 @@ export const AdminKits: React.FC = () => {
       pdfName: '',
       badge: 'New',
       featuresTitle: "What's Included & Key Highlights",
+      note: '',
     });
     setFeaturesInput('Plug-and-play jumper cables\nZero-soldering assembly\nStep-by-step PDF assembly guide\nPre-tested Microcontroller & Sensors');
     setBomInput('Arduino Uno R3: 1\nMotor Driver: 1\nChassis Pack: 1');
@@ -96,6 +97,7 @@ export const AdminKits: React.FC = () => {
       pdfName: kit.pdfName || '',
       hidePrice: Boolean(kit.hidePrice),
       featuresTitle: kit.featuresTitle || "What's Included & Key Highlights",
+      note: kit.note || '',
     });
     setFeaturesInput(kit.features ? kit.features.join('\n') : '');
     setBomInput(kit.bomList ? kit.bomList.map((b) => `${b.item}: ${b.qty}`).join('\n') : '');
@@ -376,6 +378,20 @@ export const AdminKits: React.FC = () => {
                     value={formData.subtitle || ''}
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs text-navy"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="text-xs font-bold text-navy flex items-center justify-between">
+                    <span>Custom Note / Notice</span>
+                    <span className="text-[11px] text-slate-400">e.g. &quot;Note: Programming charge will be extra&quot;</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Note: Programming charge will be extra (leave blank to use section default)"
+                    value={formData.note || ''}
+                    onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-border rounded-xl text-xs text-navy font-medium"
                   />
                 </div>
 

@@ -20,15 +20,24 @@ import {
   ExternalLink,
   Sliders,
   Megaphone,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  FileText
 } from 'lucide-react';
 import { AdminMenubar } from '@/components/admin/AdminMenubar';
 
 export const AdminContentCMS: React.FC = () => {
-  const { settings, updateCMSContent, showToast } = useStore();
+  const { settings, updateCMSContent, updateSettings, showToast } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'whyUs' | 'quotes' | 'footer' | 'menubar'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'whyUs' | 'quotes' | 'footer' | 'menubar' | 'notes'>('hero');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Section Notes State
+  const [sectionNotesData, setSectionNotesData] = useState({
+    kitsNote: settings.sectionNotes?.kitsNote || 'Note: Programming charge will be extra',
+    practicalsNote: settings.sectionNotes?.practicalsNote || 'Note: Programming charge will be extra',
+    projectsNote: settings.sectionNotes?.projectsNote || 'Note: Programming charge will be extra',
+    productsNote: settings.sectionNotes?.productsNote || 'Note: Programming charge will be extra',
+  });
 
   // Hero State
   const [heroData, setHeroData] = useState<CMSHeroContent>({
@@ -180,6 +189,16 @@ export const AdminContentCMS: React.FC = () => {
     }
   };
 
+  const handleSaveSectionNotes = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await updateSettings({ sectionNotes: sectionNotesData });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleAddQuote = () => {
     const newQ: QuoteItem = {
       id: 'quote-' + Date.now(),
@@ -290,6 +309,18 @@ export const AdminContentCMS: React.FC = () => {
         >
           <MenuIcon className="w-4 h-4" />
           <span>Header Navigation Menu</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('notes')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold font-heading rounded-t-xl transition-all cursor-pointer border-b-2 whitespace-nowrap ${
+            activeTab === 'notes'
+              ? 'border-primary text-primary bg-blue-50/50'
+              : 'border-transparent text-secondary hover:text-navy'
+          }`}
+        >
+          <FileText className="w-4 h-4" />
+          <span>Section Notices &amp; Notes</span>
         </button>
       </div>
 
@@ -859,6 +890,90 @@ export const AdminContentCMS: React.FC = () => {
         <div className="pt-2">
           <AdminMenubar />
         </div>
+      )}
+
+      {/* 6. SECTION NOTICES & CHARGES MANAGEMENT */}
+      {activeTab === 'notes' && (
+        <form onSubmit={handleSaveSectionNotes} className="bg-white p-6 rounded-2xl border border-border shadow-2xs space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-sm font-extrabold text-navy uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              Section Default Notices &amp; Programming Charge Notes
+            </h3>
+            <p className="text-xs text-secondary leading-relaxed">
+              Configure the default notice pill that displays on storefront cards and detail popup modals across each section (e.g., &quot;Note: Programming charge will be extra&quot;). Individual items can override these defaults directly in their own edit modals.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-navy flex items-center justify-between">
+                  <span>Robotics Starter Kits Default Notice</span>
+                  <span className="text-[10px] text-cyan font-mono font-bold">KITS SECTION</span>
+                </label>
+                <input
+                  type="text"
+                  value={sectionNotesData.kitsNote}
+                  onChange={(e) => setSectionNotesData({ ...sectionNotesData, kitsNote: e.target.value })}
+                  placeholder="e.g. Note: Programming charge will be extra"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-medium text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-navy flex items-center justify-between">
+                  <span>Guided Practicals &amp; Labs Default Notice</span>
+                  <span className="text-[10px] text-emerald-600 font-mono font-bold">PRACTICALS</span>
+                </label>
+                <input
+                  type="text"
+                  value={sectionNotesData.practicalsNote}
+                  onChange={(e) => setSectionNotesData({ ...sectionNotesData, practicalsNote: e.target.value })}
+                  placeholder="e.g. Note: Programming charge will be extra"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-medium text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-navy flex items-center justify-between">
+                  <span>Engineering Blueprints Default Notice</span>
+                  <span className="text-[10px] text-purple-600 font-mono font-bold">PROJECTS</span>
+                </label>
+                <input
+                  type="text"
+                  value={sectionNotesData.projectsNote}
+                  onChange={(e) => setSectionNotesData({ ...sectionNotesData, projectsNote: e.target.value })}
+                  placeholder="e.g. Note: Programming charge will be extra"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-medium text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-navy flex items-center justify-between">
+                  <span>Components &amp; Products Default Notice</span>
+                  <span className="text-[10px] text-primary font-mono font-bold">PRODUCTS</span>
+                </label>
+                <input
+                  type="text"
+                  value={sectionNotesData.productsNote}
+                  onChange={(e) => setSectionNotesData({ ...sectionNotesData, productsNote: e.target.value })}
+                  placeholder="e.g. Note: Programming charge will be extra"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-border rounded-xl text-xs font-medium text-navy focus:outline-hidden focus:border-primary focus:bg-white"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 flex justify-end">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{isSaving ? 'Saving...' : 'Save Section Notices'}</span>
+            </button>
+          </div>
+        </form>
       )}
 
     </div>

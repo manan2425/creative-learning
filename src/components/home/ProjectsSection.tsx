@@ -19,30 +19,7 @@ import {
 } from 'lucide-react';
 
 export const ProjectsSection: React.FC = () => {
-  const { projects, addToCart, openWhatsAppInquiry, showToast, setActiveQuickViewProject } = useStore();
-
-  const handleAddProjectToCart = (project: any) => {
-    const projectCost = project.price ?? project.estimatedCost ?? 0;
-    const isQuoteProject = Boolean(project.hidePrice || !projectCost);
-
-    addToCart({
-      id: `project-${project.id}`,
-      type: 'project',
-      name: `${project.title} (Complete Project)`,
-      price: isQuoteProject ? 0 : projectCost,
-      hidePrice: isQuoteProject,
-      image: (project.images && project.images[0]) || project.image || 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=700&q=80',
-      sku: `PRJ-${project.id.toUpperCase().slice(0, 8)}`,
-      meta: {
-        category: project.category,
-        difficulty: project.difficulty,
-        bomCount: project.bom?.length || 0,
-        note: 'Programming charge will be extra'
-      }
-    }, 1);
-
-    showToast('Project Added 🚀', `${project.title} added to your cart as a complete project.`, 'success');
-  };
+  const { projects, openWhatsAppInquiry, showToast, setActiveQuickViewProject, settings } = useStore();
 
   return (
     <section id="projects" className="py-16 lg:py-24 bg-white border-b border-border relative overflow-hidden">
@@ -143,20 +120,24 @@ export const ProjectsSection: React.FC = () => {
                       <span>Blueprint</span>
                     </button>
 
-                    <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold font-mono text-navy border border-border shadow-md">
+                    {/* Price Tag Overlay - Matching Kits */}
+                    <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-border shadow-lg flex items-baseline gap-2 z-10">
                       {project.hidePrice || !(project.price || project.estimatedCost) ? (
-                        <span className="text-emerald-800 font-extrabold flex items-center gap-1.5 font-heading">
+                        <span className="text-xs font-extrabold font-heading text-emerald-800 flex items-center gap-1.5">
                           <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                           Custom Quotation
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1.5">
-                          <span>Est. Project Cost:</span>
-                          <span className="text-primary font-extrabold">₹{project.price || project.estimatedCost}</span>
-                          {project.originalPrice && project.originalPrice > (project.price || project.estimatedCost || 0) && (
-                            <span className="text-slate-400 font-normal line-through text-[11px]">₹{project.originalPrice}</span>
-                          )}
-                        </span>
+                        <>
+                          <span className="text-xl font-extrabold font-mono text-navy">
+                            ₹{project.price || project.estimatedCost}
+                          </span>
+                          {project.originalPrice && project.originalPrice > (project.price || project.estimatedCost || 0) ? (
+                            <span className="text-xs text-slate-400 line-through font-mono">
+                              ₹{project.originalPrice}
+                            </span>
+                          ) : null}
+                        </>
                       )}
                     </div>
                   </div>
@@ -230,35 +211,23 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Programming Charge Notice & Action Buttons */}
+                {/* Note & Direct WhatsApp Order */}
                 <div className="p-6 pt-0 space-y-2.5">
                   <div className="flex items-center gap-1.5 text-[11px] text-amber-700 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>Note: Programming charge will be extra</span>
+                    <span>Note: {project.note || settings.sectionNotes?.projectsNote || 'Programming charge will be extra'}</span>
                   </div>
 
                   <button
-                    onClick={() => handleAddProjectToCart(project)}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>
-                      {project.hidePrice || !(project.price || project.estimatedCost)
-                        ? 'Add Complete Project to Cart (Quote Request)'
-                        : `Add Complete Project to Cart (₹${project.price || project.estimatedCost})`}
-                    </span>
-                  </button>
-
-                  <button
                     onClick={() => openWhatsAppInquiry(
-                      `Blueprint & BOM Inquiry: ${project.title}`,
-                      `Estimated BOM: ${project.hidePrice ? 'Price on Request' : `₹${project.price || project.estimatedCost}`}`,
+                      `Blueprint & Hardware Order: ${project.title}`,
+                      `Estimated Cost: ${project.hidePrice ? 'Price on Request' : `₹${project.price || project.estimatedCost}`}, Category: ${project.category}`,
                       project.id
                     )}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-emerald-50 text-navy hover:text-emerald-800 border border-border hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
                   >
-                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Enquire Project on WhatsApp</span>
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    <span>{project.hidePrice || !(project.price || project.estimatedCost) ? 'Enquire Blueprint on WhatsApp' : `Order Blueprint & Kit (₹${project.price || project.estimatedCost})`}</span>
                   </button>
                 </div>
 

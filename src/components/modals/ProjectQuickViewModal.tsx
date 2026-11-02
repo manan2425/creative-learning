@@ -25,9 +25,9 @@ export const ProjectQuickViewModal: React.FC = () => {
   const { 
     activeQuickViewProject, 
     setActiveQuickViewProject, 
-    addToCart, 
     openWhatsAppInquiry,
-    showToast 
+    showToast,
+    settings 
   } = useStore();
 
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
@@ -68,27 +68,6 @@ export const ProjectQuickViewModal: React.FC = () => {
   const currentPhoto = allPhotos[activePhotoIdx] || allPhotos[0];
   const effectivePrice = project.price ?? project.estimatedCost ?? 0;
   const isQuoteItem = Boolean(project.hidePrice || !effectivePrice);
-
-  const handleAddWholeProjectToCart = () => {
-    addToCart({
-      id: `project-${project.id}`,
-      type: 'project',
-      name: `${project.title} (Complete Project)`,
-      price: isQuoteItem ? 0 : effectivePrice,
-      hidePrice: isQuoteItem,
-      image: currentPhoto,
-      sku: `PRJ-${project.id.slice(0, 8).toUpperCase()}`,
-      meta: {
-        category: project.category,
-        difficulty: project.difficulty,
-        bomCount: project.bom?.length || 0,
-        note: 'Programming charge will be extra'
-      }
-    }, 1);
-
-    showToast('Project Added 🚀', `${project.title} added to your cart as a complete project.`, 'success');
-    setActiveQuickViewProject(null);
-  };
 
   const handleWhatsAppInquiry = () => {
     openWhatsAppInquiry(
@@ -191,7 +170,7 @@ export const ProjectQuickViewModal: React.FC = () => {
 
               <div className="flex items-center gap-1.5 text-xs text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
                 <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Note: Programming charge will be extra</span>
+                <span>Note: {project.note || settings.sectionNotes?.projectsNote || 'Programming charge will be extra'}</span>
               </div>
             </div>
           </div>
@@ -363,24 +342,19 @@ export const ProjectQuickViewModal: React.FC = () => {
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <button
               type="button"
-              onClick={handleAddWholeProjectToCart}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold font-heading shadow-md shadow-primary/20 transition-all cursor-pointer"
+              onClick={() => setActiveQuickViewProject(null)}
+              className="px-4 py-3 rounded-xl bg-slate-200/80 hover:bg-slate-300 active:bg-slate-400 text-slate-700 text-xs font-bold transition-all cursor-pointer"
             >
-              <ShoppingCart className="w-4 h-4" />
-              <span>
-                {isQuoteItem
-                  ? 'Add Complete Project to Cart (Quote Request)'
-                  : `Add Complete Project to Cart (₹${effectivePrice})`}
-              </span>
+              Cancel &amp; Close
             </button>
 
             <button
               type="button"
               onClick={handleWhatsAppInquiry}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-heading shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Enquire via WhatsApp</span>
+              <span>{isQuoteItem ? 'Enquire Blueprint on WhatsApp' : `Order Blueprint & Hardware (₹${effectivePrice})`}</span>
             </button>
           </div>
         </div>

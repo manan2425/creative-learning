@@ -22,6 +22,7 @@ export interface Product {
   sku: string;
   featured?: boolean;
   datasheetUrl?: string;
+  note?: string;
   createdAt?: string;
 }
 
@@ -42,6 +43,7 @@ export interface RoboticsKit {
   pdfUrl?: string;
   pdfName?: string;
   badge?: string;
+  note?: string;
   featuresTitle?: string;
   features: string[];
   bomList: {
@@ -73,6 +75,7 @@ export interface PracticalExperiment {
   pdfName?: string;
   description: string;
   objective: string;
+  note?: string;
   requiredComponents: {
     name: string;
     qty: number;
@@ -111,6 +114,7 @@ export interface EngineeringProject {
   pdfName?: string;
   description: string;
   highlights: string[];
+  note?: string;
   bom: {
     name: string;
     qty: number;
@@ -230,6 +234,13 @@ export interface NavMenuItem {
   isExternal?: boolean;
 }
 
+export interface SectionNotesConfig {
+  kitsNote?: string;
+  practicalsNote?: string;
+  projectsNote?: string;
+  productsNote?: string;
+}
+
 export interface StoreSettings {
   _id?: string;
   whatsappNumber: string;
@@ -249,6 +260,7 @@ export interface StoreSettings {
   heroQuoteText?: string;
   heroQuoteAuthor?: string;
   sectionQuotes?: SectionQuotesConfig;
+  sectionNotes?: SectionNotesConfig;
   quotes?: QuoteItem[];
   footerBio?: string;
   footerAddress?: string;

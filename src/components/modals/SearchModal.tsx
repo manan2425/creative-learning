@@ -10,7 +10,6 @@ import {
   Layers, 
   Compass, 
   ArrowRight,
-  ShoppingCart,
   MessageCircle
 } from 'lucide-react';
 
@@ -24,7 +23,7 @@ export const SearchModal: React.FC = () => {
     projects,
     setActiveQuickViewProduct,
     setActivePracticalModal,
-    addToCart
+    openWhatsAppInquiry
   } = useStore();
 
   const [query, setQuery] = useState('');
@@ -151,20 +150,16 @@ export const SearchModal: React.FC = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToCart({
-                            id: prod.id,
-                            type: 'product',
-                            name: prod.name,
-                            price: prod.hidePrice ? 0 : prod.price,
-                            hidePrice: Boolean(prod.hidePrice || !prod.price),
-                            image: prod.image,
-                            sku: prod.sku,
-                          });
+                          openWhatsAppInquiry(
+                            `Product Order: ${prod.name}`,
+                            `SKU: ${prod.sku}, Price: ${prod.hidePrice || !prod.price ? 'Price on Request' : `₹${prod.price}`}`,
+                            prod.id
+                          );
                         }}
-                        className="p-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-lg transition-colors cursor-pointer"
-                        title="Add to cart"
+                        className="p-1.5 bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white rounded-lg transition-colors cursor-pointer"
+                        title="Order on WhatsApp"
                       >
-                        <ShoppingCart className="w-3.5 h-3.5" />
+                        <MessageCircle className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>

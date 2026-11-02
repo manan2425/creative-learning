@@ -15,11 +15,12 @@ import {
   BookOpen,
   ArrowRight,
   ShieldCheck,
-  Eye
+  Eye,
+  AlertCircle
 } from 'lucide-react';
 
 export const KitsSection: React.FC = () => {
-  const { kits, addToCart, openWhatsAppInquiry, setActiveQuickViewKit } = useStore();
+  const { kits, openWhatsAppInquiry, setActiveQuickViewKit, settings } = useStore();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
 
   const filteredKits = selectedDifficulty === 'All' 
@@ -230,37 +231,26 @@ export const KitsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons & Note */}
                 <div className="p-6 pt-0 space-y-2.5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <button
-                      onClick={() => addToCart({
-                        id: kit.id,
-                        type: 'kit',
-                        name: kit.title,
-                        price: kit.hidePrice ? 0 : kit.price,
-                        hidePrice: Boolean(kit.hidePrice || !kit.price),
-                        image: kit.image,
-                        sku: `KIT-${(kit.difficulty || 'DIY').toUpperCase()}`,
-                      })}
-                      className="flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/20 transition-all cursor-pointer"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Add Kit to Cart</span>
-                    </button>
+                  {(kit.note || settings.sectionNotes?.kitsNote) && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>Note: {kit.note || settings.sectionNotes?.kitsNote}</span>
+                    </div>
+                  )}
 
-                    <button
-                      onClick={() => openWhatsAppInquiry(
-                        `Starter Kit Inquiry: ${kit.title}`,
-                        `Price: ${kit.hidePrice ? 'Price on Request' : `₹${kit.price}`}, Level: ${kit.difficulty}`,
-                        kit.id
-                      )}
-                      className="flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
-                    >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>Order via WhatsApp</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => openWhatsAppInquiry(
+                      `Starter Kit Inquiry: ${kit.title}`,
+                      `Price: ${kit.hidePrice ? 'Price on Request' : `₹${kit.price}`}, Level: ${kit.difficulty}`,
+                      kit.id
+                    )}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    <span>Order via WhatsApp</span>
+                  </button>
                 </div>
 
               </div>
